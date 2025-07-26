@@ -1,13 +1,15 @@
-apply plugin: 'com.android.application'
+plugins {
+    alias(libs.plugins.android.application)
+}
 
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.3"
+    namespace 'com.example.librewards'
+    compileSdk 36
 
     defaultConfig {
-        applicationId "com.example.librewards"
-        minSdkVersion 23
-        targetSdkVersion 29
+        applicationId "com.example.myapplication"
+        minSdk 24
+        targetSdk 36
         versionCode 1
         versionName "1.0"
 
@@ -20,7 +22,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
 }
 
 dependencies {

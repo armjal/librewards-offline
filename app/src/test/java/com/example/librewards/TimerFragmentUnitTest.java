@@ -16,11 +16,12 @@ import java.util.stream.Stream;
 class TimerFragmentUnitTest {
     static Stream<Arguments> provideInputsForPointsCalculatorTest() {
         return Stream.of(
-                Arguments.of(5, 0),
-                Arguments.of(10500, 400),
+                Arguments.of(10500, 0),
+                Arguments.of(60000, 75),
                 Arguments.of(120000, 125),
                 Arguments.of(185000, 225),
-                Arguments.of(800000, 700)
+                Arguments.of(507000, 700),
+                Arguments.of(800000, 800)
 
         );
     }

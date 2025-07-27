@@ -226,13 +226,7 @@ public class TimerFragment extends Fragment {
         int pointsEarned = 0;
         int timeSpentSeconds = (int) (totalTimeSpentAtLibrary/1000);
 
-        if(timeSpentSeconds >= 10 && timeSpentSeconds < 30){
-            pointsEarned = 400; // currently here and was added for testing purposes
-        }
-        else if(timeSpentSeconds >= 30 && timeSpentSeconds < 60){
-            pointsEarned = 50;
-        }
-        else if(timeSpentSeconds >= 60 && timeSpentSeconds < 120){
+         if(timeSpentSeconds >= 60 && timeSpentSeconds < 120){
             pointsEarned = 75;
         }
         else if(timeSpentSeconds >= 120 && timeSpentSeconds < 180){
@@ -244,8 +238,11 @@ public class TimerFragment extends Fragment {
         else if(timeSpentSeconds >= 260 && timeSpentSeconds < 400){
             pointsEarned = 400;
         }
-        else if(timeSpentSeconds >= 500){
+        else if(timeSpentSeconds >= 400 && timeSpentSeconds < 600){
             pointsEarned = 700;
+        }
+        else if(timeSpentSeconds >= 600){
+             pointsEarned = 800;
         }
         return pointsEarned;
     }

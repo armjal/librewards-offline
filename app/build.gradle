@@ -7,7 +7,7 @@ android {
     compileSdk 36
 
     defaultConfig {
-        applicationId "com.example.myapplication"
+        applicationId "com.example.librewards"
         minSdk 24
         targetSdk 36
         versionCode 1
@@ -27,6 +27,9 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 }
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -35,9 +38,12 @@ dependencies {
     implementation libs.constraintlayout
     implementation libs.legacy.support.v4
     implementation libs.lifecycle.extensions
-    testImplementation libs.junit
-    androidTestImplementation libs.junit
-    androidTestImplementation libs.espresso.core
     implementation libs.material
 
+    testImplementation platform(libs.junit)
+    testImplementation libs.junit.jupiter
+    testRuntimeOnly libs.junit.platform.launcher
+
+    androidTestImplementation platform(libs.junit)
+    androidTestImplementation libs.espresso.core
 }

@@ -17,7 +17,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.icu.util.TimeUnit;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
@@ -33,9 +32,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
-import java.sql.Time;
-import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -153,8 +149,10 @@ public class TimerFragment extends Fragment {
 
                                             //'totalTime' gets the total duration spent at the library in milliseconds
                                             long totalTime = SystemClock.elapsedRealtime() - stopwatch.getBase();
-                                            //Sets the points using the setPoints method
-                                            setPointsFromTime(totalTime);
+                                            int pointsEarned = PointsCalculator.calculateFromDuration(totalTime);
+                                            announceAccumulatedPoints(pointsEarned, totalTime);
+                                            myDb.addPoints(pointsEarned);
+                                            points.setText(String.valueOf(myDb.getPoints()));
                                             stopwatch.setBase(SystemClock.elapsedRealtime());
                                             stopwatch.stop();
                                             //Clears the input text and resets to original state
@@ -221,53 +219,14 @@ public class TimerFragment extends Fragment {
             c.moveToNext();
         }
     }
-
-    //Method that converts the duration spent at the library into points
-    public void setPointsFromTime(long totalTime){
-        int pointsEarned = 0;
-        int minutes = (int) ((totalTime/1000) /60);
-        if(totalTime > 10000 && totalTime < 30000){
-            pointsEarned = 400;
-            myDb.addPoints(pointsEarned);
-            points.setText(String.valueOf(myDb.getPoints()));
+    private void announceAccumulatedPoints(int pointsEarned, long totalTimeSpentAtLibrary) {
+        int timeSpentMinutes = ((int) totalTimeSpentAtLibrary / 1000) /60;
+        if(timeSpentMinutes == 1){
+            showPopup("Well done, you spent "+ timeSpentMinutes +" minute at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints());
 
         }
-        else if(totalTime >= 30000 && totalTime < 60000){
-            pointsEarned = 50;
-            myDb.addPoints(pointsEarned);
-            points.setText(String.valueOf(myDb.getPoints()));
-        }
-        else if(totalTime >= 60000 && totalTime < 120000){
-            pointsEarned = 75;
-            myDb.addPoints(pointsEarned);
-            points.setText(String.valueOf(myDb.getPoints()));
-        }
-        else if(totalTime >= 120000 && totalTime < 180000){
-            pointsEarned = 125;
-            myDb.addPoints(pointsEarned);
-            points.setText(String.valueOf(myDb.getPoints()));
-        }
-        else if(totalTime >= 180000 && totalTime < 260000){
-            pointsEarned = 225;
-            myDb.addPoints(pointsEarned);
-            points.setText(String.valueOf(myDb.getPoints()));
-        }
-        else if(totalTime >= 260000 && totalTime < 400000){
-            pointsEarned = 400;
-            myDb.addPoints(pointsEarned);
-            points.setText(String.valueOf(myDb.getPoints()));
-        }
-        else if(totalTime >= 500000){
-            pointsEarned = 700;
-            myDb.addPoints(pointsEarned);
-            points.setText(String.valueOf(myDb.getPoints()));
-        }
-        if(minutes == 1){
-            showPopup("Well done, you spent "+ minutes +" minute at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints());
-
-        }
-        else if(minutes > 1){
-            showPopup("Well done, you spent "+ minutes +" minutes at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints());
+        else if(timeSpentMinutes > 1){
+            showPopup("Well done, you spent "+ timeSpentMinutes +" timeSpentMinutes at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints());
 
         }
         else{

@@ -32,7 +32,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -150,8 +149,7 @@ public class TimerFragment extends Fragment {
 
                                             //'totalTime' gets the total duration spent at the library in milliseconds
                                             long totalTime = SystemClock.elapsedRealtime() - stopwatch.getBase();
-                                            //Sets the points using the setPoints method
-                                            int pointsEarned = calculatePointsFromTimeSpent(totalTime);
+                                            int pointsEarned = PointsCalculator.calculateFromDuration(totalTime);
                                             announceAccumulatedPoints(pointsEarned, totalTime);
                                             myDb.addPoints(pointsEarned);
                                             points.setText(String.valueOf(myDb.getPoints()));
@@ -221,32 +219,6 @@ public class TimerFragment extends Fragment {
             c.moveToNext();
         }
     }
-
-    public int calculatePointsFromTimeSpent(long totalTimeSpentAtLibrary) {
-        int pointsEarned = 0;
-        int timeSpentSeconds = (int) (totalTimeSpentAtLibrary/1000);
-
-         if(timeSpentSeconds >= 60 && timeSpentSeconds < 120){
-            pointsEarned = 75;
-        }
-        else if(timeSpentSeconds >= 120 && timeSpentSeconds < 180){
-            pointsEarned = 125;
-        }
-        else if(timeSpentSeconds >= 180 && timeSpentSeconds < 260){
-            pointsEarned = 225;
-        }
-        else if(timeSpentSeconds >= 260 && timeSpentSeconds < 400){
-            pointsEarned = 400;
-        }
-        else if(timeSpentSeconds >= 400 && timeSpentSeconds < 600){
-            pointsEarned = 700;
-        }
-        else if(timeSpentSeconds >= 600){
-             pointsEarned = 800;
-        }
-        return pointsEarned;
-    }
-
     private void announceAccumulatedPoints(int pointsEarned, long totalTimeSpentAtLibrary) {
         int timeSpentMinutes = ((int) totalTimeSpentAtLibrary / 1000) /60;
         if(timeSpentMinutes == 1){

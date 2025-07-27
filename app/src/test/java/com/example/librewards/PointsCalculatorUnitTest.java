@@ -2,18 +2,14 @@ package com.example.librewards;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import java.util.stream.Stream;
 
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
- */
 
-class TimerFragmentUnitTest {
+class PointsCalculatorUnitTest {
     static Stream<Arguments> provideInputsForPointsCalculatorTest() {
         return Stream.of(
                 Arguments.of(10500, 0),
@@ -25,12 +21,12 @@ class TimerFragmentUnitTest {
 
         );
     }
+
     @ParameterizedTest
     @MethodSource("provideInputsForPointsCalculatorTest")
-    void calculatePointsFromTime_givenRangeOfTimes_returnsExpectedPointsEarned(long timeSpentInLibrary, int expectedPointsEarned) {
-        TimerFragment timerFragment = new TimerFragment();
+    void calculateFromDuration_givenRangeOfTimes_returnsExpectedPointsEarned(long timeSpentInLibrary, int expectedPointsEarned) {
+        int actualPointsEarned = PointsCalculator.calculateFromDuration(timeSpentInLibrary);
 
-        int actualPointsEarned = timerFragment.calculatePointsFromTimeSpent(timeSpentInLibrary);
         assertEquals(expectedPointsEarned, actualPointsEarned);
 
     }

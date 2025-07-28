@@ -96,82 +96,73 @@ public class TimerFragment extends Fragment implements UserChangeListener {
        currStartCodes = checkForUpdates(currStartCodes, originalStartCodes, "start_codes_table");
         currStopCodes = checkForUpdates(currStopCodes,originalStopCodes, "stop_codes_table");
             //Sets actions on clicking the "Start" Button
-            startButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    //Checks if there is any text inputted
-                    if(editText.length() == 0){
-                    toastMessage("No code was entered, please try again");
-                    }
-                    //Checks if the current start code table in the database contains the code that has been inputted
-                    else if (currStartCodes.contains(editText.getText().toString())) {
-                        //Removes the code from the database as it has already been used once
-                        currStartCodes.remove(editText.getText().toString());
-                        myDb.deleteCode("start_codes_table", editText.getText().toString());
-                        //Clears the input text
-                        editText.setText(null);
-                        editText.setHint("Please enter the stop code");
-                        //Starts the stopwatch
-                        stopwatch.setBase(SystemClock.elapsedRealtime());
-                        stopwatch.start();
-                        //Switches from the 'Start' button to the 'Stop' button
-                        startButton.setVisibility(v.INVISIBLE);
-                        stopButton.setVisibility(v.VISIBLE);
-                        //All actions to be taken place once the stopwatch has started
-                        stopwatch.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
-                            @Override
-                            public void onChronometerTick(Chronometer chronometer) {
-                                //Checks if the stopwatch has gone over 24 hours. If so, the stopwatch resets back to its original state
-                                if ((SystemClock.elapsedRealtime() - stopwatch.getBase()) >= 500000) {
-                                    stopwatch.setBase(SystemClock.elapsedRealtime());
-                                    stopwatch.stop();
-                                    stopButton.setVisibility(v.INVISIBLE);
-                                    startButton.setVisibility(v.VISIBLE);
-                                    showPopup("No stop code was entered for 24 hours. The timer has been reset");
-                                }
-                                stopButton.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        //Checks if there is any text inputted
-                                        if(editText.length() == 0){
-                                            toastMessage("No code was entered");
-                                        }
-                                        //Checks if the current stop code table in the database contains the code that has been inputted
-                                        if (currStopCodes.contains(editText.getText().toString())) {
-                                            //Removes the code from the database as it has already been used once
-                                            currStopCodes.remove(editText.getText().toString());
-                                            myDb.deleteCode("stop_codes_table", editText.getText().toString());
+            startButton.setOnClickListener(v2 -> {
+                //Checks if there is any text inputted
+                if(editText.length() == 0){
+                toastMessage("No code was entered, please try again");
+                }
+                //Checks if the current start code table in the database contains the code that has been inputted
+                else if (currStartCodes.contains(editText.getText().toString())) {
+                    //Removes the code from the database as it has already been used once
+                    currStartCodes.remove(editText.getText().toString());
+                    myDb.deleteCode("start_codes_table", editText.getText().toString());
+                    //Clears the input text
+                    editText.setText(null);
+                    editText.setHint("Please enter the stop code");
+                    //Starts the stopwatch
+                    stopwatch.setBase(SystemClock.elapsedRealtime());
+                    stopwatch.start();
+                    //Switches from the 'Start' button to the 'Stop' button
+                    startButton.setVisibility(v2.INVISIBLE);
+                    stopButton.setVisibility(v2.VISIBLE);
+                    //All actions to be taken place once the stopwatch has started
+                    stopwatch.setOnChronometerTickListener(chronometer -> {
+                        //Checks if the stopwatch has gone over 24 hours. If so, the stopwatch resets back to its original state
+                        if ((SystemClock.elapsedRealtime() - stopwatch.getBase()) >= 500000) {
+                            stopwatch.setBase(SystemClock.elapsedRealtime());
+                            stopwatch.stop();
+                            stopButton.setVisibility(v2.INVISIBLE);
+                            startButton.setVisibility(v2.VISIBLE);
+                            showPopup("No stop code was entered for 24 hours. The timer has been reset");
+                        }
+                        stopButton.setOnClickListener(v1 -> {
+                            //Checks if there is any text inputted
+                            if(editText.length() == 0){
+                                toastMessage("No code was entered");
+                            }
+                            //Checks if the current stop code table in the database contains the code that has been inputted
+                            if (currStopCodes.contains(editText.getText().toString())) {
+                                //Removes the code from the database as it has already been used once
+                                currStopCodes.remove(editText.getText().toString());
+                                myDb.deleteCode("stop_codes_table", editText.getText().toString());
 
-                                            //'totalTime' gets the total duration spent at the library in milliseconds
-                                            long totalTime = SystemClock.elapsedRealtime() - stopwatch.getBase();
-                                            int pointsEarned = PointsCalculator.calculateFromDuration(totalTime);
-                                            announceAccumulatedPoints(pointsEarned, totalTime);
-                                            myDb.addPoints(pointsEarned);
-                                            points.setText(String.valueOf(myDb.getPoints()));
-                                            stopwatch.setBase(SystemClock.elapsedRealtime());
-                                            stopwatch.stop();
-                                            //Clears the input text and resets to original state
-                                            editText.setText(null);
-                                            editText.setHint("Please enter the start code");
-                                            //Listener to communicate with Rewards Fragment and give the points to display in there
-                                            UserChangeNotifier.notifyPointsChanged(myDb.getPoints());
-                                            stopButton.setVisibility(v.INVISIBLE);
-                                            startButton.setVisibility(v.VISIBLE);
+                                //'totalTime' gets the total duration spent at the library in milliseconds
+                                long totalTime = SystemClock.elapsedRealtime() - stopwatch.getBase();
+                                int pointsEarned = PointsCalculator.calculateFromDuration(totalTime);
+                                announceAccumulatedPoints(pointsEarned, totalTime);
+                                myDb.addPoints(pointsEarned);
+                                points.setText(String.valueOf(myDb.getPoints()));
+                                stopwatch.setBase(SystemClock.elapsedRealtime());
+                                stopwatch.stop();
+                                //Clears the input text and resets to original state
+                                editText.setText(null);
+                                editText.setHint("Please enter the start code");
+                                //Listener to communicate with Rewards Fragment and give the points to display in there
+                                UserChangeNotifier.notifyPointsChanged(myDb.getPoints());
+                                stopButton.setVisibility(v1.INVISIBLE);
+                                startButton.setVisibility(v1.VISIBLE);
 
-                                        }
-                                        //If the stop code entered is not in the database, a toast will show
-                                        else{
-                                            toastMessage("The code you entered is not valid, please try again");
-                                        }
-                                    }
-                                });
+                            }
+                            //If the stop code entered is not in the database, a toast will show
+                            else{
+                                toastMessage("The code you entered is not valid, please try again");
                             }
                         });
-                    }
-                    //If the start code entered is not in the database, a toast will show
-                    else{
-                        toastMessage(getString(R.string.invalidCode));
-                    }
+                    });
+                }
+                //If the start code entered is not in the database, a toast will show
+                else{
+                    toastMessage(getString(R.string.invalidCode));
                 }
             });
 
@@ -258,12 +249,7 @@ public class TimerFragment extends Fragment implements UserChangeListener {
         TextView popupText = popup.findViewById(R.id.popupText);
         setTextToEdit(text);
         popupText.setText(getTextToEdit());
-        closeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popup.dismiss();
-            }
-        });
+        closeBtn.setOnClickListener(v -> popup.dismiss());
         popup.show();
 
     }

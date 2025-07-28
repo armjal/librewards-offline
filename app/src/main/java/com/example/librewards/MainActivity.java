@@ -80,13 +80,7 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
         requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.timer);
         requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.reward);
         onFirstStartShowPopup();
-        //Help button on standby in case a user required information about the application
-        helpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPopup(getString(R.string.helpInfo));
-            }
-        });
+        helpButton.setOnClickListener(v -> showPopup(getString(R.string.helpInfo)));
     }
 
     private void onFirstStartShowPopup(){
@@ -99,22 +93,19 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
     //Custom popup that asks for the users name on first start-up
     public void showPopupName(){
         popupNameContainer.setVisibility(View.VISIBLE);
-        nameButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(enterName.length() != 0) {
-                    //Adds the name given to the database
-                    myDb.addName(enterName.getText().toString());
-                    popupNameContainer.setVisibility(View.INVISIBLE);
-                    //Sets the names in the fragments instantly as they will be the first ones on show once the popup dismisses
-                    timerFragment.initialSetName();
-                    rewardsFragment.initialSetName();
-                    //Once the popup closes the "Help" popup opens to give the user information before they start
-                    showPopup(getString(R.string.helpInfo));
-                }
-                else{
-                    toastMessage("No name was entered, please try again");
-                }
+        nameButton.setOnClickListener(v -> {
+            if(enterName.length() != 0) {
+                //Adds the name given to the database
+                myDb.addName(enterName.getText().toString());
+                popupNameContainer.setVisibility(View.INVISIBLE);
+                //Sets the names in the fragments instantly as they will be the first ones on show once the popup dismisses
+                timerFragment.initialSetName();
+                rewardsFragment.initialSetName();
+                //Once the popup closes the "Help" popup opens to give the user information before they start
+                showPopup(getString(R.string.helpInfo));
+            }
+            else{
+                toastMessage("No name was entered, please try again");
             }
         });
         markAsNoLongerFirstStart();
@@ -135,12 +126,7 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
         TextView popupText = popup.findViewById(R.id.popupText);
         setTextToEdit(text);
         popupText.setText(getTextToEdit());
-        closeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popup.dismiss();
-            }
-        });
+        closeBtn.setOnClickListener(v -> popup.dismiss());
         popup.show();
 
     }

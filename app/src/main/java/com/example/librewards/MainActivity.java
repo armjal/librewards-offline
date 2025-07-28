@@ -45,27 +45,22 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
     private static final String LIBREWARDS_PREFS = "librewards_prefs";
     DatabaseHelper myDb;
     Dialog popup;
-    private ViewPager viewPager;
-    private TabLayout tabLayout;
-
     private TimerFragment timerFragment;
     private RewardsFragment rewardsFragment;
     private String textToEdit;
     private EditText enterName;
     private Button nameButton;
-    private ImageView helpButton;
     private FrameLayout popupNameContainer;
     private SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Sets the layout to the XML file associated with it
         setContentView(R.layout.activity_main);
-        //Assigns the field to the view's specified in the fragment_timer XML file file
         myDb = new DatabaseHelper(this);
-        viewPager = findViewById(R.id.viewPager);
-        tabLayout = findViewById(R.id.tabLayout);
-        helpButton = findViewById(R.id.helpButton);
+        ViewPager viewPager = findViewById(R.id.viewPager);
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
+        ImageView helpButton = findViewById(R.id.helpButton);
+
         sharedPreferences = this.getSharedPreferences(LIBREWARDS_PREFS, Context.MODE_PRIVATE);
 
         enterName = findViewById(R.id.enterName);
@@ -82,9 +77,8 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
         viewPagerAdapter.addFragment(rewardsFragment, "Rewards");
         viewPager.setAdapter(viewPagerAdapter);
 
-        tabLayout.getTabAt(0).setIcon(R.drawable.timer);
-        tabLayout.getTabAt(1).setIcon(R.drawable.reward);
         requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.timer);
+        requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.reward);
         onFirstStartShowPopup();
         //Help button on standby in case a user required information about the application
         helpButton.setOnClickListener(new View.OnClickListener() {

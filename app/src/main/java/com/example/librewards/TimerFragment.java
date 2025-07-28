@@ -40,35 +40,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TimerFragment extends Fragment implements UserChangeListener {
-    Dialog popup;
-    Chronometer stopwatch;
-    DatabaseHelper myDb;
-    public static final String TAG = TimerFragment.class.getSimpleName();
+    public static final String TIMER_TAG = TimerFragment.class.getSimpleName();
 
-    private ListFromFile listFromFile;
-    public List<String> currStartCodes = new ArrayList<>();
-    public List<String> originalStartCodes = new ArrayList<>();
-    public List<String> currStopCodes = new ArrayList<>();
-    public List<String> originalStopCodes = new ArrayList<>();
+    private List<String> currStartCodes = new ArrayList<>();
+    private List<String> currStopCodes = new ArrayList<>();
 
-    private EditText editText;
     private String textToEdit;
-    private Button startButton;
-    private Button stopButton;
     private TextView points;
     private TextView name;
+    private ListFromFile listFromFile;
+    private DatabaseHelper myDb;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
         View v = inflater.inflate(R.layout.fragment_timer, container, false);
         //Assigns the field to the view's specified in the fragment_timer XML file file
-        stopwatch = v.findViewById(R.id.stopwatch);
-        editText = v.findViewById(R.id.startText);
-        startButton = v.findViewById(R.id.startButton);
-        stopButton = v.findViewById(R.id.stopButton);
+        Chronometer stopwatch = v.findViewById(R.id.stopwatch);
+        EditText editText = v.findViewById(R.id.startText);
+        Button startButton = v.findViewById(R.id.startButton);
+        Button stopButton = v.findViewById(R.id.stopButton);
         myDb = new DatabaseHelper(getActivity().getApplicationContext());
         points = v.findViewById(R.id.points);
         points.setText(String.valueOf(myDb.getPoints()));
@@ -88,8 +79,8 @@ public class TimerFragment extends Fragment implements UserChangeListener {
         addCurrCodes(currStartCodes,"start_codes_table");
         addCurrCodes(currStopCodes,"stop_codes_table");
         //Gets all of the codes listed in the text files and add them to a list
-        originalStartCodes = addNewCodes("startcodes.txt");
-        originalStopCodes = addNewCodes("stopcodes.txt");
+        List<String> originalStartCodes = addNewCodes("startcodes.txt");
+        List<String> originalStopCodes = addNewCodes("stopcodes.txt");
         //Checks if the text files have any codes different to the ones currently in the database and updates the
         //database if so. This is the method that would be used once the codes need to be refreshed. This
         //would happen every once in a while
@@ -242,7 +233,7 @@ public class TimerFragment extends Fragment implements UserChangeListener {
 
     //Method that creates a popup
     public void showPopup(String text){
-        popup = new Dialog(getActivity());
+        Dialog popup = new Dialog(getActivity());
         popup.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popup.setContentView(R.layout.popup_layout);
         ImageView closeBtn = popup.findViewById(R.id.closeBtn);
@@ -259,7 +250,7 @@ public class TimerFragment extends Fragment implements UserChangeListener {
         listFromFile = new ListFromFile(getActivity().getApplicationContext());
         newList = listFromFile.readLine(path);
         for (String s : newList)
-            Log.d(TAG, s);
+            Log.d(TIMER_TAG, s);
         return newList;
     }
 
@@ -269,14 +260,14 @@ public class TimerFragment extends Fragment implements UserChangeListener {
         listFromFile = new ListFromFile(getActivity().getApplicationContext());
         startList = listFromFile.readLine("startcodes.txt");
         for (String s : startList)
-            Log.d(TAG, s);
+            Log.d(TIMER_TAG, s);
 
         myDb.storeCodes(startList, "start_codes_table");
 
         List<String> stopList;
         stopList = listFromFile.readLine("stopcodes.txt");
         for (String d : stopList)
-            Log.d(TAG, d);
+            Log.d(TIMER_TAG, d);
 
         myDb.storeCodes(stopList, "stop_codes_table");
 

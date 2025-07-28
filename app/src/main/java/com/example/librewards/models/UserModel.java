@@ -15,7 +15,7 @@ public class UserModel {
 
     public void setName(String name) {
         this.name = name;
-        userChangeListener.onNameChanged(name);
+        UserChangeNotifier.notifyNameChange(name);
     }
 
     public String getName() {

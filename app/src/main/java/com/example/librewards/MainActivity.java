@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
 
         sharedPreferences = this.getSharedPreferences(LIBREWARDS_PREFS, Context.MODE_PRIVATE);
         userModel = new UserModel();
-        timerFragment = new TimerFragment(userModel);
+        timerFragment = new TimerFragment();
         rewardsFragment = new RewardsFragment();
 
 

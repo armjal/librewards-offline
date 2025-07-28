@@ -34,7 +34,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.example.librewards.models.UserChangeListener;
-import com.example.librewards.models.UserModel;
+import com.example.librewards.models.UserChangeNotifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,6 @@ public class TimerFragment extends Fragment implements UserChangeListener {
     Dialog popup;
     Chronometer stopwatch;
     DatabaseHelper myDb;
-    private final UserModel userModel;
     public static final String TAG = TimerFragment.class.getSimpleName();
 
     private ListFromFile listFromFile;
@@ -59,10 +58,6 @@ public class TimerFragment extends Fragment implements UserChangeListener {
     private TextView points;
     private TextView name;
     TimerListener listener;
-
-    public TimerFragment(UserModel userModel){
-        this.userModel = userModel;
-    }
 
     //Interface that consists of a method that will update the points in "RewardsFragment"
     public interface TimerListener {
@@ -192,7 +187,7 @@ public class TimerFragment extends Fragment implements UserChangeListener {
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
-        userModel.setUserChangeListener(this);
+        UserChangeNotifier.addListener(this);
 
         String wholeName = getString(R.string.Hey) + " " + myDb.getName();
         name.setText(wholeName);
@@ -200,7 +195,7 @@ public class TimerFragment extends Fragment implements UserChangeListener {
     }
     @Override
     public void onNameChanged(String newName) {
-        String wholeName = getString(R.string.Hey) + " " + userModel.getName();
+        String wholeName = getString(R.string.Hey) + " " + newName;
         name.setText(wholeName);
     }
 

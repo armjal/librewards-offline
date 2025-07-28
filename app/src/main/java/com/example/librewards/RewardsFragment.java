@@ -29,15 +29,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.example.librewards.models.UserChangeListener;
+import com.example.librewards.models.UserChangeNotifier;
+
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class RewardsFragment extends Fragment {
+public class RewardsFragment extends Fragment implements UserChangeListener {
     private static final String TAG = RewardsFragment.class.getSimpleName();
     Dialog popup;
     DatabaseHelper myDb;
-
     private ListFromFile listFromFile;
     private EditText editText;
     private TextView points;
@@ -48,7 +50,6 @@ public class RewardsFragment extends Fragment {
     RewardsFragment.RewardsListener listener;
     private String textToEdit;
 
-    //Interface that consists of a method that will update the points in "TimerFragment"
     public interface RewardsListener {
         void onPointsRewardsSent(int points);
 
@@ -65,9 +66,6 @@ public class RewardsFragment extends Fragment {
         points = v.findViewById(R.id.points2);
         points.setText(String.valueOf(myDb.getPoints()));
         name = v.findViewById(R.id.nameRewards);
-        //Sets the name of user for this fragment by retrieving it from the database
-        String wholeName = getString(R.string.Hey) + " " + myDb.getName();
-        name.setText(wholeName);
 
         //Creating a preference for activity on first start-up only
         SharedPreferences rewardsPrefs = getActivity().getSharedPreferences("rewardsPrefs", Context.MODE_PRIVATE);
@@ -113,7 +111,15 @@ public class RewardsFragment extends Fragment {
         });
         return v;
     }
-    //Method that creates a custom popup
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
+        UserChangeNotifier.addListener(this);
+
+        String wholeName = getString(R.string.Hey) + " " + myDb.getName();
+        name.setText(wholeName);
+
+    }
+
     public void showPopup(String text){
         popup = new Dialog(getActivity());
         popup.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -181,6 +187,16 @@ public class RewardsFragment extends Fragment {
         points.setText(String.valueOf(newPoints));
     }
 
+    @Override
+    public void onNameChanged(String newName) {
+        String wholeName = getString(R.string.Hey) + " " + newName;
+        name.setText(wholeName);
+    }
+
+    @Override
+    public void onPointsChanged(int newPoints) {
+
+    }
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);

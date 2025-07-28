@@ -1,5 +1,7 @@
 package com.example.librewards;
 
+import static java.util.Objects.requireNonNull;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,29 +33,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements TimerFragment.TimerListener, RewardsFragment.RewardsListener{
-
+    private static final String FIRST_START_PREFS_BOOL = "firstStart";
+    private static final String LIBREWARDS_PREFS = "librewards_prefs";
     DatabaseHelper myDb;
     Dialog popup;
-    private ViewPager viewPager;
-    private TabLayout tabLayout;
-
     private TimerFragment timerFragment;
     private RewardsFragment rewardsFragment;
     private String textToEdit;
     private EditText enterName;
     private Button nameButton;
-    private ImageView helpButton;
     private FrameLayout popupNameContainer;
+    private SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Sets the layout to the XML file associated with it
         setContentView(R.layout.activity_main);
-        //Assigns the field to the view's specified in the fragment_timer XML file file
         myDb = new DatabaseHelper(this);
-        viewPager = findViewById(R.id.viewPager);
-        tabLayout = findViewById(R.id.tabLayout);
-        helpButton = findViewById(R.id.helpButton);
+        ViewPager viewPager = findViewById(R.id.viewPager);
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
+        ImageView helpButton = findViewById(R.id.helpButton);
+
+        sharedPreferences = this.getSharedPreferences(LIBREWARDS_PREFS, Context.MODE_PRIVATE);
+
         enterName = findViewById(R.id.enterName);
         nameButton = findViewById(R.id.nameButton);
         popupNameContainer = findViewById(R.id.popupNameContainer);
@@ -68,68 +69,56 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
         viewPagerAdapter.addFragment(rewardsFragment, "Rewards");
         viewPager.setAdapter(viewPagerAdapter);
 
-        tabLayout.getTabAt(0).setIcon(R.drawable.timer);
-        tabLayout.getTabAt(1).setIcon(R.drawable.reward);
+        requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.timer);
+        requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.reward);
+        onFirstStartShowPopup();
+        helpButton.setOnClickListener(v -> showPopup(getString(R.string.helpInfo)));
+    }
 
-        //Creating a preference for activity on first start-up only
-        SharedPreferences prefs = this.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-        //Anything enclosed in the 'if' statement will only run once; at first start-up. For this instance I only needed the application to set the name of the user once.
-        boolean firstStart = prefs.getBoolean("firstStart", true);
+    private void onFirstStartShowPopup(){
+        boolean firstStart = sharedPreferences.getBoolean(FIRST_START_PREFS_BOOL, true);
         if (firstStart) {
             showPopupName();
 
         }
-        //Help button on standby in case a user required information about the application
-        helpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPopup(getString(R.string.helpInfo));
-            }
-        });
     }
     //Custom popup that asks for the users name on first start-up
     public void showPopupName(){
         popupNameContainer.setVisibility(View.VISIBLE);
-        nameButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(enterName.length() != 0) {
-                    //Adds the name given to the database
-                    myDb.addName(enterName.getText().toString());
-                    popupNameContainer.setVisibility(View.INVISIBLE);
-                    //Sets the names in the fragments instantly as they will be the first ones on show once the popup dismisses
-                    timerFragment.initialSetName();
-                    rewardsFragment.initialSetName();
-                    //Once the popup closes the "Help" popup opens to give the user information before they start
-                    showPopup(getString(R.string.helpInfo));
-                }
-                else{
-                    toastMessage("No name was entered, please try again");
-                }
+        nameButton.setOnClickListener(v -> {
+            if(enterName.length() != 0) {
+                //Adds the name given to the database
+                myDb.addName(enterName.getText().toString());
+                popupNameContainer.setVisibility(View.INVISIBLE);
+                //Sets the names in the fragments instantly as they will be the first ones on show once the popup dismisses
+                timerFragment.initialSetName();
+                rewardsFragment.initialSetName();
+                //Once the popup closes the "Help" popup opens to give the user information before they start
+                showPopup(getString(R.string.helpInfo));
+            }
+            else{
+                toastMessage("No name was entered, please try again");
             }
         });
-        //Sets the 'firstStart' boolean to false so it won't be called again on the user's device
-        SharedPreferences prefs = this.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean("firstStart", false);
+        markAsNoLongerFirstStart();
+    }
+
+    private void markAsNoLongerFirstStart(){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(FIRST_START_PREFS_BOOL, false);
         editor.apply();
     }
 
     //Method that creates a popup
     public void showPopup(String text){
         popup = new Dialog(this);
-        popup.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        requireNonNull(popup.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popup.setContentView(R.layout.popup_layout);
         ImageView closeBtn = popup.findViewById(R.id.closeBtn);
         TextView popupText = popup.findViewById(R.id.popupText);
         setTextToEdit(text);
         popupText.setText(getTextToEdit());
-        closeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                popup.dismiss();
-            }
-        });
+        closeBtn.setOnClickListener(v -> popup.dismiss());
         popup.show();
 
     }

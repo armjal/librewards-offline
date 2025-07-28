@@ -1,11 +1,3 @@
-/*Author: Arman Jalilian
-Date of Completion: 07/06/2020
-Module Code: CSC3122
-Application Name: Lib Rewards
-Application Purpose: Rewards students as they spend time at the library
-Class Name: MainActivity
-Class Purpose: The main activity is where the fragments are called within. It is also where the navigation is called and set from.
- */
 package com.example.librewards;
 
 import static java.util.Objects.requireNonNull;
@@ -16,17 +8,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.librewards.models.UserModel;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -52,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
     private Button nameButton;
     private FrameLayout popupNameContainer;
     private SharedPreferences sharedPreferences;
+    private UserModel userModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,14 +54,16 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
         ImageView helpButton = findViewById(R.id.helpButton);
 
         sharedPreferences = this.getSharedPreferences(LIBREWARDS_PREFS, Context.MODE_PRIVATE);
+        userModel = new UserModel();
+        timerFragment = new TimerFragment();
+        rewardsFragment = new RewardsFragment();
+
 
         enterName = findViewById(R.id.enterName);
         nameButton = findViewById(R.id.nameButton);
         popupNameContainer = findViewById(R.id.popupNameContainer);
         popupNameContainer.setVisibility(View.INVISIBLE);
 
-        timerFragment = new TimerFragment();
-        rewardsFragment = new RewardsFragment();
         tabLayout.setupWithViewPager(viewPager);
 
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 0);
@@ -90,27 +84,22 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
 
         }
     }
-    //Custom popup that asks for the users name on first start-up
     public void showPopupName(){
         popupNameContainer.setVisibility(View.VISIBLE);
         nameButton.setOnClickListener(v -> {
-            if(enterName.length() != 0) {
-                //Adds the name given to the database
-                myDb.addName(enterName.getText().toString());
+            if(enterName.length() == 0) {
+                toastMessage("No name was entered, please try again");
+            } else {
+                String userName = enterName.getText().toString();
+                myDb.addName(userName);
                 popupNameContainer.setVisibility(View.INVISIBLE);
-                //Sets the names in the fragments instantly as they will be the first ones on show once the popup dismisses
-                timerFragment.initialSetName();
-                rewardsFragment.initialSetName();
-                //Once the popup closes the "Help" popup opens to give the user information before they start
+                userModel.setName(userName);
                 showPopup(getString(R.string.helpInfo));
             }
-            else{
-                toastMessage("No name was entered, please try again");
-            }
+
         });
         markAsNoLongerFirstStart();
     }
-
     private void markAsNoLongerFirstStart(){
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(FIRST_START_PREFS_BOOL, false);
@@ -142,8 +131,6 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
         Toast.makeText(this,message,Toast.LENGTH_LONG).show();
     }
 
-    //Using the interface in both fragments, the main activity is able to facilitate communication between the two fragments. Here, it sets the points in each fragment each time
-    //it's updated
     @Override
     public void onPointsRewardsSent(int points) {
         timerFragment.updatePoints(points);
@@ -154,11 +141,10 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
         rewardsFragment.updatedPoints(points);
     }
 
-    //Using a tab layout tutorial from YouTube user @Coding In Flow, I was able to create a tab layout and customise it so it fit my theme.
-    private class ViewPagerAdapter extends FragmentPagerAdapter {
+    private static class ViewPagerAdapter extends FragmentPagerAdapter {
 
-        private List<Fragment> fragments = new ArrayList<>();
-        private List<String> fragmentTitle = new ArrayList<>();
+        private final List<Fragment> fragments = new ArrayList<>();
+        private final List<String> fragmentTitle = new ArrayList<>();
 
         public ViewPagerAdapter(@NonNull FragmentManager fm, int behavior) {
             super(fm, behavior);

@@ -76,16 +76,16 @@ public class TimerFragment extends Fragment implements UserChangeListener {
         }
 
         //Gets all of the codes that are currently in the database and adds them to a list
-        addCurrCodes(currStartCodes,"start_codes_table");
-        addCurrCodes(currStopCodes,"stop_codes_table");
+        addCurrCodes(currStartCodes,getString(R.string.start_codes_table));
+        addCurrCodes(currStopCodes,getString(R.string.stop_codes_table));
         //Gets all of the codes listed in the text files and add them to a list
-        List<String> originalStartCodes = addNewCodes("startcodes.txt");
-        List<String> originalStopCodes = addNewCodes("stopcodes.txt");
+        List<String> originalStartCodes = addNewCodes(getString(R.string.startcodes_file_name));
+        List<String> originalStopCodes = addNewCodes(getString(R.string.stopcodes_file_name));
         //Checks if the text files have any codes different to the ones currently in the database and updates the
         //database if so. This is the method that would be used once the codes need to be refreshed. This
         //would happen every once in a while
-       currStartCodes = checkForUpdates(currStartCodes, originalStartCodes, "start_codes_table");
-        currStopCodes = checkForUpdates(currStopCodes,originalStopCodes, "stop_codes_table");
+       currStartCodes = checkForUpdates(currStartCodes, originalStartCodes, getString(R.string.start_codes_table));
+        currStopCodes = checkForUpdates(currStopCodes,originalStopCodes, getString(R.string.stop_codes_table));
             //Sets actions on clicking the "Start" Button
             startButton.setOnClickListener(v2 -> {
                 //Checks if there is any text inputted

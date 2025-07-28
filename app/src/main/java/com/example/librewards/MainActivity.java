@@ -119,6 +119,10 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
                 }
             }
         });
+        markAsNoLongerFirstStart();
+    }
+
+    private void markAsNoLongerFirstStart(){
         //Sets the 'firstStart' boolean to false so it won't be called again on the user's device
         SharedPreferences prefs = this.getSharedPreferences("prefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();

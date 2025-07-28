@@ -40,6 +40,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements TimerFragment.TimerListener, RewardsFragment.RewardsListener{
 
+    private static final String FIRST_START_PREFS_BOOL = "firstStart";
+    private static final String LIBREWARDS_PREFS = "librewards_prefs";
     DatabaseHelper myDb;
     Dialog popup;
     private ViewPager viewPager;
@@ -52,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
     private Button nameButton;
     private ImageView helpButton;
     private FrameLayout popupNameContainer;
+    private SharedPreferences sharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +65,8 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
         viewPager = findViewById(R.id.viewPager);
         tabLayout = findViewById(R.id.tabLayout);
         helpButton = findViewById(R.id.helpButton);
+        sharedPreferences = this.getSharedPreferences(LIBREWARDS_PREFS, Context.MODE_PRIVATE);
+
         enterName = findViewById(R.id.enterName);
         nameButton = findViewById(R.id.nameButton);
         popupNameContainer = findViewById(R.id.popupNameContainer);
@@ -93,6 +98,8 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
         SharedPreferences prefs = this.getSharedPreferences("prefs", Context.MODE_PRIVATE);
         //Anything enclosed in the 'if' statement will only run once; at first start-up. For this instance I only needed the application to set the name of the user once.
         boolean firstStart = prefs.getBoolean("firstStart", true);
+    private void onFirstStartShowPopup(){
+        boolean firstStart = sharedPreferences.getBoolean(FIRST_START_PREFS_BOOL, true);
         if (firstStart) {
             showPopupName();
 
@@ -127,6 +134,8 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
         SharedPreferences prefs = this.getSharedPreferences("prefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean("firstStart", false);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(FIRST_START_PREFS_BOOL, false);
         editor.apply();
     }
 

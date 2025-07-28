@@ -46,12 +46,7 @@ public class TimerFragment extends Fragment implements UserChangeListener {
     private Button stopButton;
     private TextView points;
     private TextView name;
-    TimerListener listener;
 
-    //Interface that consists of a method that will update the points in "RewardsFragment"
-    public interface TimerListener {
-        void onPointsTimerSent(int points);
-    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -148,7 +143,7 @@ public class TimerFragment extends Fragment implements UserChangeListener {
                                             editText.setText(null);
                                             editText.setHint("Please enter the start code");
                                             //Listener to communicate with Rewards Fragment and give the points to display in there
-                                            listener.onPointsTimerSent(myDb.getPoints());
+                                            UserChangeNotifier.notifyPointsChanged(myDb.getPoints());
                                             stopButton.setVisibility(v.INVISIBLE);
                                             startButton.setVisibility(v.VISIBLE);
 
@@ -190,12 +185,9 @@ public class TimerFragment extends Fragment implements UserChangeListener {
 
     @Override
     public void onPointsChanged(int newPoints) {
-
-    }
-    //Method that is used between fragments to update each other's points
-    public void updatePoints(int newPoints){
         points.setText(String.valueOf(newPoints));
     }
+
     //Method to check if the text file has been updated with new codes or not
     public List<String> checkForUpdates(List<String> currCodes, List<String> originalCodes, String table){
         List<String> tempCodes = new ArrayList<>();
@@ -312,20 +304,4 @@ public class TimerFragment extends Fragment implements UserChangeListener {
         Toast.makeText(getActivity().getApplicationContext(),message,Toast.LENGTH_LONG).show();
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof TimerListener) {
-            listener = (TimerListener) context;
-        }
-        else{
-            throw new RuntimeException(context.toString() + "must implement TimerListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
-    }
 }

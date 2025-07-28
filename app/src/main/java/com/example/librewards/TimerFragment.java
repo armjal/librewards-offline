@@ -1,15 +1,6 @@
-/*Author: Arman Jalilian
-Date of Completion: 07/06/2020
-Module Code: CSC3122
-Application Name: Lib Rewards
-Application Purpose: Rewards students as they spend time at the library
-Class Name: TimerFragment
-Class Purpose: The starting fragment for when a user opens the application. It allows the user to enter start and stop code given by
-library staff for the day. The start code will start the timer and the stop code will stop. The duration spent at the library is then
-converted into points where a user can later redeem in RewardsFragment.
- */
-
 package com.example.librewards;
+
+import static java.util.Objects.requireNonNull;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -60,13 +51,13 @@ public class TimerFragment extends Fragment implements UserChangeListener {
         EditText editText = v.findViewById(R.id.startText);
         Button startButton = v.findViewById(R.id.startButton);
         Button stopButton = v.findViewById(R.id.stopButton);
-        myDb = new DatabaseHelper(getActivity().getApplicationContext());
+        myDb = new DatabaseHelper(requireActivity().getApplicationContext());
         points = v.findViewById(R.id.points);
         points.setText(String.valueOf(myDb.getPoints()));
         name = v.findViewById(R.id.nameTimer);
 
         //Creating a preference for activity on first start-up only
-        SharedPreferences timerPrefs = getActivity().getSharedPreferences("timerPrefs", Context.MODE_PRIVATE);
+        SharedPreferences timerPrefs = requireActivity().getSharedPreferences("timerPrefs", Context.MODE_PRIVATE);
         boolean firstStart = timerPrefs.getBoolean("firstStart", true);
         //Anything enclosed in the 'if' statement will only run once; at first start-up.
         if (firstStart) {
@@ -96,7 +87,7 @@ public class TimerFragment extends Fragment implements UserChangeListener {
                 else if (currStartCodes.contains(editText.getText().toString())) {
                     //Removes the code from the database as it has already been used once
                     currStartCodes.remove(editText.getText().toString());
-                    myDb.deleteCode("start_codes_table", editText.getText().toString());
+                    myDb.deleteCode(getString(R.string.start_codes_table), editText.getText().toString());
                     //Clears the input text
                     editText.setText(null);
                     editText.setHint("Please enter the stop code");
@@ -104,16 +95,16 @@ public class TimerFragment extends Fragment implements UserChangeListener {
                     stopwatch.setBase(SystemClock.elapsedRealtime());
                     stopwatch.start();
                     //Switches from the 'Start' button to the 'Stop' button
-                    startButton.setVisibility(v2.INVISIBLE);
-                    stopButton.setVisibility(v2.VISIBLE);
+                    startButton.setVisibility(View.INVISIBLE);
+                    stopButton.setVisibility(View.VISIBLE);
                     //All actions to be taken place once the stopwatch has started
                     stopwatch.setOnChronometerTickListener(chronometer -> {
                         //Checks if the stopwatch has gone over 24 hours. If so, the stopwatch resets back to its original state
                         if ((SystemClock.elapsedRealtime() - stopwatch.getBase()) >= 500000) {
                             stopwatch.setBase(SystemClock.elapsedRealtime());
                             stopwatch.stop();
-                            stopButton.setVisibility(v2.INVISIBLE);
-                            startButton.setVisibility(v2.VISIBLE);
+                            stopButton.setVisibility(View.INVISIBLE);
+                            startButton.setVisibility(View.VISIBLE);
                             showPopup("No stop code was entered for 24 hours. The timer has been reset");
                         }
                         stopButton.setOnClickListener(v1 -> {
@@ -125,7 +116,7 @@ public class TimerFragment extends Fragment implements UserChangeListener {
                             if (currStopCodes.contains(editText.getText().toString())) {
                                 //Removes the code from the database as it has already been used once
                                 currStopCodes.remove(editText.getText().toString());
-                                myDb.deleteCode("stop_codes_table", editText.getText().toString());
+                                myDb.deleteCode(getString(R.string.stop_codes_table), editText.getText().toString());
 
                                 //'totalTime' gets the total duration spent at the library in milliseconds
                                 long totalTime = SystemClock.elapsedRealtime() - stopwatch.getBase();
@@ -140,8 +131,8 @@ public class TimerFragment extends Fragment implements UserChangeListener {
                                 editText.setHint("Please enter the start code");
                                 //Listener to communicate with Rewards Fragment and give the points to display in there
                                 UserChangeNotifier.notifyPointsChanged(myDb.getPoints());
-                                stopButton.setVisibility(v1.INVISIBLE);
-                                startButton.setVisibility(v1.VISIBLE);
+                                stopButton.setVisibility(View.INVISIBLE);
+                                startButton.setVisibility(View.VISIBLE);
 
                             }
                             //If the stop code entered is not in the database, a toast will show
@@ -226,15 +217,9 @@ public class TimerFragment extends Fragment implements UserChangeListener {
 
         }
     }
-    //Method to set the name on first start-up. Method is called in MainActivity
-    public void initialSetName(){
-        name.setText(getString(R.string.Hey)+" "+ myDb.getName());
-    }
-
-    //Method that creates a popup
     public void showPopup(String text){
-        Dialog popup = new Dialog(getActivity());
-        popup.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Dialog popup = new Dialog(requireActivity());
+        requireNonNull(popup.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popup.setContentView(R.layout.popup_layout);
         ImageView closeBtn = popup.findViewById(R.id.closeBtn);
         TextView popupText = popup.findViewById(R.id.popupText);
@@ -247,7 +232,7 @@ public class TimerFragment extends Fragment implements UserChangeListener {
     //Method that adds the codes from the text file into a list using the ListFromFile class
     private List<String> addNewCodes(String path){
         List<String> newList;
-        listFromFile = new ListFromFile(getActivity().getApplicationContext());
+        listFromFile = new ListFromFile(requireActivity().getApplicationContext());
         newList = listFromFile.readLine(path);
         for (String s : newList)
             Log.d(TIMER_TAG, s);
@@ -257,23 +242,23 @@ public class TimerFragment extends Fragment implements UserChangeListener {
     //Method adds codes to the database on first start-up
     private void addInitialCodes(){
         List<String> startList;
-        listFromFile = new ListFromFile(getActivity().getApplicationContext());
-        startList = listFromFile.readLine("startcodes.txt");
+        listFromFile = new ListFromFile(requireActivity().getApplicationContext());
+        startList = listFromFile.readLine(getString(R.string.startcodes_file_name));
         for (String s : startList)
             Log.d(TIMER_TAG, s);
 
-        myDb.storeCodes(startList, "start_codes_table");
+        myDb.storeCodes(startList, getString(R.string.start_codes_table));
 
         List<String> stopList;
-        stopList = listFromFile.readLine("stopcodes.txt");
+        stopList = listFromFile.readLine( getString(R.string.stopcodes_file_name));
         for (String d : stopList)
             Log.d(TIMER_TAG, d);
 
-        myDb.storeCodes(stopList, "stop_codes_table");
+        myDb.storeCodes(stopList, getString(R.string.stop_codes_table));
 
         //'firstStart' boolean is set to false which means that the the method will not run after first
         //start
-        SharedPreferences timerPrefs = getActivity().getSharedPreferences("timerPrefs", Context.MODE_PRIVATE);
+        SharedPreferences timerPrefs = requireActivity().getSharedPreferences("timerPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = timerPrefs.edit();
         editor.putBoolean("firstStart", false);
         editor.apply();
@@ -289,7 +274,7 @@ public class TimerFragment extends Fragment implements UserChangeListener {
 
     //Custom Toast message
     public void toastMessage(String message){
-        Toast.makeText(getActivity().getApplicationContext(),message,Toast.LENGTH_LONG).show();
+        Toast.makeText(requireActivity().getApplicationContext(),message,Toast.LENGTH_LONG).show();
     }
 
 }

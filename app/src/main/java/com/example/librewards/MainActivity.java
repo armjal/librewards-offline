@@ -78,7 +78,17 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
 
         tabLayout.getTabAt(0).setIcon(R.drawable.timer);
         tabLayout.getTabAt(1).setIcon(R.drawable.reward);
+        onFirstStartShowPopup();
+        //Help button on standby in case a user required information about the application
+        helpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPopup(getString(R.string.helpInfo));
+            }
+        });
+    }
 
+    public void onFirstStartShowPopup(){
         //Creating a preference for activity on first start-up only
         SharedPreferences prefs = this.getSharedPreferences("prefs", Context.MODE_PRIVATE);
         //Anything enclosed in the 'if' statement will only run once; at first start-up. For this instance I only needed the application to set the name of the user once.
@@ -87,13 +97,6 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
             showPopupName();
 
         }
-        //Help button on standby in case a user required information about the application
-        helpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPopup(getString(R.string.helpInfo));
-            }
-        });
     }
     //Custom popup that asks for the users name on first start-up
     public void showPopupName(){

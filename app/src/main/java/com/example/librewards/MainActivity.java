@@ -30,13 +30,10 @@ import com.google.android.material.tabs.TabLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements TimerFragment.TimerListener, RewardsFragment.RewardsListener{
+public class MainActivity extends AppCompatActivity{
     private static final String FIRST_START_PREFS_BOOL = "firstStart";
     private static final String LIBREWARDS_PREFS = "librewards_prefs";
-    DatabaseHelper myDb;
-    Dialog popup;
-    private TimerFragment timerFragment;
-    private RewardsFragment rewardsFragment;
+    private DatabaseHelper myDb;
     private String textToEdit;
     private EditText enterName;
     private Button nameButton;
@@ -48,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         myDb = new DatabaseHelper(this);
         ViewPager viewPager = findViewById(R.id.viewPager);
         TabLayout tabLayout = findViewById(R.id.tabLayout);
@@ -55,8 +53,8 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
 
         sharedPreferences = this.getSharedPreferences(LIBREWARDS_PREFS, Context.MODE_PRIVATE);
         userModel = new UserModel();
-        timerFragment = new TimerFragment();
-        rewardsFragment = new RewardsFragment();
+        TimerFragment timerFragment = new TimerFragment();
+        RewardsFragment rewardsFragment = new RewardsFragment();
 
 
         enterName = findViewById(R.id.enterName);
@@ -108,7 +106,7 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
 
     //Method that creates a popup
     public void showPopup(String text){
-        popup = new Dialog(this);
+        Dialog popup = new Dialog(this);
         requireNonNull(popup.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popup.setContentView(R.layout.popup_layout);
         ImageView closeBtn = popup.findViewById(R.id.closeBtn);
@@ -130,17 +128,6 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
     public void toastMessage(String message){
         Toast.makeText(this,message,Toast.LENGTH_LONG).show();
     }
-
-    @Override
-    public void onPointsRewardsSent(int points) {
-        timerFragment.updatePoints(points);
-    }
-
-    @Override
-    public void onPointsTimerSent(int points) {
-        rewardsFragment.updatedPoints(points);
-    }
-
     private static class ViewPagerAdapter extends FragmentPagerAdapter {
 
         private final List<Fragment> fragments = new ArrayList<>();

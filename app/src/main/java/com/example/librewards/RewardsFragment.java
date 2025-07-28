@@ -46,14 +46,8 @@ public class RewardsFragment extends Fragment implements UserChangeListener {
     private TextView name;
     private Button rewardButton;
     public List<String> rewardsCodes = new ArrayList<>();
-
-    RewardsFragment.RewardsListener listener;
     private String textToEdit;
 
-    public interface RewardsListener {
-        void onPointsRewardsSent(int points);
-
-    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -95,7 +89,7 @@ public class RewardsFragment extends Fragment implements UserChangeListener {
                         showPopup("Code accepted, keep it up! Your new points balance is: " + myDb.getPoints());
                         points.setText(String.valueOf(myDb.getPoints()));
                         //Communicates the new point balance with other fragment
-                        listener.onPointsRewardsSent(myDb.getPoints());
+                        UserChangeNotifier.notifyPointsChanged(myDb.getPoints());
                     }
                     //If the points are less than the cost of the reward, a popup shows up stating that the user has insufficient funds
                     else{
@@ -195,22 +189,6 @@ public class RewardsFragment extends Fragment implements UserChangeListener {
 
     @Override
     public void onPointsChanged(int newPoints) {
-
-    }
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof RewardsFragment.RewardsListener) {
-            listener = (RewardsFragment.RewardsListener) context;
-        }
-        else{
-            throw new RuntimeException(context.toString() + "must implement TimerListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
+        points.setText(String.valueOf(newPoints));
     }
 }

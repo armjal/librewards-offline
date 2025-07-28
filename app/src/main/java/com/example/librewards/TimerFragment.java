@@ -32,14 +32,18 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
+import com.example.librewards.models.UserChangeListener;
+import com.example.librewards.models.UserModel;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class TimerFragment extends Fragment {
+public class TimerFragment extends Fragment implements UserChangeListener {
     Dialog popup;
     Chronometer stopwatch;
     DatabaseHelper myDb;
-
+    private final UserModel userModel;
     public static final String TAG = TimerFragment.class.getSimpleName();
 
     private ListFromFile listFromFile;
@@ -55,6 +59,10 @@ public class TimerFragment extends Fragment {
     private TextView points;
     private TextView name;
     TimerListener listener;
+
+    public TimerFragment(UserModel userModel){
+        this.userModel = userModel;
+    }
 
     //Interface that consists of a method that will update the points in "RewardsFragment"
     public interface TimerListener {
@@ -75,9 +83,6 @@ public class TimerFragment extends Fragment {
         points = v.findViewById(R.id.points);
         points.setText(String.valueOf(myDb.getPoints()));
         name = v.findViewById(R.id.nameTimer);
-        //Sets the name of user for this fragment by retrieving it from the database
-        String wholeName = getString(R.string.Hey) + " " +myDb.getName();
-        name.setText(wholeName);
 
         //Creating a preference for activity on first start-up only
         SharedPreferences timerPrefs = getActivity().getSharedPreferences("timerPrefs", Context.MODE_PRIVATE);
@@ -185,6 +190,24 @@ public class TimerFragment extends Fragment {
 
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
+        userModel.setUserChangeListener(this);
+
+        String wholeName = getString(R.string.Hey) + " " + myDb.getName();
+        name.setText(wholeName);
+
+    }
+    @Override
+    public void onNameChanged(String newName) {
+        String wholeName = getString(R.string.Hey) + " " + userModel.getName();
+        name.setText(wholeName);
+    }
+
+    @Override
+    public void onPointsChanged(int newPoints) {
+
+    }
     //Method that is used between fragments to update each other's points
     public void updatePoints(int newPoints){
         points.setText(String.valueOf(newPoints));

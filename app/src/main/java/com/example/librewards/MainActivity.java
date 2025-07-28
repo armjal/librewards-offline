@@ -8,6 +8,8 @@ Class Purpose: The main activity is where the fragments are called within. It is
  */
 package com.example.librewards;
 
+import static java.util.Objects.requireNonNull;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,7 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements TimerFragment.TimerListener, RewardsFragment.RewardsListener{
-
     private static final String FIRST_START_PREFS_BOOL = "firstStart";
     private static final String LIBREWARDS_PREFS = "librewards_prefs";
     DatabaseHelper myDb;
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
 
         tabLayout.getTabAt(0).setIcon(R.drawable.timer);
         tabLayout.getTabAt(1).setIcon(R.drawable.reward);
+        requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.timer);
         onFirstStartShowPopup();
         //Help button on standby in case a user required information about the application
         helpButton.setOnClickListener(new View.OnClickListener() {
@@ -93,11 +95,6 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
         });
     }
 
-    public void onFirstStartShowPopup(){
-        //Creating a preference for activity on first start-up only
-        SharedPreferences prefs = this.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-        //Anything enclosed in the 'if' statement will only run once; at first start-up. For this instance I only needed the application to set the name of the user once.
-        boolean firstStart = prefs.getBoolean("firstStart", true);
     private void onFirstStartShowPopup(){
         boolean firstStart = sharedPreferences.getBoolean(FIRST_START_PREFS_BOOL, true);
         if (firstStart) {
@@ -130,10 +127,6 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
     }
 
     private void markAsNoLongerFirstStart(){
-        //Sets the 'firstStart' boolean to false so it won't be called again on the user's device
-        SharedPreferences prefs = this.getSharedPreferences("prefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putBoolean("firstStart", false);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(FIRST_START_PREFS_BOOL, false);
         editor.apply();
@@ -142,7 +135,7 @@ public class MainActivity extends AppCompatActivity implements TimerFragment.Tim
     //Method that creates a popup
     public void showPopup(String text){
         popup = new Dialog(this);
-        popup.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        requireNonNull(popup.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popup.setContentView(R.layout.popup_layout);
         ImageView closeBtn = popup.findViewById(R.id.closeBtn);
         TextView popupText = popup.findViewById(R.id.popupText);

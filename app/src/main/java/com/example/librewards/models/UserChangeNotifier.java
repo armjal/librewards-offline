@@ -18,4 +18,10 @@ public class UserChangeNotifier {
             listener.onNameChanged(name);
         }
     }
+
+    public static void notifyPointsChanged(int points) {
+        for (UserChangeListener listener : listeners) {
+            listener.onPointsChanged(points);
+        }
+    }
 }

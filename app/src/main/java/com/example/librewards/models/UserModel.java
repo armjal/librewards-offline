@@ -6,6 +6,7 @@ public class UserModel {
 
     public void setPoints(Integer points) {
         this.points = points;
+        UserChangeNotifier.notifyPointsChanged(points);
     }
 
     public void setName(String name) {

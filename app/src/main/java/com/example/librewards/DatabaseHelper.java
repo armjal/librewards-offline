@@ -17,9 +17,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE4 = "points_table";
     public static final String TABLE5 = "name_table";
     public final Context context;
+    private final ListFromFile listFromFile;
+
     public DatabaseHelper(Context context)  {
         super(context, DATABASE_NAME, null, 1);
         this.context = context;
+        this.listFromFile = new ListFromFile(context);
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -118,7 +121,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
     //Method that updates the reward codes if the text file is different to the one stored in the database
-    public void updateRewardCodes(List<String> newCodesList) {
+    public List<String> refreshRewardCodes() {
+        List<String> newCodesList = listFromFile.readRewardsLine(context.getString(R.string.rewardcodes_file_name));
         int id = 1;
         //'j' is the integer that gets the cost of each code
         int j = 1;
@@ -134,6 +138,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             id++;
             j+=2;
         }
+        return newCodesList;
     }
     //Method that adds points to the current balance of points
     public void addPoints(int points){
@@ -196,7 +201,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void addInitialCodes(){
-        ListFromFile listFromFile = new ListFromFile(context);
         List<String> startList = listFromFile.readLine(context.getString(R.string.startcodes_file_name));
         List<String> stopList = listFromFile.readLine(context.getString(R.string.stopcodes_file_name));
         List<String> rewardsList = listFromFile.readRewardsLine(context.getString(R.string.rewardcodes_file_name));
@@ -206,4 +210,3 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         storeRewards(rewardsList);
     }
 }
-

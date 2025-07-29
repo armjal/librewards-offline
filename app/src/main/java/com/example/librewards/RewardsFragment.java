@@ -1,8 +1,6 @@
 package com.example.librewards;
 
 import android.app.Dialog;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -50,14 +48,6 @@ public class RewardsFragment extends Fragment implements UserChangeListener {
         points = v.findViewById(R.id.points2);
         points.setText(String.valueOf(myDb.getPoints()));
         name = v.findViewById(R.id.nameRewards);
-
-        //Creating a preference for activity on first start-up only
-        SharedPreferences rewardsPrefs = getActivity().getSharedPreferences("rewardsPrefs", Context.MODE_PRIVATE);
-        boolean firstStart = rewardsPrefs.getBoolean("firstStart", true);
-        //Anything enclosed in the 'if' statement will only run once; at first start-up.
-        if (firstStart) {
-            addInitialCodes();
-        }
         //Adds the codes from the text file to the database and updates the database every time in case there are new codes or costs in the text file
         rewardsCodes = addNewCodes("rewardcodes.txt");
         myDb.updateRewardCodes(rewardsCodes);
@@ -133,24 +123,6 @@ public class RewardsFragment extends Fragment implements UserChangeListener {
         for (String s : newList)
             Log.d(TAG, s);
         return newList;
-    }
-
-    //Adds the first set of reward codes to the database
-    private void addInitialCodes(){
-        List<String> startList;
-        listFromFile = new ListFromFile(getActivity().getApplicationContext());
-        startList = listFromFile.readRewardsLine("rewardcodes.txt");
-        for (String s : startList)
-            Log.d(TAG, s);
-
-        myDb.storeRewards(startList);
-
-        //'firstStart' boolean is set to false which means that the the method will not run after first
-        //start
-        SharedPreferences rewardsPrefs = getActivity().getSharedPreferences("rewardsPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = rewardsPrefs.edit();
-        editor.putBoolean("firstStart", false);
-        editor.apply();
     }
 
     //Method creating a custom Toast message

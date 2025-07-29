@@ -37,5 +37,6 @@
     <string name="start_codes_table">start_codes_table</string>
     <string name="startcodes_file_name">startcodes.txt</string>
     <string name="stopcodes_file_name">stopcodes.txt</string>
+    <string name="rewardcodes_file_name">rewardcodes.txt</string>
 
 </resources>

@@ -10,19 +10,17 @@ import android.database.sqlite.SQLiteStatement;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    //Instantiating the database name and table names. Final values so they cannot be changed once they are created
     public static final String DATABASE_NAME = "codes.db";
     public static final String TABLE1 = "start_codes_table";
     public static final String TABLE2 = "stop_codes_table";
     public static final String TABLE3 = "reward_codes_table";
     public static final String TABLE4 = "points_table";
     public static final String TABLE5 = "name_table";
-
+    public final Context context;
     public DatabaseHelper(Context context)  {
         super(context, DATABASE_NAME, null, 1);
-        SQLiteDatabase db = this.getWritableDatabase();
+        this.context = context;
     }
-    //Method that creates the tables and the columns within where the columns have been given data types and names.
     @Override
     public void onCreate(SQLiteDatabase db) {
         String table1 = "CREATE TABLE " + TABLE1 + " (id INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT) ";
@@ -35,6 +33,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(table3);
         db.execSQL(table4);
         db.execSQL(table5);
+        db.execSQL("INSERT INTO " + TABLE4 + '(' + "points" + ')' + "VALUES (?)");
 
     }
 
@@ -62,8 +61,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     //Cursor method that goes through the contents of a given column and table and returns values within them
     public Cursor getAllData(String col, String table){
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor c = db.rawQuery("SELECT " +  col  + " FROM " +  table, null);
-        return c;
+        return db.rawQuery("SELECT " +  col  + " FROM " +  table, null);
     }
 
     //Method that returns the name that a user gives using a cursor
@@ -71,10 +69,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String output = "";
         Cursor c = db.rawQuery("SELECT " + "name" + " FROM " + TABLE5, null);
-        if(c != null && c.getCount() > 0) {
-            if(c.moveToFirst()){
+        if(c.getCount() > 0 && c.moveToFirst()) {
                 output = c.getString(c.getColumnIndex("name"));
-            }
         }
         c.close();
         return output;
@@ -85,13 +81,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         int output = 0;
         Cursor c = db.rawQuery("SELECT " + "points" + " FROM " + TABLE4, null);
-        if(c != null && c.getCount() > 0){
-            if(c.moveToFirst()){
-
+        if(c.getCount() > 0 && c.moveToFirst()){
                 output = c.getInt(0);
-
             }
-        }
+
 
         c.close();
         return output;
@@ -102,13 +95,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         int output = 0;
         Cursor c = db.rawQuery("SELECT " + "cost" + " FROM " + TABLE3 + " WHERE codes = " + "'" + code + "'", null);
-        if (c != null && c.getCount() > 0) {
-            if (c.moveToFirst()) {
-
+        if (c.getCount() > 0 && c.moveToFirst()) {
                 output = c.getInt(c.getColumnIndex("cost"));
 
             }
-        }
+
         c.close();
         return output;
     }
@@ -204,13 +195,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    //Method that only runs once in the TimerFragment to instantiate the points to zero on first start-up
-    public void initialPoints(){
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("INSERT INTO " + TABLE4 + '(' + "points" + ')' + "VALUES (?)");
+    public void addInitialCodes(){
+        ListFromFile listFromFile = new ListFromFile(context);
+        List<String> startList = listFromFile.readLine(context.getString(R.string.startcodes_file_name));
+        List<String> stopList = listFromFile.readLine(context.getString(R.string.stopcodes_file_name));
+        List<String> rewardsList = listFromFile.readRewardsLine(context.getString(R.string.rewardcodes_file_name));
 
+        storeCodes(startList, context.getString(R.string.start_codes_table));
+        storeCodes(stopList, context.getString(R.string.stop_codes_table));
+        storeRewards(rewardsList);
     }
-
-
 }
 

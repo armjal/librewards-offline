@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +25,6 @@ import java.util.List;
 
 
 public class RewardsFragment extends Fragment implements UserChangeListener {
-    private static final String REWARDS_TAG = RewardsFragment.class.getSimpleName();
-
     private DatabaseHelper myDb;
     private TextView points;
     private TextView name;
@@ -45,16 +42,14 @@ public class RewardsFragment extends Fragment implements UserChangeListener {
         points = v.findViewById(R.id.points2);
         points.setText(String.valueOf(myDb.getPoints()));
         name = v.findViewById(R.id.nameRewards);
-        //Adds the codes from the text file to the database and updates the database every time in case there are new codes or costs in the text file
-        List<String> rewardsCodes = addNewRewardCodes();
-        myDb.updateRewardCodes(rewardsCodes);
 
-        //Sets actions on clicking the "Reward" Button
+        List<String> rewardCodes = myDb.refreshRewardCodes();
+
         rewardButton.setOnClickListener(v1 -> {
             if(editText.length() == 0){
                 toastMessage("No code was entered, please try again");
             }
-            else if(!rewardsCodes.contains(editText.getText().toString())) {
+            else if(!rewardCodes.contains(editText.getText().toString())) {
                 toastMessage(getString(R.string.invalidCode));
             } else {
                 if (myDb.getPoints() <= myDb.getCost(editText.getText().toString())) {
@@ -91,17 +86,6 @@ public class RewardsFragment extends Fragment implements UserChangeListener {
         popup.show();
 
     }
-
-    private List<String> addNewRewardCodes(){
-        ListFromFile listFromFile;
-        List<String> newList;
-        listFromFile = new ListFromFile(requireActivity());
-        newList = listFromFile.readRewardsLine(getString(R.string.rewardcodes_file_name));
-        for (String s : newList)
-            Log.d(REWARDS_TAG, s);
-        return newList;
-    }
-
     public void toastMessage(String message){
         Toast.makeText(requireActivity() ,message,Toast.LENGTH_LONG).show();
     }

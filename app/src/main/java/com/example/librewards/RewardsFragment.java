@@ -28,50 +28,61 @@ public class RewardsFragment extends Fragment implements UserChangeListener {
     private DatabaseHelper myDb;
     private TextView points;
     private TextView name;
-    private String textToEdit;
+    private Button rewardButton;
+    private EditText rewardText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_rewards, container, false);
-        //Assigns the field to the view's specified in the fragment_timer XML file file
-        myDb = new DatabaseHelper(requireActivity());
-        Button rewardButton = v.findViewById(R.id.rewardButton);
-        EditText editText = v.findViewById(R.id.rewardText);
+
+        rewardButton = v.findViewById(R.id.rewardButton);
+        rewardText = v.findViewById(R.id.rewardText);
         points = v.findViewById(R.id.points2);
-        points.setText(String.valueOf(myDb.getPoints()));
         name = v.findViewById(R.id.nameRewards);
 
-        List<String> rewardCodes = myDb.refreshRewardCodes();
-
-        rewardButton.setOnClickListener(v1 -> {
-            if(editText.length() == 0){
-                toastMessage("No code was entered, please try again");
-            }
-            else if(!rewardCodes.contains(editText.getText().toString())) {
-                toastMessage(getString(R.string.invalidCode));
-            } else {
-                if (myDb.getPoints() <= myDb.getCost(editText.getText().toString())) {
-                    showPopup(getString(R.string.insufficientFunds));
-                }
-                else {
-                    myDb.minusPoints(myDb.getCost(editText.getText().toString()));
-                    showPopup("Code accepted, keep it up! Your new points balance is: " + myDb.getPoints());
-                    points.setText(String.valueOf(myDb.getPoints()));
-                    UserChangeNotifier.notifyPointsChanged(myDb.getPoints());
-                }
-            }
-        });
         return v;
     }
+
     @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
+    public void onViewCreated(@NonNull View v, Bundle savedInstanceState){
+        myDb = new DatabaseHelper(requireActivity());
+        List<String> rewardCodes = myDb.refreshRewardCodes();
+
+        points.setText(String.valueOf(myDb.getPoints()));
+
+        rewardButton.setOnClickListener(v1 -> {
+            String inputtedRewardCode = rewardText.getText().toString();
+            if(validateRewardCode(rewardCodes, inputtedRewardCode)) {
+                purchaseReward(inputtedRewardCode);
+            }
+        });
         UserChangeNotifier.addListener(this);
 
         String wholeName = getString(R.string.Hey) + " " + myDb.getName();
         name.setText(wholeName);
+    }
 
+    public void purchaseReward(String inputtedRewardCode){
+            if (myDb.getPoints() <= myDb.getCost(inputtedRewardCode)) {
+                showPopup(getString(R.string.insufficientFunds));
+            } else {
+                myDb.minusPoints(myDb.getCost(inputtedRewardCode));
+                showPopup("Code accepted, keep it up! Your new points balance is: " + myDb.getPoints());
+                points.setText(String.valueOf(myDb.getPoints()));
+                UserChangeNotifier.notifyPointsChanged(myDb.getPoints());
+            }
+        }
+
+    private boolean validateRewardCode(List<String> rewardCodes, String inputtedRewardCode){
+        if (inputtedRewardCode.isEmpty()) {
+            toastMessage("No code was entered, please try again");
+            return false;
+        } else if (!rewardCodes.contains(inputtedRewardCode)) {
+            toastMessage(getString(R.string.invalidCode));
+            return false;
+        }
+        return true;
     }
 
     public void showPopup(String text){
@@ -80,22 +91,14 @@ public class RewardsFragment extends Fragment implements UserChangeListener {
         popup.setContentView(R.layout.popup_layout);
         ImageView closeBtn = popup.findViewById(R.id.closeBtn);
         TextView popupText = popup.findViewById(R.id.popupText);
-        setTextToEdit(text);
-        popupText.setText(getTextToEdit());
+        popupText.setText(text);
         closeBtn.setOnClickListener(v -> popup.dismiss());
         popup.show();
 
     }
+
     public void toastMessage(String message){
         Toast.makeText(requireActivity() ,message,Toast.LENGTH_LONG).show();
-    }
-
-    public void setTextToEdit(String textToEdit) {
-        this.textToEdit = textToEdit;
-    }
-
-    public String getTextToEdit() {
-        return textToEdit;
     }
 
     @Override

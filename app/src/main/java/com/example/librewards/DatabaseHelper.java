@@ -26,10 +26,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE3 = "reward_codes_table";
     public static final String TABLE4 = "points_table";
     public static final String TABLE5 = "name_table";
-
+    public final Context context;
     public DatabaseHelper(Context context)  {
         super(context, DATABASE_NAME, null, 1);
-        SQLiteDatabase db = this.getWritableDatabase();
+        this.context = context;
     }
     //Method that creates the tables and the columns within where the columns have been given data types and names.
     @Override
@@ -44,6 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(table3);
         db.execSQL(table4);
         db.execSQL(table5);
+        db.execSQL("INSERT INTO " + TABLE4 + '(' + "points" + ')' + "VALUES (?)");
 
     }
 
@@ -213,13 +214,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    //Method that only runs once in the TimerFragment to instantiate the points to zero on first start-up
-    public void initialPoints(){
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("INSERT INTO " + TABLE4 + '(' + "points" + ')' + "VALUES (?)");
+    public void addInitialCodes(){
+        List<String> startList;
+        ListFromFile listFromFile = new ListFromFile(context);
+        startList = listFromFile.readLine(context.getString(R.string.startcodes_file_name));
+        storeCodes(startList, context.getString(R.string.start_codes_table));
 
+        List<String> stopList;
+        stopList = listFromFile.readLine(context.getString(R.string.stopcodes_file_name));
+
+        storeCodes(stopList, context.getString(R.string.stop_codes_table));
     }
-
-
 }
 

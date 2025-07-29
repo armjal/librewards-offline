@@ -72,21 +72,9 @@ public class MainActivity extends AppCompatActivity{
 
     public void onFirstStart(){
         showPopupName();
-        myDb.initialPoints();
-        addInitialCodes();
+        myDb.addInitialCodes();
     }
 
-    private void addInitialCodes(){
-        List<String> startList;
-        ListFromFile listFromFile = new ListFromFile(this);
-        startList = listFromFile.readLine(getString(R.string.startcodes_file_name));
-        myDb.storeCodes(startList, getString(R.string.start_codes_table));
-
-        List<String> stopList;
-        stopList = listFromFile.readLine( getString(R.string.stopcodes_file_name));
-
-        myDb.storeCodes(stopList, getString(R.string.stop_codes_table));
-    }
     public void showPopupName(){
         popupNameContainer.setVisibility(View.VISIBLE);
         nameButton.setOnClickListener(v -> {

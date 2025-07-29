@@ -196,15 +196,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void addInitialCodes(){
-        List<String> startList;
         ListFromFile listFromFile = new ListFromFile(context);
-        startList = listFromFile.readLine(context.getString(R.string.startcodes_file_name));
+        List<String> startList = listFromFile.readLine(context.getString(R.string.startcodes_file_name));
+        List<String> stopList = listFromFile.readLine(context.getString(R.string.stopcodes_file_name));
+        List<String> rewardsList = listFromFile.readRewardsLine(context.getString(R.string.rewardcodes_file_name));
+
         storeCodes(startList, context.getString(R.string.start_codes_table));
-
-        List<String> stopList;
-        stopList = listFromFile.readLine(context.getString(R.string.stopcodes_file_name));
-
         storeCodes(stopList, context.getString(R.string.stop_codes_table));
+        storeRewards(rewardsList);
     }
 }
 

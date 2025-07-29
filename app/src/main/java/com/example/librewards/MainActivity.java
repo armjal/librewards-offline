@@ -1,5 +1,6 @@
 package com.example.librewards;
 
+import static com.example.librewards.FirstStartHandler.onFirstStart;
 import static java.util.Objects.requireNonNull;
 
 import androidx.annotation.NonNull;
@@ -31,27 +32,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity{
-    private static final String FIRST_START_PREFS_BOOL = "firstStart";
-    private static final String LIBREWARDS_PREFS = "librewards_prefs";
     private DatabaseHelper myDb;
     private String textToEdit;
     private EditText enterName;
     private Button nameButton;
     private FrameLayout popupNameContainer;
-    private SharedPreferences sharedPreferences;
     private UserModel userModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         myDb = new DatabaseHelper(this);
+
+        popupNameContainer = findViewById(R.id.popupNameContainer);
+        popupNameContainer.setVisibility(View.INVISIBLE);
         ViewPager viewPager = findViewById(R.id.viewPager);
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         ImageView helpButton = findViewById(R.id.helpButton);
 
-        sharedPreferences = this.getSharedPreferences(LIBREWARDS_PREFS, Context.MODE_PRIVATE);
         userModel = new UserModel();
         TimerFragment timerFragment = new TimerFragment();
         RewardsFragment rewardsFragment = new RewardsFragment();
@@ -59,8 +58,8 @@ public class MainActivity extends AppCompatActivity{
 
         enterName = findViewById(R.id.enterName);
         nameButton = findViewById(R.id.nameButton);
-        popupNameContainer = findViewById(R.id.popupNameContainer);
-        popupNameContainer.setVisibility(View.INVISIBLE);
+
+        onFirstStart(this, this::showPopupName);
 
         tabLayout.setupWithViewPager(viewPager);
 
@@ -71,17 +70,9 @@ public class MainActivity extends AppCompatActivity{
 
         requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.timer);
         requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.reward);
-        onFirstStartShowPopup();
         helpButton.setOnClickListener(v -> showPopup(getString(R.string.helpInfo)));
     }
 
-    private void onFirstStartShowPopup(){
-        boolean firstStart = sharedPreferences.getBoolean(FIRST_START_PREFS_BOOL, true);
-        if (firstStart) {
-            showPopupName();
-
-        }
-    }
     public void showPopupName(){
         popupNameContainer.setVisibility(View.VISIBLE);
         nameButton.setOnClickListener(v -> {
@@ -96,14 +87,7 @@ public class MainActivity extends AppCompatActivity{
             }
 
         });
-        markAsNoLongerFirstStart();
     }
-    private void markAsNoLongerFirstStart(){
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(FIRST_START_PREFS_BOOL, false);
-        editor.apply();
-    }
-
     //Method that creates a popup
     public void showPopup(String text){
         Dialog popup = new Dialog(this);
@@ -159,5 +143,4 @@ public class MainActivity extends AppCompatActivity{
             return fragmentTitle.get(position);
         }
     }
-
 }

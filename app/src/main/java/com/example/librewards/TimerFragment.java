@@ -3,8 +3,6 @@ package com.example.librewards;
 import static java.util.Objects.requireNonNull;
 
 import android.app.Dialog;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -39,7 +37,6 @@ public class TimerFragment extends Fragment implements UserChangeListener {
     private String textToEdit;
     private TextView points;
     private TextView name;
-    private ListFromFile listFromFile;
     private DatabaseHelper myDb;
 
     @Override
@@ -55,16 +52,6 @@ public class TimerFragment extends Fragment implements UserChangeListener {
         points = v.findViewById(R.id.points);
         points.setText(String.valueOf(myDb.getPoints()));
         name = v.findViewById(R.id.nameTimer);
-
-        //Creating a preference for activity on first start-up only
-        SharedPreferences timerPrefs = requireActivity().getSharedPreferences("timerPrefs", Context.MODE_PRIVATE);
-        boolean firstStart = timerPrefs.getBoolean("firstStart", true);
-        //Anything enclosed in the 'if' statement will only run once; at first start-up.
-        if (firstStart) {
-            myDb.initialPoints();
-            addInitialCodes();
-
-        }
 
         //Gets all of the codes that are currently in the database and adds them to a list
         addCurrCodes(currStartCodes,getString(R.string.start_codes_table));
@@ -229,39 +216,13 @@ public class TimerFragment extends Fragment implements UserChangeListener {
         popup.show();
 
     }
-    //Method that adds the codes from the text file into a list using the ListFromFile class
     private List<String> addNewCodes(String path){
         List<String> newList;
-        listFromFile = new ListFromFile(requireActivity().getApplicationContext());
+        ListFromFile listFromFile = new ListFromFile(requireActivity().getApplicationContext());
         newList = listFromFile.readLine(path);
         for (String s : newList)
             Log.d(TIMER_TAG, s);
         return newList;
-    }
-
-    //Method adds codes to the database on first start-up
-    private void addInitialCodes(){
-        List<String> startList;
-        listFromFile = new ListFromFile(requireActivity().getApplicationContext());
-        startList = listFromFile.readLine(getString(R.string.startcodes_file_name));
-        for (String s : startList)
-            Log.d(TIMER_TAG, s);
-
-        myDb.storeCodes(startList, getString(R.string.start_codes_table));
-
-        List<String> stopList;
-        stopList = listFromFile.readLine( getString(R.string.stopcodes_file_name));
-        for (String d : stopList)
-            Log.d(TIMER_TAG, d);
-
-        myDb.storeCodes(stopList, getString(R.string.stop_codes_table));
-
-        //'firstStart' boolean is set to false which means that the the method will not run after first
-        //start
-        SharedPreferences timerPrefs = requireActivity().getSharedPreferences("timerPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = timerPrefs.edit();
-        editor.putBoolean("firstStart", false);
-        editor.apply();
     }
 
     public void setTextToEdit(String textToEdit) {

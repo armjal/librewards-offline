@@ -1,8 +1,7 @@
 package com.example.librewards;
 
-import static com.example.librewards.FirstStartHandler.onFirstStart;
+import static com.example.librewards.FirstStartHandler.handleFirstStart;
 import static java.util.Objects.requireNonNull;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,8 +11,6 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.app.Dialog;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -59,7 +56,7 @@ public class MainActivity extends AppCompatActivity{
         enterName = findViewById(R.id.enterName);
         nameButton = findViewById(R.id.nameButton);
 
-        onFirstStart(this, this::showPopupName);
+        handleFirstStart(this, this::onFirstStart);
 
         tabLayout.setupWithViewPager(viewPager);
 
@@ -73,6 +70,23 @@ public class MainActivity extends AppCompatActivity{
         helpButton.setOnClickListener(v -> showPopup(getString(R.string.helpInfo)));
     }
 
+    public void onFirstStart(){
+        showPopupName();
+        myDb.initialPoints();
+        addInitialCodes();
+    }
+
+    private void addInitialCodes(){
+        List<String> startList;
+        ListFromFile listFromFile = new ListFromFile(this);
+        startList = listFromFile.readLine(getString(R.string.startcodes_file_name));
+        myDb.storeCodes(startList, getString(R.string.start_codes_table));
+
+        List<String> stopList;
+        stopList = listFromFile.readLine( getString(R.string.stopcodes_file_name));
+
+        myDb.storeCodes(stopList, getString(R.string.stop_codes_table));
+    }
     public void showPopupName(){
         popupNameContainer.setVisibility(View.VISIBLE);
         nameButton.setOnClickListener(v -> {

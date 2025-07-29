@@ -13,7 +13,7 @@ public class FirstStartHandler {
     private FirstStartHandler(){
     }
 
-    public static void onFirstStart(Activity activity, Runnable actions){
+    public static void handleFirstStart(Activity activity, Runnable actions){
         sharedPreferences = activity.getSharedPreferences(LIBREWARDS_PREFS, Context.MODE_PRIVATE);
         boolean isFirstStart = sharedPreferences.getBoolean(FIRST_START_PREFS_BOOL, true);
 

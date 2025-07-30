@@ -39,6 +39,7 @@ dependencies {
     implementation libs.legacy.support.v4
     implementation libs.lifecycle.extensions
     implementation libs.material
+    implementation libs.core.splashscreen
 
     testImplementation platform(libs.junit)
     testImplementation libs.junit.jupiter

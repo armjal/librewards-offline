@@ -1,15 +1,10 @@
-package com.example.librewards;
+package com.example.librewards.views;
 
 import static com.example.librewards.FirstStartHandler.handleFirstStart;
 import static java.util.Objects.requireNonNull;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.Dialog;
 import android.graphics.Color;
@@ -23,10 +18,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.librewards.DatabaseHelper;
+import com.example.librewards.R;
 import com.example.librewards.models.UserModel;
+import com.example.librewards.views.adapters.ViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity{
@@ -47,29 +45,29 @@ public class MainActivity extends AppCompatActivity{
 
         popupNameContainer = findViewById(R.id.popupNameContainer);
         popupNameContainer.setVisibility(View.INVISIBLE);
-        ViewPager viewPager = findViewById(R.id.viewPager);
+        ViewPager2 viewPager = findViewById(R.id.viewPager);
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         ImageView helpButton = findViewById(R.id.helpButton);
 
         userModel = new UserModel();
-        TimerFragment timerFragment = new TimerFragment();
-        RewardsFragment rewardsFragment = new RewardsFragment();
-
 
         enterName = findViewById(R.id.enterName);
         nameButton = findViewById(R.id.nameButton);
 
         handleFirstStart(this, this::onFirstStart);
 
-        tabLayout.setupWithViewPager(viewPager);
-
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 0);
-        viewPagerAdapter.addFragment(timerFragment, "Timer");
-        viewPagerAdapter.addFragment(rewardsFragment, "Rewards");
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this);
         viewPager.setAdapter(viewPagerAdapter);
 
-        requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.timer);
-        requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.reward);
+        List<FragmentExtended> fragments = List.of(new TimerFragment(), new RewardsFragment());
+        viewPagerAdapter.addFragments(fragments);
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) ->
+            {
+                tab.setText(fragments.get(position).getTitle());
+                tab.setIcon(fragments.get(position).getIcon());
+            }
+        ).attach();
+
         helpButton.setOnClickListener(v -> showPopup(getString(R.string.helpInfo)));
     }
 
@@ -116,36 +114,5 @@ public class MainActivity extends AppCompatActivity{
 
     public void toastMessage(String message){
         Toast.makeText(this,message,Toast.LENGTH_LONG).show();
-    }
-    private static class ViewPagerAdapter extends FragmentPagerAdapter {
-
-        private final List<Fragment> fragments = new ArrayList<>();
-        private final List<String> fragmentTitle = new ArrayList<>();
-
-        public ViewPagerAdapter(@NonNull FragmentManager fm, int behavior) {
-            super(fm, behavior);
-        }
-
-        public void addFragment(Fragment fragment, String title) {
-            fragments.add(fragment);
-            fragmentTitle.add(title);
-        }
-
-        @NonNull
-        @Override
-        public Fragment getItem(int position) {
-            return fragments.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return fragments.size();
-        }
-
-        @Nullable
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return fragmentTitle.get(position);
-        }
     }
 }

@@ -11,7 +11,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:theme="@style/Theme.App.Starting"
-            android:name=".MainActivity"
+            android:windowSoftInputMode="adjustPan"
+            android:name=".views.MainActivity"
             android:configChanges="orientation"
             android:exported="true"
             android:screenOrientation="portrait">

@@ -245,4 +245,9 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     public String getTitle() {
         return TITLE;
     }
+
+    @Override
+    public int getIcon() {
+        return R.drawable.timer;
+    }
 }

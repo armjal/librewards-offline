@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity{
         ImageView helpButton = findViewById(R.id.helpButton);
 
         userModel = new UserModel();
-        List<FragmentExtended> fragments = List.of(new TimerFragment(), new RewardsFragment());
 
         enterName = findViewById(R.id.enterName);
         nameButton = findViewById(R.id.nameButton);
@@ -59,15 +58,16 @@ public class MainActivity extends AppCompatActivity{
 
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this);
         viewPager.setAdapter(viewPagerAdapter);
-        viewPagerAdapter.addFragments(fragments);
 
-        new TabLayoutMediator(tabLayout, viewPager,
-                (tab, position) -> tab.setText(fragments.get(position).getTitle())
+        List<FragmentExtended> fragments = List.of(new TimerFragment(), new RewardsFragment());
+        viewPagerAdapter.addFragments(fragments);
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) ->
+            {
+                tab.setText(fragments.get(position).getTitle());
+                tab.setIcon(fragments.get(position).getIcon());
+            }
         ).attach();
 
-
-        requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.timer);
-        requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.reward);
         helpButton.setOnClickListener(v -> showPopup(getString(R.string.helpInfo)));
     }
 

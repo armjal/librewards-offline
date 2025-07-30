@@ -97,42 +97,43 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
                 //Switches from the 'Start' button to the 'Stop' button
                 startButton.setVisibility(View.INVISIBLE);
                 stopButton.setVisibility(View.VISIBLE);
-                //All actions to be taken place once the stopwatch has started
-                stopwatch.setOnChronometerTickListener(chronometer -> {
-                    //Checks if the stopwatch has gone over 24 hours. If so, the stopwatch resets back to its original state
-                    if ((SystemClock.elapsedRealtime() - stopwatch.getBase()) >= 500000) {
-                        stopwatch.setBase(SystemClock.elapsedRealtime());
-                        stopwatch.stop();
-                        stopButton.setVisibility(View.INVISIBLE);
-                        startButton.setVisibility(View.VISIBLE);
-                        showPopup("No stop code was entered for 24 hours. The timer has been reset");
-                    }
-                    stopButton.setOnClickListener(v1 -> {
-                        String inputtedStopCode = timerCodeText.getText().toString();
-                        if(validateTimerCode(inputtedStopCode, currStopCodes)) {
-                            currStopCodes.remove(inputtedStopCode);
-                            myDb.deleteCode(getString(R.string.stop_codes_table), inputtedStopCode);
+                stopwatch.setOnChronometerTickListener(chronometer -> enforceTimerDayLimit());
 
-                            //'totalTime' gets the total duration spent at the library in milliseconds
-                            long totalTime = SystemClock.elapsedRealtime() - stopwatch.getBase();
-                            int pointsEarned = PointsCalculator.calculateFromDuration(totalTime);
-                            announceAccumulatedPoints(pointsEarned, totalTime);
-                            myDb.addPoints(pointsEarned);
-                            points.setText(String.valueOf(myDb.getPoints()));
-                            stopwatch.setBase(SystemClock.elapsedRealtime());
-                            stopwatch.stop();
-                            //Clears the input text and resets to original state
-                            timerCodeText.setText(null);
-                            timerCodeText.setHint("Please enter the start code");
-                            //Listener to communicate with Rewards Fragment and give the points to display in there
-                            UserChangeNotifier.notifyPointsChanged(myDb.getPoints());
-                            stopButton.setVisibility(View.INVISIBLE);
-                            startButton.setVisibility(View.VISIBLE);
-                        }
-                    });
-                });
+        stopButton.setOnClickListener(v1 -> {
+            String inputtedStopCode = timerCodeText.getText().toString();
+            if(validateTimerCode(inputtedStopCode, currStopCodes)) {
+                currStopCodes.remove(inputtedStopCode);
+                myDb.deleteCode(getString(R.string.stop_codes_table), inputtedStopCode);
+
+                //'totalTime' gets the total duration spent at the library in milliseconds
+                long totalTime = SystemClock.elapsedRealtime() - stopwatch.getBase();
+                int pointsEarned = PointsCalculator.calculateFromDuration(totalTime);
+                announceAccumulatedPoints(pointsEarned, totalTime);
+                myDb.addPoints(pointsEarned);
+                points.setText(String.valueOf(myDb.getPoints()));
+                stopwatch.setBase(SystemClock.elapsedRealtime());
+                stopwatch.stop();
+                //Clears the input text and resets to original state
+                timerCodeText.setText(null);
+                timerCodeText.setHint("Please enter the start code");
+                //Listener to communicate with Rewards Fragment and give the points to display in there
+                UserChangeNotifier.notifyPointsChanged(myDb.getPoints());
+                stopButton.setVisibility(View.INVISIBLE);
+                startButton.setVisibility(View.VISIBLE);
             }
         });
+            }
+        });
+    }
+
+    private void enforceTimerDayLimit() {
+        if ((SystemClock.elapsedRealtime() - stopwatch.getBase()) >= 500000) {
+            stopwatch.setBase(SystemClock.elapsedRealtime());
+            stopwatch.stop();
+            stopButton.setVisibility(View.INVISIBLE);
+            startButton.setVisibility(View.VISIBLE);
+            showPopup("No stop code was entered for 24 hours. The timer has been reset");
+        }
     }
 
     private boolean validateTimerCode(String inputtedCode, List<String> codes) {

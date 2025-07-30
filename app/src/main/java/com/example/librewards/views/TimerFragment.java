@@ -1,4 +1,4 @@
-package com.example.librewards;
+package com.example.librewards.views;
 
 import static java.util.Objects.requireNonNull;
 
@@ -20,17 +20,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 
+import com.example.librewards.DatabaseHelper;
+import com.example.librewards.ListFromFile;
+import com.example.librewards.PointsCalculator;
+import com.example.librewards.R;
 import com.example.librewards.models.UserChangeListener;
 import com.example.librewards.models.UserChangeNotifier;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TimerFragment extends Fragment implements UserChangeListener {
+public class TimerFragment extends FragmentExtended implements UserChangeListener {
+    private static final String TITLE = "Timer";
     public static final String TIMER_TAG = TimerFragment.class.getSimpleName();
-
     private List<String> currStartCodes = new ArrayList<>();
     private List<String> currStopCodes = new ArrayList<>();
 
@@ -238,4 +241,13 @@ public class TimerFragment extends Fragment implements UserChangeListener {
         Toast.makeText(requireActivity().getApplicationContext(),message,Toast.LENGTH_LONG).show();
     }
 
+    @Override
+    public String getTitle() {
+        return TITLE;
+    }
+
+    @Override
+    public int getIcon() {
+        return R.drawable.timer;
+    }
 }

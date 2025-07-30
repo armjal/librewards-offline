@@ -5,7 +5,7 @@ public final class PointsCalculator {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
-    static int calculateFromDuration(long totalDurationAtLibrary) {
+    public static int calculateFromDuration(long totalDurationAtLibrary) {
         int pointsEarned = 0;
         int durationSeconds = (int) (totalDurationAtLibrary/1000);
 

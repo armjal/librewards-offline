@@ -81,15 +81,10 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         //would happen every once in a while
         currStartCodes = checkForUpdates(currStartCodes, originalStartCodes, getString(R.string.start_codes_table));
         currStopCodes = checkForUpdates(currStopCodes,originalStopCodes, getString(R.string.stop_codes_table));
-        //Sets actions on clicking the "Start" Button
+
         startButton.setOnClickListener(v2 -> {
             String inputtedStartCode = timerCodeText.getText().toString();
-            //Checks if there is any text inputted
-            if(inputtedStartCode.isEmpty()){
-                toastMessage("No code was entered, please try again");
-            }
-            //Checks if the current start code table in the database contains the code that has been inputted
-            else if (currStartCodes.contains(inputtedStartCode)) {
+            if(validateTimerCode(inputtedStartCode, currStartCodes)) {
                 //Removes the code from the database as it has already been used once
                 currStartCodes.remove(inputtedStartCode);
                 myDb.deleteCode(getString(R.string.start_codes_table), inputtedStartCode);
@@ -114,15 +109,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
                     }
                     stopButton.setOnClickListener(v1 -> {
                         String inputtedStopCode = timerCodeText.getText().toString();
-                        //Checks if there is any text inputted
-                        if(inputtedStopCode.isEmpty()){
-                            toastMessage("No code was entered, please try again");
-                        }
-                        //Checks if the current stop code table in the database contains the code that has been inputted
-                        if (!currStopCodes.contains(inputtedStopCode)) {
-                            toastMessage("The code you entered is not valid, please try again");
-                        } else {
-                            //Removes the code from the database as it has already been used once
+                        if(validateTimerCode(inputtedStopCode, currStopCodes)) {
                             currStopCodes.remove(inputtedStopCode);
                             myDb.deleteCode(getString(R.string.stop_codes_table), inputtedStopCode);
 
@@ -141,18 +128,25 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
                             UserChangeNotifier.notifyPointsChanged(myDb.getPoints());
                             stopButton.setVisibility(View.INVISIBLE);
                             startButton.setVisibility(View.VISIBLE);
-
                         }
                     });
                 });
             }
-            //If the start code entered is not in the database, a toast will show
-            else{
-                toastMessage(getString(R.string.invalidCode));
-            }
         });
-
     }
+
+    private boolean validateTimerCode(String inputtedCode, List<String> codes) {
+        if(inputtedCode.isEmpty()){
+            toastMessage("No code was entered, please try again");
+            return false;
+        }
+        else if (!codes.contains(inputtedCode)) {
+            toastMessage(getString(R.string.invalidCode));
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public void onNameChanged(String newName) {
         String wholeName = getString(R.string.Hey) + " " + newName;

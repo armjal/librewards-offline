@@ -44,15 +44,13 @@ public class MainActivity extends AppCompatActivity{
         myDb = new DatabaseHelper(this);
 
         popupNameContainer = findViewById(R.id.popupNameContainer);
-        popupNameContainer.setVisibility(View.INVISIBLE);
         ViewPager2 viewPager = findViewById(R.id.viewPager);
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         ImageView helpButton = findViewById(R.id.helpButton);
-
-        userModel = new UserModel();
-
         enterName = findViewById(R.id.enterName);
         nameButton = findViewById(R.id.nameButton);
+
+        userModel = new UserModel();
 
         handleFirstStart(this, this::onFirstStart);
 

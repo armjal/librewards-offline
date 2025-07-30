@@ -9,7 +9,7 @@
     android:paddingBottom="10dp"
     android:paddingRight="10dp"
     android:gravity="center"
-    tools:context=".TimerFragment">
+    tools:context=".views.TimerFragment">
 
     <!-- TODO: Update blank fragment layout -->
 

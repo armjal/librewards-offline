@@ -1,4 +1,4 @@
-package com.example.librewards;
+package com.example.librewards.views;
 
 import static java.util.Objects.requireNonNull;
 
@@ -21,7 +21,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.example.librewards.models.FragmentExtended;
+import com.example.librewards.DatabaseHelper;
+import com.example.librewards.ListFromFile;
+import com.example.librewards.PointsCalculator;
+import com.example.librewards.R;
 import com.example.librewards.models.UserChangeListener;
 import com.example.librewards.models.UserChangeNotifier;
 

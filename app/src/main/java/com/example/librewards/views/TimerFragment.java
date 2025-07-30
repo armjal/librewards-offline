@@ -44,14 +44,14 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     private Button startButton;
     private Button stopButton;
     private EditText timerCodeText;
-    private Chronometer stopwatch;
+    private Chronometer timer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_timer, container, false);
 
-        stopwatch = v.findViewById(R.id.stopwatch);
+        timer = v.findViewById(R.id.timer);
         timerCodeText = v.findViewById(R.id.startText);
         startButton = v.findViewById(R.id.startButton);
         stopButton = v.findViewById(R.id.stopButton);
@@ -88,16 +88,8 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
                 //Removes the code from the database as it has already been used once
                 currStartCodes.remove(inputtedStartCode);
                 myDb.deleteCode(getString(R.string.start_codes_table), inputtedStartCode);
-                //Clears the input text
-                timerCodeText.setText(null);
-                timerCodeText.setHint("Please enter the stop code");
-                //Starts the stopwatch
-                stopwatch.setBase(SystemClock.elapsedRealtime());
-                stopwatch.start();
-                //Switches from the 'Start' button to the 'Stop' button
-                startButton.setVisibility(View.INVISIBLE);
-                stopButton.setVisibility(View.VISIBLE);
-                stopwatch.setOnChronometerTickListener(chronometer -> enforceTimerDayLimit());
+                changeTimerState(getString(R.string.start));
+                timer.setOnChronometerTickListener(chronometer -> enforceTimerDayLimit());
 
         stopButton.setOnClickListener(v1 -> {
             String inputtedStopCode = timerCodeText.getText().toString();
@@ -106,30 +98,43 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
                 myDb.deleteCode(getString(R.string.stop_codes_table), inputtedStopCode);
 
                 //'totalTime' gets the total duration spent at the library in milliseconds
-                long totalTime = SystemClock.elapsedRealtime() - stopwatch.getBase();
+                long totalTime = SystemClock.elapsedRealtime() - timer.getBase();
                 int pointsEarned = PointsCalculator.calculateFromDuration(totalTime);
                 announceAccumulatedPoints(pointsEarned, totalTime);
                 myDb.addPoints(pointsEarned);
                 points.setText(String.valueOf(myDb.getPoints()));
-                stopwatch.setBase(SystemClock.elapsedRealtime());
-                stopwatch.stop();
-                //Clears the input text and resets to original state
-                timerCodeText.setText(null);
-                timerCodeText.setHint("Please enter the start code");
+                changeTimerState(getString(R.string.stop));
                 //Listener to communicate with Rewards Fragment and give the points to display in there
                 UserChangeNotifier.notifyPointsChanged(myDb.getPoints());
-                stopButton.setVisibility(View.INVISIBLE);
-                startButton.setVisibility(View.VISIBLE);
             }
         });
             }
         });
     }
+    
+    private void changeTimerState(String desiredState){
+        String userCodeRequest = "Please enter the %s code";
+        timer.setBase(SystemClock.elapsedRealtime());
+        timerCodeText.setText(null);
+
+        if(desiredState.equals(getString(R.string.stop))){
+            timer.stop();
+            stopButton.setVisibility(View.INVISIBLE);
+            startButton.setVisibility(View.VISIBLE);
+            timerCodeText.setHint(String.format(userCodeRequest, R.string.start));
+
+        } else if(desiredState.equals(getString(R.string.start))){
+            timer.start();
+            startButton.setVisibility(View.INVISIBLE);
+            stopButton.setVisibility(View.VISIBLE);
+            timerCodeText.setHint(String.format(userCodeRequest, getString(R.string.stop)));
+        }
+    }
 
     private void enforceTimerDayLimit() {
-        if ((SystemClock.elapsedRealtime() - stopwatch.getBase()) >= 500000) {
-            stopwatch.setBase(SystemClock.elapsedRealtime());
-            stopwatch.stop();
+        if ((SystemClock.elapsedRealtime() - timer.getBase()) >= 500000) {
+            timer.setBase(SystemClock.elapsedRealtime());
+            timer.stop();
             stopButton.setVisibility(View.INVISIBLE);
             startButton.setVisibility(View.VISIBLE);
             showPopup("No stop code was entered for 24 hours. The timer has been reset");

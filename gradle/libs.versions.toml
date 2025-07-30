@@ -9,6 +9,7 @@ legacySupportV4 = "1.0.0"
 lifecycleExtensions = "2.2.0"
 material = "1.12.0"
 junitJupiter = "5.13.4"
+viewpager2 = "1.1.0"
 
 [libraries]
 constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
@@ -21,6 +22,7 @@ legacy-support-v4 = { module = "androidx.legacy:legacy-support-v4", version.ref 
 lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensions", version.ref = "lifecycleExtensions" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
+viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

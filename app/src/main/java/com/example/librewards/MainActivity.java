@@ -3,13 +3,12 @@ package com.example.librewards;
 import static com.example.librewards.FirstStartHandler.handleFirstStart;
 import static java.util.Objects.requireNonNull;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.Dialog;
 import android.graphics.Color;
@@ -23,8 +22,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.librewards.models.FragmentExtended;
 import com.example.librewards.models.UserModel;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,26 +48,26 @@ public class MainActivity extends AppCompatActivity{
 
         popupNameContainer = findViewById(R.id.popupNameContainer);
         popupNameContainer.setVisibility(View.INVISIBLE);
-        ViewPager viewPager = findViewById(R.id.viewPager);
+        ViewPager2 viewPager = findViewById(R.id.viewPager);
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         ImageView helpButton = findViewById(R.id.helpButton);
 
         userModel = new UserModel();
-        TimerFragment timerFragment = new TimerFragment();
-        RewardsFragment rewardsFragment = new RewardsFragment();
-
+        List<FragmentExtended> fragments = List.of(new TimerFragment(), new RewardsFragment());
 
         enterName = findViewById(R.id.enterName);
         nameButton = findViewById(R.id.nameButton);
 
         handleFirstStart(this, this::onFirstStart);
 
-        tabLayout.setupWithViewPager(viewPager);
-
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 0);
-        viewPagerAdapter.addFragment(timerFragment, "Timer");
-        viewPagerAdapter.addFragment(rewardsFragment, "Rewards");
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this);
         viewPager.setAdapter(viewPagerAdapter);
+        viewPagerAdapter.addFragments(fragments);
+
+        new TabLayoutMediator(tabLayout, viewPager,
+                (tab, position) -> tab.setText(fragments.get(position).getTitle())
+        ).attach();
+
 
         requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.timer);
         requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.reward);
@@ -117,35 +118,26 @@ public class MainActivity extends AppCompatActivity{
     public void toastMessage(String message){
         Toast.makeText(this,message,Toast.LENGTH_LONG).show();
     }
-    private static class ViewPagerAdapter extends FragmentPagerAdapter {
+    private static class ViewPagerAdapter extends FragmentStateAdapter {
 
         private final List<Fragment> fragments = new ArrayList<>();
-        private final List<String> fragmentTitle = new ArrayList<>();
 
-        public ViewPagerAdapter(@NonNull FragmentManager fm, int behavior) {
-            super(fm, behavior);
+        public ViewPagerAdapter(@NonNull FragmentActivity fa) {
+            super(fa);
         }
 
-        public void addFragment(Fragment fragment, String title) {
-            fragments.add(fragment);
-            fragmentTitle.add(title);
+        public void addFragments(List<FragmentExtended> fragments){
+            this.fragments.addAll(fragments);
         }
-
         @NonNull
         @Override
-        public Fragment getItem(int position) {
+        public Fragment createFragment(int position) {
             return fragments.get(position);
         }
 
         @Override
-        public int getCount() {
+        public int getItemCount() {
             return fragments.size();
-        }
-
-        @Nullable
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return fragmentTitle.get(position);
         }
     }
 }

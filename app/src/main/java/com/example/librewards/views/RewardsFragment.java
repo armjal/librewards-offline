@@ -118,4 +118,9 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
     public String getTitle() {
         return TITLE;
     }
+
+    @Override
+    public int getIcon() {
+        return R.drawable.reward;
+    }
 }

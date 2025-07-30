@@ -1,13 +1,9 @@
-package com.example.librewards;
+package com.example.librewards.views;
 
 import static com.example.librewards.FirstStartHandler.handleFirstStart;
 import static java.util.Objects.requireNonNull;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.Dialog;
@@ -22,12 +18,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.librewards.models.FragmentExtended;
+import com.example.librewards.DatabaseHelper;
+import com.example.librewards.R;
 import com.example.librewards.models.UserModel;
+import com.example.librewards.views.adapters.ViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity{
@@ -117,27 +114,5 @@ public class MainActivity extends AppCompatActivity{
 
     public void toastMessage(String message){
         Toast.makeText(this,message,Toast.LENGTH_LONG).show();
-    }
-    private static class ViewPagerAdapter extends FragmentStateAdapter {
-
-        private final List<Fragment> fragments = new ArrayList<>();
-
-        public ViewPagerAdapter(@NonNull FragmentActivity fa) {
-            super(fa);
-        }
-
-        public void addFragments(List<FragmentExtended> fragments){
-            this.fragments.addAll(fragments);
-        }
-        @NonNull
-        @Override
-        public Fragment createFragment(int position) {
-            return fragments.get(position);
-        }
-
-        @Override
-        public int getItemCount() {
-            return fragments.size();
-        }
     }
 }

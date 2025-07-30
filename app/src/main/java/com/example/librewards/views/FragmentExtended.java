@@ -1,4 +1,4 @@
-package com.example.librewards.models;
+package com.example.librewards.views;
 
 import androidx.fragment.app.Fragment;
 

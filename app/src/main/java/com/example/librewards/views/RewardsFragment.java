@@ -1,4 +1,4 @@
-package com.example.librewards;
+package com.example.librewards.views;
 
 import static java.util.Objects.requireNonNull;
 
@@ -16,15 +16,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 
+import com.example.librewards.DatabaseHelper;
+import com.example.librewards.R;
 import com.example.librewards.models.UserChangeListener;
 import com.example.librewards.models.UserChangeNotifier;
 
 import java.util.List;
 
 
-public class RewardsFragment extends Fragment implements UserChangeListener {
+public class RewardsFragment extends FragmentExtended implements UserChangeListener{
+    private static final String TITLE = "Rewards";
     private DatabaseHelper myDb;
     private TextView points;
     private TextView name;
@@ -110,5 +112,15 @@ public class RewardsFragment extends Fragment implements UserChangeListener {
     @Override
     public void onPointsChanged(int newPoints) {
         points.setText(String.valueOf(newPoints));
+    }
+
+    @Override
+    public String getTitle() {
+        return TITLE;
+    }
+
+    @Override
+    public int getIcon() {
+        return R.drawable.reward;
     }
 }

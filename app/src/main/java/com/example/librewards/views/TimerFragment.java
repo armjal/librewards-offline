@@ -3,12 +3,10 @@ package com.example.librewards.views;
 import static java.util.Objects.requireNonNull;
 
 import android.app.Dialog;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,25 +15,21 @@ import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.example.librewards.DatabaseHelper;
-import com.example.librewards.ListFromFile;
 import com.example.librewards.PointsCalculator;
 import com.example.librewards.R;
+import com.example.librewards.controllers.codes.StartCodesManager;
+import com.example.librewards.controllers.codes.StopCodesManager;
 import com.example.librewards.models.UserChangeListener;
 import com.example.librewards.models.UserChangeNotifier;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TimerFragment extends FragmentExtended implements UserChangeListener {
     private static final String TITLE = "Timer";
-    public static final String TIMER_TAG = TimerFragment.class.getSimpleName();
-    private List<String> currStartCodes = new ArrayList<>();
-    private List<String> currStopCodes = new ArrayList<>();
 
     private String textToEdit;
     private TextView points;
@@ -70,32 +64,23 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         name.setText(wholeName);
         points.setText(String.valueOf(myDb.getPoints()));
 
-        //Gets all of the codes that are currently in the database and adds them to a list
-        addCurrCodes(currStartCodes,getString(R.string.start_codes_table));
-        addCurrCodes(currStopCodes,getString(R.string.stop_codes_table));
-        //Gets all of the codes listed in the text files and add them to a list
-        List<String> originalStartCodes = addNewCodes(getString(R.string.startcodes_file_name));
-        List<String> originalStopCodes = addNewCodes(getString(R.string.stopcodes_file_name));
-        //Checks if the text files have any codes different to the ones currently in the database and updates the
-        //database if so. This is the method that would be used once the codes need to be refreshed. This
-        //would happen every once in a while
-        currStartCodes = checkForUpdates(currStartCodes, originalStartCodes, getString(R.string.start_codes_table));
-        currStopCodes = checkForUpdates(currStopCodes,originalStopCodes, getString(R.string.stop_codes_table));
+        StartCodesManager startCodesManager = new StartCodesManager(requireContext(), myDb);
+        StopCodesManager stopCodesManager = new StopCodesManager(requireContext(), myDb);
+
+        startCodesManager.refreshCodes();
+        stopCodesManager.refreshCodes();
 
         startButton.setOnClickListener(v2 -> {
             String inputtedStartCode = timerCodeText.getText().toString();
-            if(validateTimerCode(inputtedStartCode, currStartCodes)) {
-                //Removes the code from the database as it has already been used once
-                currStartCodes.remove(inputtedStartCode);
-                myDb.deleteCode(getString(R.string.start_codes_table), inputtedStartCode);
+            if(startCodesManager.validateCode(inputtedStartCode)) {
+                startCodesManager.removeUsedCode(inputtedStartCode);
                 changeTimerState(getString(R.string.start));
                 timer.setOnChronometerTickListener(chronometer -> enforceTimerDayLimit());
 
         stopButton.setOnClickListener(v1 -> {
             String inputtedStopCode = timerCodeText.getText().toString();
-            if(validateTimerCode(inputtedStopCode, currStopCodes)) {
-                currStopCodes.remove(inputtedStopCode);
-                myDb.deleteCode(getString(R.string.stop_codes_table), inputtedStopCode);
+            if(stopCodesManager.validateCode(inputtedStopCode)) {
+                stopCodesManager.removeUsedCode(inputtedStopCode);
 
                 //'totalTime' gets the total duration spent at the library in milliseconds
                 long totalTime = SystemClock.elapsedRealtime() - timer.getBase();
@@ -121,7 +106,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
             timer.stop();
             stopButton.setVisibility(View.INVISIBLE);
             startButton.setVisibility(View.VISIBLE);
-            timerCodeText.setHint(String.format(userCodeRequest, R.string.start));
+            timerCodeText.setHint(String.format(userCodeRequest, getString(R.string.start)));
 
         } else if(desiredState.equals(getString(R.string.start))){
             timer.start();
@@ -141,18 +126,6 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         }
     }
 
-    private boolean validateTimerCode(String inputtedCode, List<String> codes) {
-        if(inputtedCode.isEmpty()){
-            toastMessage("No code was entered, please try again");
-            return false;
-        }
-        else if (!codes.contains(inputtedCode)) {
-            toastMessage(getString(R.string.invalidCode));
-            return false;
-        }
-        return true;
-    }
-
     @Override
     public void onNameChanged(String newName) {
         String wholeName = getString(R.string.Hey) + " " + newName;
@@ -163,37 +136,8 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     public void onPointsChanged(int newPoints) {
         points.setText(String.valueOf(newPoints));
     }
+    
 
-    //Method to check if the text file has been updated with new codes or not
-    public List<String> checkForUpdates(List<String> currCodes, List<String> originalCodes, String table){
-        List<String> tempCodes = new ArrayList<>();
-        //Loop to check if the elements in the 'currCodes' list exactly matches those in the text file. The ones that
-        //match get added into a temporary list
-        for(int i = 0; i<currCodes.size(); i++){
-            for (int j = 0; j<originalCodes.size(); j++){
-                if(originalCodes.get(j).equals(currCodes.get(i))){
-                    tempCodes.add(currCodes.get(i));
-                }
-            }
-        }
-        //Temporary list is compared with the current codes list. If they are not an
-        //exact match, the codes update using the method in the DatabaseHelper class
-        if(!(currCodes.equals(tempCodes))){
-            currCodes = originalCodes;
-            myDb.updateCodes(table,originalCodes);
-        }
-        return currCodes;
-
-    }
-    //Method to add the current codes that are in the database to a list
-    private void addCurrCodes(List<String> codeList, String table) {
-        Cursor c = myDb.getAllData("codes", table);
-        c.moveToFirst();
-        while(!c.isAfterLast()) {
-            codeList.add(c.getString(c.getColumnIndex("codes")));
-            c.moveToNext();
-        }
-    }
     private void announceAccumulatedPoints(int pointsEarned, long totalTimeSpentAtLibrary) {
         int timeSpentMinutes = ((int) totalTimeSpentAtLibrary / 1000) /60;
         if(timeSpentMinutes == 1){
@@ -221,14 +165,6 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         popup.show();
 
     }
-    private List<String> addNewCodes(String path){
-        List<String> newList;
-        ListFromFile listFromFile = new ListFromFile(requireActivity().getApplicationContext());
-        newList = listFromFile.readLine(path);
-        for (String s : newList)
-            Log.d(TIMER_TAG, s);
-        return newList;
-    }
 
     public void setTextToEdit(String textToEdit) {
         this.textToEdit = textToEdit;
@@ -236,11 +172,6 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
 
     public String getTextToEdit() {
         return textToEdit;
-    }
-
-    //Custom Toast message
-    public void toastMessage(String message){
-        Toast.makeText(requireActivity().getApplicationContext(),message,Toast.LENGTH_LONG).show();
     }
 
     @Override

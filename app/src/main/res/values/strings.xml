@@ -38,5 +38,6 @@
     <string name="startcodes_file_name">startcodes.txt</string>
     <string name="stopcodes_file_name">stopcodes.txt</string>
     <string name="rewardcodes_file_name">rewardcodes.txt</string>
+    <string name="emptyCode">No code was entered, please try again</string>
 
 </resources>

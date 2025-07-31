@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
@@ -208,5 +209,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         storeCodes(startList, context.getString(R.string.start_codes_table));
         storeCodes(stopList, context.getString(R.string.stop_codes_table));
         storeRewards(rewardsList);
+    }
+
+    public List<String> checkForUpdates(List<String> currCodes, List<String> originalCodes, String table){
+        List<String> tempCodes = new ArrayList<>();
+        //Loop to check if the elements in the 'currCodes' list exactly matches those in the text file. The ones that
+        //match get added into a temporary list
+        for(int i = 0; i<currCodes.size(); i++){
+            for (int j = 0; j<originalCodes.size(); j++){
+                if(originalCodes.get(j).equals(currCodes.get(i))){
+                    tempCodes.add(currCodes.get(i));
+                }
+            }
+        }
+        //Temporary list is compared with the current codes list. If they are not an
+        //exact match, the codes update using the method in the DatabaseHelper class
+        if(!(currCodes.equals(tempCodes))){
+            currCodes = originalCodes;
+            this.updateCodes(table,originalCodes);
+        }
+        return currCodes;
+    }
+
+    public List<String> getCurrentCodes(String table) {
+        List<String> codes = new ArrayList<>();
+        Cursor c = this.getAllData("codes", table);
+        c.moveToFirst();
+        while(!c.isAfterLast()) {
+            codes.add(c.getString(c.getColumnIndex("codes")));
+            c.moveToNext();
+        }
+        return codes;
     }
 }

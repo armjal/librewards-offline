@@ -1,5 +1,6 @@
 package com.example.librewards.views;
 
+import static com.example.librewards.views.ViewUtils.toastMessage;
 import static java.util.Objects.requireNonNull;
 
 import android.app.Dialog;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.librewards.DatabaseHelper;
+import com.example.librewards.ListFromFile;
 import com.example.librewards.PointsCalculator;
 import com.example.librewards.R;
 import com.example.librewards.controllers.codes.StartCodesManager;
@@ -64,22 +66,34 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         name.setText(wholeName);
         points.setText(String.valueOf(myDb.getPoints()));
 
-        StartCodesManager startCodesManager = new StartCodesManager(requireContext(), myDb);
-        StopCodesManager stopCodesManager = new StopCodesManager(requireContext(), myDb);
+        StartCodesManager startCodesManager = new StartCodesManager(myDb);
+        StopCodesManager stopCodesManager = new StopCodesManager(myDb);
 
-        startCodesManager.refreshCodes();
-        stopCodesManager.refreshCodes();
+        startCodesManager.refreshCodes(new ListFromFile(requireContext()));
+        stopCodesManager.refreshCodes(new ListFromFile(requireContext()));
 
         startButton.setOnClickListener(v2 -> {
             String inputtedStartCode = timerCodeText.getText().toString();
-            if(startCodesManager.validateCode(inputtedStartCode)) {
+            if (inputtedStartCode.isEmpty()) {
+                toastMessage(getString(R.string.emptyCode), requireContext());
+            }
+            else if (startCodesManager.isInvalidCode(inputtedStartCode)){
+                toastMessage(getString(R.string.invalidCode), requireContext());
+            }
+            else {
                 startCodesManager.removeUsedCode(inputtedStartCode);
                 changeTimerState(getString(R.string.start));
                 timer.setOnChronometerTickListener(chronometer -> enforceTimerDayLimit());
 
         stopButton.setOnClickListener(v1 -> {
             String inputtedStopCode = timerCodeText.getText().toString();
-            if(stopCodesManager.validateCode(inputtedStopCode)) {
+            if (inputtedStopCode.isEmpty()) {
+                toastMessage(getString(R.string.emptyCode), requireContext());
+            }
+            else if (stopCodesManager.isInvalidCode(inputtedStopCode)){
+                toastMessage(getString(R.string.invalidCode), requireContext());
+            }
+            else {
                 stopCodesManager.removeUsedCode(inputtedStopCode);
 
                 //'totalTime' gets the total duration spent at the library in milliseconds

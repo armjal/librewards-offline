@@ -1,22 +1,15 @@
 package com.example.librewards.controllers.codes;
 
-import static com.example.librewards.views.ViewUtils.toastMessage;
-
-import android.content.Context;
-
 import com.example.librewards.DatabaseHelper;
 import com.example.librewards.ListFromFile;
-import com.example.librewards.R;
 
 import java.util.List;
 
 public abstract class CodesManager {
-    private final Context context;
     private final DatabaseHelper myDb;
     private List<String> codes;
 
-    CodesManager(Context context, DatabaseHelper myDb){
-        this.context = context;
+    CodesManager(DatabaseHelper myDb){
         this.myDb = myDb;
     }
 
@@ -24,26 +17,18 @@ public abstract class CodesManager {
 
     public abstract String getCodesFileName();
 
-    public boolean validateCode(String inputtedCode) {
-        if (inputtedCode.isEmpty()) {
-            toastMessage(context.getString(R.string.emptyCode), context);
-            return false;
-        } else if (!codes.contains(inputtedCode)) {
-            toastMessage(context.getString(R.string.invalidCode), context);
-            return false;
-        }
-        return true;
+    public boolean isInvalidCode(String inputtedCode) {
+        return !codes.contains(inputtedCode);
     }
 
-    private List<String> getCodesFromFile(String path){
-        ListFromFile listFromFile = new ListFromFile(context);
+    private List<String> getCodesFromFile(ListFromFile listFromFile, String path){
         return listFromFile.readLine(path);
     }
 
-    public void refreshCodes() {
-        List<String> currStartCodes = myDb.getCurrentCodes(getCodesTableName());
-        List<String> originalStartCodes = getCodesFromFile(getCodesFileName());
-        codes = myDb.checkForUpdates(currStartCodes, originalStartCodes, getCodesTableName());
+    public void refreshCodes(ListFromFile listFromFile) {
+        List<String> currentCodes = myDb.getCurrentCodes(getCodesTableName());
+        List<String> originalCodes = getCodesFromFile(listFromFile, getCodesFileName());
+        codes = myDb.checkForUpdates(currentCodes, originalCodes, getCodesTableName());
     }
 
     public void removeUsedCode(String inputtedCode) {

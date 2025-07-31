@@ -1,18 +1,18 @@
 package com.example.librewards.controllers.codes;
 
-import android.content.Context;
+import static com.example.librewards.DbConstants.STOP_CODES_FILE_NAME;
+import static com.example.librewards.DbConstants.STOP_CODES_TABLE_NAME;
 
 import com.example.librewards.DatabaseHelper;
-import com.example.librewards.R;
 
 public class StopCodesManager extends CodesManager {
     private final String codesTableName;
     private final String codesFileName;
 
-    public StopCodesManager(Context context, DatabaseHelper myDb) {
-        super(context, myDb);
-        this.codesTableName = context.getString(R.string.stop_codes_table);
-        this.codesFileName = context.getString(R.string.stopcodes_file_name);
+    public StopCodesManager(DatabaseHelper myDb) {
+        super(myDb);
+        this.codesTableName = STOP_CODES_TABLE_NAME;
+        this.codesFileName = STOP_CODES_FILE_NAME;
     }
 
     @Override

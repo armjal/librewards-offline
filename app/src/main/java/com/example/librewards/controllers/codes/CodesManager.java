@@ -1,7 +1,6 @@
 package com.example.librewards.controllers.codes;
 
 import com.example.librewards.DatabaseHelper;
-import com.example.librewards.ListFromFile;
 
 import java.util.List;
 
@@ -15,20 +14,15 @@ public abstract class CodesManager {
 
     public abstract String getCodesTableName();
 
-    public abstract String getCodesFileName();
+    public abstract List<String> getOriginalCodes();
 
     public boolean notInCodesList(String inputtedCode) {
         return !codes.contains(inputtedCode);
     }
 
-    private List<String> getCodesFromFile(ListFromFile listFromFile, String path){
-        return listFromFile.readLine(path);
-    }
-
-    public void refreshCodes(ListFromFile listFromFile) {
+    public void refreshCodes() {
         List<String> currentCodes = myDb.getCurrentCodes(getCodesTableName());
-        List<String> originalCodes = getCodesFromFile(listFromFile, getCodesFileName());
-        codes = myDb.checkForUpdates(currentCodes, originalCodes, getCodesTableName());
+        codes = myDb.checkForUpdates(currentCodes, getOriginalCodes(), getCodesTableName());
     }
 
     public void removeUsedCode(String inputtedCode) {

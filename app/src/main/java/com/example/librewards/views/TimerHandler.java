@@ -7,10 +7,11 @@ import com.example.librewards.controllers.codes.StartCodesManager;
 import com.example.librewards.controllers.codes.StopCodesManager;
 
 public class TimerHandler {
-    StartCodesManager startCodesManager;
-    StopCodesManager stopCodesManager;
+    private final StartCodesManager startCodesManager;
+    private final StopCodesManager stopCodesManager;
     private final TimerView timerView;
     private long totalDuration = 0;
+    private int pointsEarned = 0;
 
     public TimerHandler(TimerView timerView, StartCodesManager startCodesManager, StopCodesManager stopCodesManager) {
         this.startCodesManager = startCodesManager;
@@ -37,8 +38,12 @@ public class TimerHandler {
     }
 
     public int saveTotalPointsFromDuration(DatabaseHelper myDb) {
-        int pointsEarned = PointsCalculator.calculateFromDuration(totalDuration);
+        pointsEarned = PointsCalculator.calculateFromDuration(totalDuration);
         myDb.addPoints(pointsEarned);
+        return myDb.getPoints();
+    }
+
+    public int getPointsEarned(){
         return pointsEarned;
     }
 }

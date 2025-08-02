@@ -1,11 +1,5 @@
 package com.example.librewards.views;
 
-import static com.example.librewards.views.ViewUtils.toastMessage;
-import static java.util.Objects.requireNonNull;
-
-import android.app.Dialog;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
@@ -14,13 +8,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
 import com.example.librewards.DatabaseHelper;
-import com.example.librewards.ListFromFile;
 import com.example.librewards.R;
 import com.example.librewards.controllers.codes.CodesManager;
 import com.example.librewards.controllers.codes.StartCodesManager;
@@ -30,8 +22,6 @@ import com.example.librewards.models.UserChangeNotifier;
 
 public class TimerFragment extends FragmentExtended implements UserChangeListener, TimerView {
     private static final String TITLE = "Timer";
-
-    private String textToEdit;
     private TextView points;
     private TextView name;
     private Button startButton;
@@ -39,6 +29,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     private EditText timerCodeText;
     private Chronometer timer;
     private DatabaseHelper myDb;
+    private ViewUtils viewUtils;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,6 +50,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         UserChangeNotifier.addListener(this);
         myDb = new DatabaseHelper(requireContext());
+        viewUtils = new ViewUtils(requireContext());
 
         String wholeName = getString(R.string.Hey) + " " + myDb.getName();
         name.setText(wholeName);
@@ -68,8 +60,8 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         StopCodesManager stopCodesManager = new StopCodesManager(myDb);
         TimerHandler timerHandler = new TimerHandler(this, startCodesManager, stopCodesManager);
 
-        startCodesManager.refreshCodes(new ListFromFile(requireContext()));
-        stopCodesManager.refreshCodes(new ListFromFile(requireContext()));
+        startCodesManager.refreshCodes();
+        stopCodesManager.refreshCodes();
 
         startButton.setOnClickListener(v2 -> {
             String inputtedStartCode = timerCodeText.getText().toString();
@@ -82,20 +74,19 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
             String inputtedStopCode = timerCodeText.getText().toString();
             if (isValidCode(stopCodesManager, inputtedStopCode)) {
                 long totalDuration = timerHandler.stop(inputtedStopCode);
-                int pointsEarned = timerHandler.saveTotalPointsFromDuration(myDb);
-                points.setText(String.valueOf(myDb.getPoints()));
-                announceAccumulatedPoints(pointsEarned, totalDuration);
-                UserChangeNotifier.notifyPointsChanged(pointsEarned);
+                int totalPoints = timerHandler.saveTotalPointsFromDuration(myDb);
+                announceAccumulatedPoints(timerHandler.getPointsEarned(), totalDuration, totalPoints);
+                UserChangeNotifier.notifyPointsChanged(totalPoints);
             }
         });
     }
 
     private boolean isValidCode(CodesManager codesManager, String inputtedCode) {
         if (inputtedCode.isEmpty()) {
-            toastMessage(getString(R.string.emptyCode), requireContext());
+            viewUtils.toastMessage(getString(R.string.emptyCode));
             return false;
         } else if (codesManager.notInCodesList(inputtedCode)) {
-            toastMessage(getString(R.string.invalidCode), requireContext());
+            viewUtils.toastMessage(getString(R.string.invalidCode));
             return false;
         }
         return true;
@@ -124,7 +115,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         timer.setBase(SystemClock.elapsedRealtime());
         timer.stop();
         enableStartButton();
-        showPopup("No stop code was entered for 24 hours. The timer has been reset");
+        viewUtils.showPopup("No stop code was entered for 24 hours. The timer has been reset");
     }
 
     @Override
@@ -153,38 +144,20 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         points.setText(String.valueOf(newPoints));
     }
 
-    private void announceAccumulatedPoints(int pointsEarned, long totalTimeSpentAtLibrary) {
+    private void announceAccumulatedPoints(int pointsEarned, long totalTimeSpentAtLibrary, int totalPoints) {
         int timeSpentMinutes = ((int) totalTimeSpentAtLibrary / 1000) / 60;
+        String popUpMessage;
+
         if (timeSpentMinutes == 1) {
-            showPopup("Well done, you spent " + timeSpentMinutes + " minute at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints());
+            popUpMessage = String.format(getString(R.string.congratsMessage), timeSpentMinutes, "minute", pointsEarned, totalPoints);
 
         } else if (timeSpentMinutes > 1) {
-            showPopup("Well done, you spent " + timeSpentMinutes + " timeSpentMinutes at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints());
+            popUpMessage = String.format(getString(R.string.congratsMessage), timeSpentMinutes, "minutes", pointsEarned, totalPoints);
 
         } else {
-            showPopup("Unfortunately you have not spent the minimum required time at the library to receive points!");
+            popUpMessage = getString(R.string.unfortunatelyMessage);
         }
-    }
-
-    public void showPopup(String text) {
-        Dialog popup = new Dialog(requireActivity());
-        requireNonNull(popup.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        popup.setContentView(R.layout.popup_layout);
-        ImageView closeBtn = popup.findViewById(R.id.closeBtn);
-        TextView popupText = popup.findViewById(R.id.popupText);
-        setTextToEdit(text);
-        popupText.setText(getTextToEdit());
-        closeBtn.setOnClickListener(v -> popup.dismiss());
-        popup.show();
-
-    }
-
-    public void setTextToEdit(String textToEdit) {
-        this.textToEdit = textToEdit;
-    }
-
-    public String getTextToEdit() {
-        return textToEdit;
+        viewUtils.showPopup(popUpMessage);
     }
 
     @Override

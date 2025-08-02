@@ -76,7 +76,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
             if (isValidCode(stopCodesManager, inputtedStopCode)) {
                 long totalDuration = timerHandler.stop(inputtedStopCode);
                 int totalPoints = timerHandler.saveTotalPointsFromDuration(myDb);
-                announceAccumulatedPoints(timerHandler.getPointsEarned(), totalDuration);
+                announceAccumulatedPoints(timerHandler.getPointsEarned(), totalDuration, totalPoints);
                 UserChangeNotifier.notifyPointsChanged(totalPoints);
             }
         });
@@ -150,13 +150,13 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         String popUpMessage;
 
         if (timeSpentMinutes == 1) {
-            popUpMessage = "Well done, you spent " + timeSpentMinutes + " minute at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints();
-
-        } else if (timeSpentMinutes > 1) {
             popUpMessage = String.format(getString(R.string.congratsMessage), timeSpentMinutes, "minute", pointsEarned, totalPoints);
 
+        } else if (timeSpentMinutes > 1) {
+            popUpMessage = String.format(getString(R.string.congratsMessage), timeSpentMinutes, "minutes", pointsEarned, totalPoints);
+
         } else {
-            popUpMessage = "Unfortunately you have not spent the minimum required time at the library to receive points!";
+            popUpMessage = getString(R.string.unfortunatelyMessage);
         }
         viewUtils.showPopup(popUpMessage);
     }

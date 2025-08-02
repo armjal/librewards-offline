@@ -39,5 +39,6 @@
     <string name="stopcodes_file_name">stopcodes.txt</string>
     <string name="rewardcodes_file_name">rewardcodes.txt</string>
     <string name="emptyCode">No code was entered, please try again</string>
-
+    <string name="congratsMessage">Well done, you spent %1$d %2$s at the library and have earned %3$d points!\nYour new points balance is: %4$d</string>
+    <string name="unfortunatelyMessage">"Unfortunately you have not spent the minimum required time at the library to receive points!"</string>
 </resources>

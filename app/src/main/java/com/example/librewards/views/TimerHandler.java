@@ -39,6 +39,6 @@ public class TimerHandler {
     public int saveTotalPointsFromDuration(DatabaseHelper myDb) {
         int pointsEarned = PointsCalculator.calculateFromDuration(totalDuration);
         myDb.addPoints(pointsEarned);
-        return pointsEarned;
+        return myDb.getPoints();
     }
 }

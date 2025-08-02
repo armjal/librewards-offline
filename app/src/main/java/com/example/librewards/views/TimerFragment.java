@@ -83,7 +83,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
             if (isValidCode(stopCodesManager, inputtedStopCode)) {
                 long totalDuration = timerHandler.stop(inputtedStopCode);
                 int pointsEarned = timerHandler.saveTotalPointsFromDuration(myDb);
-                points.setText(String.valueOf(myDb.getPoints()));
+                points.setText(String.valueOf(pointsEarned));
                 announceAccumulatedPoints(pointsEarned, totalDuration);
                 UserChangeNotifier.notifyPointsChanged(pointsEarned);
             }

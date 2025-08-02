@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">LibRewards</string>
-    <string name="start"> Start </string>
-    <string name="stop"> Stop </string>
+    <string name="start"> start </string>
+    <string name="stop"> stop </string>
     <string name="timer"> Timer </string>
     <string name="rewards"> Rewards </string>
     <string name="helpButton">help button</string>
@@ -38,5 +38,6 @@
     <string name="startcodes_file_name">startcodes.txt</string>
     <string name="stopcodes_file_name">stopcodes.txt</string>
     <string name="rewardcodes_file_name">rewardcodes.txt</string>
+    <string name="emptyCode">No code was entered, please try again</string>
 
 </resources>

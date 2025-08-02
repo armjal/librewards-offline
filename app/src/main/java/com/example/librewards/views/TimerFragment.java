@@ -75,9 +75,9 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
             String inputtedStopCode = timerCodeText.getText().toString();
             if (isValidCode(stopCodesManager, inputtedStopCode)) {
                 long totalDuration = timerHandler.stop(inputtedStopCode);
-                int pointsEarned = timerHandler.saveTotalPointsFromDuration(myDb);
-                announceAccumulatedPoints(pointsEarned, totalDuration);
-                UserChangeNotifier.notifyPointsChanged(pointsEarned);
+                int totalPoints = timerHandler.saveTotalPointsFromDuration(myDb);
+                announceAccumulatedPoints(timerHandler.getPointsEarned(), totalDuration);
+                UserChangeNotifier.notifyPointsChanged(totalPoints);
             }
         });
     }
@@ -145,17 +145,20 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         points.setText(String.valueOf(newPoints));
     }
 
-    private void announceAccumulatedPoints(int pointsEarned, long totalTimeSpentAtLibrary) {
+    private void announceAccumulatedPoints(int pointsEarned, long totalTimeSpentAtLibrary, int totalPoints) {
         int timeSpentMinutes = ((int) totalTimeSpentAtLibrary / 1000) / 60;
+        String popUpMessage;
+
         if (timeSpentMinutes == 1) {
-            viewUtils.showPopup("Well done, you spent " + timeSpentMinutes + " minute at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints());
+            popUpMessage = "Well done, you spent " + timeSpentMinutes + " minute at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints();
 
         } else if (timeSpentMinutes > 1) {
-            viewUtils.showPopup("Well done, you spent " + timeSpentMinutes + " timeSpentMinutes at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints());
+            popUpMessage = String.format(getString(R.string.congratsMessage), timeSpentMinutes, "minute", pointsEarned, totalPoints);
 
         } else {
-            viewUtils.showPopup("Unfortunately you have not spent the minimum required time at the library to receive points!");
+            popUpMessage = "Unfortunately you have not spent the minimum required time at the library to receive points!";
         }
+        viewUtils.showPopup(popUpMessage);
     }
 
     @Override

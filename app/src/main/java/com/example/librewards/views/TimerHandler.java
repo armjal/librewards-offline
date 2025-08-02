@@ -7,8 +7,8 @@ import com.example.librewards.controllers.codes.StartCodesManager;
 import com.example.librewards.controllers.codes.StopCodesManager;
 
 public class TimerHandler {
-    StartCodesManager startCodesManager;
-    StopCodesManager stopCodesManager;
+    private final StartCodesManager startCodesManager;
+    private final StopCodesManager stopCodesManager;
     private final TimerView timerView;
     private long totalDuration = 0;
     private int pointsEarned = 0;

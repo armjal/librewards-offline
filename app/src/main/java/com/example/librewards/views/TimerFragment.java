@@ -21,26 +21,24 @@ import androidx.annotation.NonNull;
 
 import com.example.librewards.DatabaseHelper;
 import com.example.librewards.ListFromFile;
-import com.example.librewards.PointsCalculator;
 import com.example.librewards.R;
+import com.example.librewards.controllers.codes.CodesManager;
 import com.example.librewards.controllers.codes.StartCodesManager;
 import com.example.librewards.controllers.codes.StopCodesManager;
 import com.example.librewards.models.UserChangeListener;
 import com.example.librewards.models.UserChangeNotifier;
 
-import java.util.List;
-
-public class TimerFragment extends FragmentExtended implements UserChangeListener {
+public class TimerFragment extends FragmentExtended implements UserChangeListener, TimerView {
     private static final String TITLE = "Timer";
 
     private String textToEdit;
     private TextView points;
     private TextView name;
-    private DatabaseHelper myDb;
     private Button startButton;
     private Button stopButton;
     private EditText timerCodeText;
     private Chronometer timer;
+    private DatabaseHelper myDb;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,9 +56,9 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState){
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         UserChangeNotifier.addListener(this);
-        myDb = new DatabaseHelper(requireActivity().getApplicationContext());
+        myDb = new DatabaseHelper(requireContext());
 
         String wholeName = getString(R.string.Hey) + " " + myDb.getName();
         name.setText(wholeName);
@@ -68,76 +66,80 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
 
         StartCodesManager startCodesManager = new StartCodesManager(myDb);
         StopCodesManager stopCodesManager = new StopCodesManager(myDb);
+        TimerHandler timerHandler = new TimerHandler(this, startCodesManager, stopCodesManager);
 
         startCodesManager.refreshCodes(new ListFromFile(requireContext()));
         stopCodesManager.refreshCodes(new ListFromFile(requireContext()));
 
         startButton.setOnClickListener(v2 -> {
             String inputtedStartCode = timerCodeText.getText().toString();
-            if (inputtedStartCode.isEmpty()) {
-                toastMessage(getString(R.string.emptyCode), requireContext());
+            if (isValidCode(startCodesManager, inputtedStartCode)) {
+                timerHandler.start(inputtedStartCode);
             }
-            else if (startCodesManager.isInvalidCode(inputtedStartCode)){
-                toastMessage(getString(R.string.invalidCode), requireContext());
-            }
-            else {
-                startCodesManager.removeUsedCode(inputtedStartCode);
-                changeTimerState(getString(R.string.start));
-                timer.setOnChronometerTickListener(chronometer -> enforceTimerDayLimit());
+        });
 
         stopButton.setOnClickListener(v1 -> {
             String inputtedStopCode = timerCodeText.getText().toString();
-            if (inputtedStopCode.isEmpty()) {
-                toastMessage(getString(R.string.emptyCode), requireContext());
-            }
-            else if (stopCodesManager.isInvalidCode(inputtedStopCode)){
-                toastMessage(getString(R.string.invalidCode), requireContext());
-            }
-            else {
-                stopCodesManager.removeUsedCode(inputtedStopCode);
-
-                //'totalTime' gets the total duration spent at the library in milliseconds
-                long totalTime = SystemClock.elapsedRealtime() - timer.getBase();
-                int pointsEarned = PointsCalculator.calculateFromDuration(totalTime);
-                announceAccumulatedPoints(pointsEarned, totalTime);
-                myDb.addPoints(pointsEarned);
+            if (isValidCode(stopCodesManager, inputtedStopCode)) {
+                long totalDuration = timerHandler.stop(inputtedStopCode);
+                int pointsEarned = timerHandler.saveTotalPointsFromDuration(myDb);
                 points.setText(String.valueOf(myDb.getPoints()));
-                changeTimerState(getString(R.string.stop));
-                //Listener to communicate with Rewards Fragment and give the points to display in there
-                UserChangeNotifier.notifyPointsChanged(myDb.getPoints());
-            }
-        });
+                announceAccumulatedPoints(pointsEarned, totalDuration);
+                UserChangeNotifier.notifyPointsChanged(pointsEarned);
             }
         });
     }
-    
-    private void changeTimerState(String desiredState){
+
+    private boolean isValidCode(CodesManager codesManager, String inputtedCode) {
+        if (inputtedCode.isEmpty()) {
+            toastMessage(getString(R.string.emptyCode), requireContext());
+            return false;
+        } else if (codesManager.notInCodesList(inputtedCode)) {
+            toastMessage(getString(R.string.invalidCode), requireContext());
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void changeTimerToDesiredState(String desiredState) {
         String userCodeRequest = "Please enter the %s code";
         timer.setBase(SystemClock.elapsedRealtime());
         timerCodeText.setText(null);
 
-        if(desiredState.equals(getString(R.string.stop))){
+        if (desiredState.equals(getString(R.string.stop))) {
             timer.stop();
-            stopButton.setVisibility(View.INVISIBLE);
-            startButton.setVisibility(View.VISIBLE);
+            enableStartButton();
             timerCodeText.setHint(String.format(userCodeRequest, getString(R.string.start)));
 
-        } else if(desiredState.equals(getString(R.string.start))){
+        } else if (desiredState.equals(getString(R.string.start))) {
             timer.start();
-            startButton.setVisibility(View.INVISIBLE);
-            stopButton.setVisibility(View.VISIBLE);
+            enableStopButton();
             timerCodeText.setHint(String.format(userCodeRequest, getString(R.string.stop)));
         }
     }
 
-    private void enforceTimerDayLimit() {
-        if ((SystemClock.elapsedRealtime() - timer.getBase()) >= 500000) {
-            timer.setBase(SystemClock.elapsedRealtime());
-            timer.stop();
-            stopButton.setVisibility(View.INVISIBLE);
-            startButton.setVisibility(View.VISIBLE);
-            showPopup("No stop code was entered for 24 hours. The timer has been reset");
-        }
+    @Override
+    public void enforceTimerDayLimit() {
+        timer.setBase(SystemClock.elapsedRealtime());
+        timer.stop();
+        enableStartButton();
+        showPopup("No stop code was entered for 24 hours. The timer has been reset");
+    }
+
+    @Override
+    public Chronometer getTimer() {
+        return timer;
+    }
+
+    private void enableStartButton() {
+        stopButton.setVisibility(View.INVISIBLE);
+        startButton.setVisibility(View.VISIBLE);
+    }
+
+    private void enableStopButton() {
+        startButton.setVisibility(View.INVISIBLE);
+        stopButton.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -150,24 +152,21 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     public void onPointsChanged(int newPoints) {
         points.setText(String.valueOf(newPoints));
     }
-    
 
     private void announceAccumulatedPoints(int pointsEarned, long totalTimeSpentAtLibrary) {
-        int timeSpentMinutes = ((int) totalTimeSpentAtLibrary / 1000) /60;
-        if(timeSpentMinutes == 1){
-            showPopup("Well done, you spent "+ timeSpentMinutes +" minute at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints());
+        int timeSpentMinutes = ((int) totalTimeSpentAtLibrary / 1000) / 60;
+        if (timeSpentMinutes == 1) {
+            showPopup("Well done, you spent " + timeSpentMinutes + " minute at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints());
 
-        }
-        else if(timeSpentMinutes > 1){
-            showPopup("Well done, you spent "+ timeSpentMinutes +" timeSpentMinutes at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints());
+        } else if (timeSpentMinutes > 1) {
+            showPopup("Well done, you spent " + timeSpentMinutes + " timeSpentMinutes at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints());
 
-        }
-        else{
+        } else {
             showPopup("Unfortunately you have not spent the minimum required time at the library to receive points!");
-
         }
     }
-    public void showPopup(String text){
+
+    public void showPopup(String text) {
         Dialog popup = new Dialog(requireActivity());
         requireNonNull(popup.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popup.setContentView(R.layout.popup_layout);

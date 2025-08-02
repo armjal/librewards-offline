@@ -17,7 +17,7 @@ public abstract class CodesManager {
 
     public abstract String getCodesFileName();
 
-    public boolean isInvalidCode(String inputtedCode) {
+    public boolean notInCodesList(String inputtedCode) {
         return !codes.contains(inputtedCode);
     }
 

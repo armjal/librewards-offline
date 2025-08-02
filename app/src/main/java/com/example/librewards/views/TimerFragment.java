@@ -1,11 +1,5 @@
 package com.example.librewards.views;
 
-import static com.example.librewards.views.ViewUtils.toastMessage;
-import static java.util.Objects.requireNonNull;
-
-import android.app.Dialog;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
@@ -14,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -30,8 +23,6 @@ import com.example.librewards.models.UserChangeNotifier;
 
 public class TimerFragment extends FragmentExtended implements UserChangeListener, TimerView {
     private static final String TITLE = "Timer";
-
-    private String textToEdit;
     private TextView points;
     private TextView name;
     private Button startButton;
@@ -39,6 +30,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     private EditText timerCodeText;
     private Chronometer timer;
     private DatabaseHelper myDb;
+    private ViewUtils viewUtils;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,6 +51,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         UserChangeNotifier.addListener(this);
         myDb = new DatabaseHelper(requireContext());
+        viewUtils = new ViewUtils(requireContext());
 
         String wholeName = getString(R.string.Hey) + " " + myDb.getName();
         name.setText(wholeName);
@@ -91,10 +84,10 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
 
     private boolean isValidCode(CodesManager codesManager, String inputtedCode) {
         if (inputtedCode.isEmpty()) {
-            toastMessage(getString(R.string.emptyCode), requireContext());
+            viewUtils.toastMessage(getString(R.string.emptyCode));
             return false;
         } else if (codesManager.notInCodesList(inputtedCode)) {
-            toastMessage(getString(R.string.invalidCode), requireContext());
+            viewUtils.toastMessage(getString(R.string.invalidCode));
             return false;
         }
         return true;
@@ -123,7 +116,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         timer.setBase(SystemClock.elapsedRealtime());
         timer.stop();
         enableStartButton();
-        showPopup("No stop code was entered for 24 hours. The timer has been reset");
+        viewUtils.showPopup("No stop code was entered for 24 hours. The timer has been reset");
     }
 
     @Override
@@ -155,27 +148,14 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     private void announceAccumulatedPoints(int pointsEarned, long totalTimeSpentAtLibrary) {
         int timeSpentMinutes = ((int) totalTimeSpentAtLibrary / 1000) / 60;
         if (timeSpentMinutes == 1) {
-            showPopup("Well done, you spent " + timeSpentMinutes + " minute at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints());
+            viewUtils.showPopup("Well done, you spent " + timeSpentMinutes + " minute at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints());
 
         } else if (timeSpentMinutes > 1) {
-            showPopup("Well done, you spent " + timeSpentMinutes + " timeSpentMinutes at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints());
+            viewUtils.showPopup("Well done, you spent " + timeSpentMinutes + " timeSpentMinutes at the library and have earned " + pointsEarned + " points!\nYour new points balance is: " + myDb.getPoints());
 
         } else {
-            showPopup("Unfortunately you have not spent the minimum required time at the library to receive points!");
+            viewUtils.showPopup("Unfortunately you have not spent the minimum required time at the library to receive points!");
         }
-    }
-
-    public void showPopup(String text) {
-        Dialog popup = new Dialog(requireActivity());
-        requireNonNull(popup.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        popup.setContentView(R.layout.popup_layout);
-        ImageView closeBtn = popup.findViewById(R.id.closeBtn);
-        TextView popupText = popup.findViewById(R.id.popupText);
-
-        popupText.setText(text);
-        closeBtn.setOnClickListener(v -> popup.dismiss());
-        popup.show();
-
     }
 
     @Override

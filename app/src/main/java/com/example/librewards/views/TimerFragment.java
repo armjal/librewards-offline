@@ -172,19 +172,11 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         popup.setContentView(R.layout.popup_layout);
         ImageView closeBtn = popup.findViewById(R.id.closeBtn);
         TextView popupText = popup.findViewById(R.id.popupText);
-        setTextToEdit(text);
-        popupText.setText(getTextToEdit());
+
+        popupText.setText(text);
         closeBtn.setOnClickListener(v -> popup.dismiss());
         popup.show();
 
-    }
-
-    public void setTextToEdit(String textToEdit) {
-        this.textToEdit = textToEdit;
-    }
-
-    public String getTextToEdit() {
-        return textToEdit;
     }
 
     @Override

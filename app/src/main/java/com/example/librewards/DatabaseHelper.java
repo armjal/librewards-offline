@@ -52,18 +52,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    //Method that adds the name that the user gives to the database.
     public void addName(String yourName) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String sql = ("INSERT INTO " + NAME_TABLE_NAME + '(' + "name" + ')' + "VALUES (?)");
-        db.beginTransaction();
-        SQLiteStatement stmt = db.compileStatement(sql);
-        stmt.bindString(1, yourName);
-        stmt.execute();
-        stmt.clearBindings();
-        db.setTransactionSuccessful();
-        db.endTransaction();
-
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("name", yourName);
+        db.insert(NAME_TABLE_NAME, null, contentValues);
     }
 
     //Method that returns the name that a user gives using a cursor

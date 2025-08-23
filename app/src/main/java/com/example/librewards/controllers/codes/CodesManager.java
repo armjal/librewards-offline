@@ -21,8 +21,7 @@ public abstract class CodesManager {
     }
 
     public void refreshCodes() {
-        List<String> currentCodes = myDb.getCurrentCodes(getCodesTableName());
-        codes = myDb.checkForUpdates(currentCodes, getOriginalCodes(), getCodesTableName());
+        codes = myDb.checkForUpdates(getOriginalCodes(), getCodesTableName());
     }
 
     public void removeUsedCode(String inputtedCode) {

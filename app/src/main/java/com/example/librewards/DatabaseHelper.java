@@ -91,17 +91,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return output;
     }
 
-    private Cursor select(String tableName, String column, String limit) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        return db.query(tableName, new String[]{column}, null, null, null, null, null, limit);
-    }
-
-    private Cursor select(String tableName, String column, String whereClause, String[] whereArgs) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        return db.query(tableName, new String[]{column}, whereClause, whereArgs, null, null, null, "1");
-    }
-
-
     //Method that updates the codes in the database by taking in a table name and a list of codes that has been read from a file
     public void updateCodes(String table, List<String> newCodesList) {
         int id = 1;
@@ -178,24 +167,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public List<String> checkForUpdates(List<String> currCodes, List<String> originalCodes, String table) {
+    public List<String> checkForUpdates(List<String> originalCodes, String table) {
+        List<String> currentCodes = getCurrentCodes(table);
         List<String> tempCodes = new ArrayList<>();
         //Loop to check if the elements in the 'currCodes' list exactly matches those in the text file. The ones that
         //match get added into a temporary list
-        for (int i = 0; i < currCodes.size(); i++) {
+        for (int i = 0; i < currentCodes.size(); i++) {
             for (int j = 0; j < originalCodes.size(); j++) {
-                if (originalCodes.get(j).equals(currCodes.get(i))) {
-                    tempCodes.add(currCodes.get(i));
+                if (originalCodes.get(j).equals(currentCodes.get(i))) {
+                    tempCodes.add(currentCodes.get(i));
                 }
             }
         }
         //Temporary list is compared with the current codes list. If they are not an
         //exact match, the codes update using the method in the DatabaseHelper class
-        if (!(currCodes.equals(tempCodes))) {
-            currCodes = originalCodes;
+        if (!(currentCodes.equals(tempCodes))) {
+            currentCodes = originalCodes;
             this.updateCodes(table, originalCodes);
         }
-        return currCodes;
+        return currentCodes;
     }
 
     public List<String> getCurrentCodes(String table) {
@@ -208,5 +198,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         c.close();
         return codes;
+    }
+
+    private Cursor select(String tableName, String column, String limit) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.query(tableName, new String[]{column}, null, null, null, null, null, limit);
+    }
+
+    private Cursor select(String tableName, String column, String whereClause, String[] whereArgs) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.query(tableName, new String[]{column}, whereClause, whereArgs, null, null, null, "1");
     }
 }

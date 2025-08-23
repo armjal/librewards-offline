@@ -66,19 +66,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    //Cursor method that goes through the contents of a given column and table and returns values within them
-    public Cursor getAllData(String col, String table) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        return db.rawQuery("SELECT " + col + " FROM " + table, null);
-    }
-
     //Method that returns the name that a user gives using a cursor
     public String getName() {
-        SQLiteDatabase db = this.getWritableDatabase();
         String output = "";
-        Cursor c = db.rawQuery("SELECT " + "name" + " FROM " + NAME_TABLE_NAME, null);
+        Cursor c = select(NAME_TABLE_NAME, "name", "1");
         if (c.getCount() > 0 && c.moveToFirst()) {
-            output = c.getString(c.getColumnIndex("name"));
+            output = c.getString(0);
         }
         c.close();
         return output;
@@ -86,31 +79,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //Method that returns points that a user has accumulated using a cursor
     public int getPoints() {
-        SQLiteDatabase db = this.getWritableDatabase();
         int output = 0;
-        Cursor c = db.rawQuery("SELECT " + "points" + " FROM " + POINTS_TABLE_NAME, null);
+        Cursor c = select(POINTS_TABLE_NAME, "points", "1");
         if (c.getCount() > 0 && c.moveToFirst()) {
             output = c.getInt(0);
         }
-
-
         c.close();
         return output;
     }
 
-    //Method that returns the cost of a reward code that a user inputs
     public int getCost(String code) {
-        SQLiteDatabase db = this.getWritableDatabase();
         int output = 0;
-        Cursor c = db.rawQuery("SELECT " + "cost" + " FROM " + REWARD_CODES_TABLE_NAME + " WHERE codes = " + "'" + code + "'", null);
+        Cursor c = select(REWARD_CODES_TABLE_NAME, "cost", "codes = ?", new String[]{code});
         if (c.getCount() > 0 && c.moveToFirst()) {
-            output = c.getInt(c.getColumnIndex("cost"));
+            output = c.getInt(0);
 
         }
-
         c.close();
         return output;
     }
+
+    private Cursor select(String tableName, String column, String limit) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.query(tableName, new String[]{column}, null, null, null, null, null, limit);
+    }
+
+    private Cursor select(String tableName, String column, String whereClause, String[] whereArgs) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.query(tableName, new String[]{column}, whereClause, whereArgs, null, null, null, "1");
+    }
+
 
     //Method that updates the codes in the database by taking in a table name and a list of codes that has been read from a file
     public void updateCodes(String table, List<String> newCodesList) {
@@ -220,12 +218,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public List<String> getCurrentCodes(String table) {
         List<String> codes = new ArrayList<>();
-        Cursor c = this.getAllData("codes", table);
+        Cursor c = select(table, "codes", null);
         c.moveToFirst();
         while (!c.isAfterLast()) {
-            codes.add(c.getString(c.getColumnIndex("codes")));
+            codes.add(c.getString(0));
             c.moveToNext();
         }
+        c.close();
         return codes;
     }
 }

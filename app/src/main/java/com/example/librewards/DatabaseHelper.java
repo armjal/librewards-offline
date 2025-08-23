@@ -129,13 +129,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public List<String> refreshRewardCodes() {
         int id = 1;
         SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        for (Map.Entry<String, Integer> entry: rewardCodesAndPoints.entrySet()) {
+        for (Map.Entry<String, Integer> entry : rewardCodesAndPoints.entrySet()) {
+            ContentValues contentValues = new ContentValues();
             contentValues.put("codes", entry.getKey());
             contentValues.put("cost", entry.getValue());
             //Uses the 'id' column to iterate through the list of codes and update each one
             db.update(REWARD_CODES_TABLE_NAME, contentValues, "id = ?", new String[]{String.valueOf(id)});
-            id ++;
+            id++;
         }
         return new ArrayList<>(rewardCodesAndPoints.keySet());
     }
@@ -160,25 +160,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Method that stores the reward codes and their cost
-    public void storeRewards(List<String> rewardList) {
+    public void storeRewards() {
         SQLiteDatabase db = this.getWritableDatabase();
-        //Stores the contents in the two columns specified for the column.
-        String sql = "INSERT INTO " + REWARD_CODES_TABLE_NAME + '(' + "codes,cost" + ')' + "VALUES (?,?)";
-        db.beginTransaction();
-        //j is the integer that gets the cost of each code
-        int j = 1;
-        SQLiteStatement stmt = db.compileStatement(sql);
-        //'i' gets the code in the table. Each value increments by two as each two incremented values belong in the same column
-        for (int i = 0; i < rewardList.size() - 1; i += 2) {
-            //Values are assigned to each row in the table
-            stmt.bindString(1, rewardList.get(i));
-            stmt.bindString(2, rewardList.get(j));
-            stmt.execute();
-            stmt.clearBindings();
-            j += 2;
+        for (Map.Entry<String, Integer> entry : rewardCodesAndPoints.entrySet()) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("codes", entry.getKey());
+            contentValues.put("cost", entry.getValue());
+            db.insert(REWARD_CODES_TABLE_NAME, null, contentValues);
         }
-        db.setTransactionSuccessful();
-        db.endTransaction();
     }
 
     //Method that deletes a given start/stop code from a given table that has been used so the user cannot use again
@@ -206,7 +195,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void addInitialCodes() {
         storeCodes(startCodes, START_CODES_TABLE_NAME);
         storeCodes(stopCodes, STOP_CODES_TABLE_NAME);
-        storeRewards(new ArrayList<>(rewardCodesAndPoints.keySet()));
+        storeRewards();
     }
 
     public List<String> checkForUpdates(List<String> currCodes, List<String> originalCodes, String table) {

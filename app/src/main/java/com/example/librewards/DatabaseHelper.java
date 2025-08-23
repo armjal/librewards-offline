@@ -1,5 +1,15 @@
 package com.example.librewards;
 
+import static com.example.librewards.DbConstants.DATABASE_NAME;
+import static com.example.librewards.DbConstants.NAME_TABLE_NAME;
+import static com.example.librewards.DbConstants.POINTS_TABLE_NAME;
+import static com.example.librewards.DbConstants.REWARD_CODES_TABLE_NAME;
+import static com.example.librewards.DbConstants.START_CODES_TABLE_NAME;
+import static com.example.librewards.DbConstants.STOP_CODES_TABLE_NAME;
+import static com.example.librewards.resources.RewardCodes.rewardCodesAndPoints;
+import static com.example.librewards.resources.TimerCodes.startCodes;
+import static com.example.librewards.resources.TimerCodes.stopCodes;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,85 +19,79 @@ import android.database.sqlite.SQLiteStatement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    public static final String DATABASE_NAME = "codes.db";
-    public static final String TABLE1 = "start_codes_table";
-    public static final String TABLE2 = "stop_codes_table";
-    public static final String TABLE3 = "reward_codes_table";
-    public static final String TABLE4 = "points_table";
-    public static final String TABLE5 = "name_table";
-    public final Context context;
-    private final ListFromFile listFromFile;
-
-    public DatabaseHelper(Context context)  {
+    public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
-        this.context = context;
-        this.listFromFile = new ListFromFile(context);
     }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String table1 = "CREATE TABLE " + TABLE1 + " (id INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT) ";
-        String table2 = "CREATE TABLE " + TABLE2 + " (id INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT) ";
-        String table3 = "CREATE TABLE " + TABLE3 + " (id INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT, cost INTEGER) ";
-        String table4 = "CREATE TABLE " + TABLE4 + " (id INTEGER PRIMARY KEY AUTOINCREMENT,points INTEGER)";
-        String table5 = "CREATE TABLE " + TABLE5 + " (id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT)";
-        db.execSQL(table1);
-        db.execSQL(table2);
-        db.execSQL(table3);
-        db.execSQL(table4);
-        db.execSQL(table5);
-        db.execSQL("INSERT INTO " + TABLE4 + '(' + "points" + ')' + "VALUES (?)");
+        String create_start_codes_query = "CREATE TABLE " + START_CODES_TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT) ";
+        String create_stop_codes_query = "CREATE TABLE " + STOP_CODES_TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT) ";
+        String create_reward_codes_query = "CREATE TABLE " + REWARD_CODES_TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT, cost INTEGER) ";
+        String create_points_query = "CREATE TABLE " + POINTS_TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT,points INTEGER)";
+        String create_name_query = "CREATE TABLE " + NAME_TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT)";
+        db.execSQL(create_start_codes_query);
+        db.execSQL(create_stop_codes_query);
+        db.execSQL(create_reward_codes_query);
+        db.execSQL(create_points_query);
+        db.execSQL(create_name_query);
+        db.execSQL("INSERT INTO " + POINTS_TABLE_NAME + '(' + "points" + ')' + "VALUES (?)");
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS "+ TABLE1);
-        db.execSQL("DROP TABLE IF EXISTS "+ TABLE2);
-        db.execSQL("DROP TABLE IF EXISTS "+ TABLE3);
-        db.execSQL("DROP TABLE IF EXISTS "+ TABLE4);
+        db.execSQL("DROP TABLE IF EXISTS " + START_CODES_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + STOP_CODES_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + REWARD_CODES_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + POINTS_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + NAME_TABLE_NAME);
         onCreate(db);
     }
+
     //Method that adds the name that the user gives to the database.
-    public void addName(String yourName){
+    public void addName(String yourName) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String sql = ("INSERT INTO " + TABLE5 + '(' + "name" + ')' + "VALUES (?)");
+        String sql = ("INSERT INTO " + NAME_TABLE_NAME + '(' + "name" + ')' + "VALUES (?)");
         db.beginTransaction();
         SQLiteStatement stmt = db.compileStatement(sql);
-        stmt.bindString(1,yourName);
+        stmt.bindString(1, yourName);
         stmt.execute();
         stmt.clearBindings();
         db.setTransactionSuccessful();
         db.endTransaction();
 
     }
+
     //Cursor method that goes through the contents of a given column and table and returns values within them
-    public Cursor getAllData(String col, String table){
+    public Cursor getAllData(String col, String table) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.rawQuery("SELECT " +  col  + " FROM " +  table, null);
+        return db.rawQuery("SELECT " + col + " FROM " + table, null);
     }
 
     //Method that returns the name that a user gives using a cursor
-    public String getName(){
+    public String getName() {
         SQLiteDatabase db = this.getWritableDatabase();
         String output = "";
-        Cursor c = db.rawQuery("SELECT " + "name" + " FROM " + TABLE5, null);
-        if(c.getCount() > 0 && c.moveToFirst()) {
-                output = c.getString(c.getColumnIndex("name"));
+        Cursor c = db.rawQuery("SELECT " + "name" + " FROM " + NAME_TABLE_NAME, null);
+        if (c.getCount() > 0 && c.moveToFirst()) {
+            output = c.getString(c.getColumnIndex("name"));
         }
         c.close();
         return output;
     }
 
     //Method that returns points that a user has accumulated using a cursor
-    public int getPoints(){
+    public int getPoints() {
         SQLiteDatabase db = this.getWritableDatabase();
         int output = 0;
-        Cursor c = db.rawQuery("SELECT " + "points" + " FROM " + TABLE4, null);
-        if(c.getCount() > 0 && c.moveToFirst()){
-                output = c.getInt(0);
-            }
+        Cursor c = db.rawQuery("SELECT " + "points" + " FROM " + POINTS_TABLE_NAME, null);
+        if (c.getCount() > 0 && c.moveToFirst()) {
+            output = c.getInt(0);
+        }
 
 
         c.close();
@@ -98,11 +102,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public int getCost(String code) {
         SQLiteDatabase db = this.getWritableDatabase();
         int output = 0;
-        Cursor c = db.rawQuery("SELECT " + "cost" + " FROM " + TABLE3 + " WHERE codes = " + "'" + code + "'", null);
+        Cursor c = db.rawQuery("SELECT " + "cost" + " FROM " + REWARD_CODES_TABLE_NAME + " WHERE codes = " + "'" + code + "'", null);
         if (c.getCount() > 0 && c.moveToFirst()) {
-                output = c.getInt(c.getColumnIndex("cost"));
+            output = c.getInt(c.getColumnIndex("cost"));
 
-            }
+        }
 
         c.close();
         return output;
@@ -121,79 +125,77 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             id++;
         }
     }
-    //Method that updates the reward codes if the text file is different to the one stored in the database
+
     public List<String> refreshRewardCodes() {
-        List<String> newCodesList = listFromFile.readRewardsLine(context.getString(R.string.rewardcodes_file_name));
         int id = 1;
-        //'j' is the integer that gets the cost of each code
-        int j = 1;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        //'i' gets the code in the table. Each value increments by two as each two incremented values belong in the same column
-        for (int i = 0; i < newCodesList.size()-1; i+=2) {
-            contentValues.put("codes", newCodesList.get(i));
-            contentValues.put("cost", newCodesList.get(j));
+        for (Map.Entry<String, Integer> entry: rewardCodesAndPoints.entrySet()) {
+            contentValues.put("codes", entry.getKey());
+            contentValues.put("cost", entry.getValue());
             //Uses the 'id' column to iterate through the list of codes and update each one
-            db.update(TABLE3, contentValues, "id = ?", new String[]{String.valueOf(id)});
-            //Iterates through codes by incrementing each id. Each id is assigned to a code and has always got a value
-            id++;
-            j+=2;
+            db.update(REWARD_CODES_TABLE_NAME, contentValues, "id = ?", new String[]{String.valueOf(id)});
+            id ++;
         }
-        return newCodesList;
+        return new ArrayList<>(rewardCodesAndPoints.keySet());
     }
+
     //Method that adds points to the current balance of points
-    public void addPoints(int points){
+    public void addPoints(int points) {
         int id = 1;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         //Uses the current balance and updates the balance with the sum of he points being passed in
-        contentValues.put("points", getPoints()+ points);
-        db.update(TABLE4, contentValues, "id = ?", new String[]{String.valueOf(id)});
+        contentValues.put("points", getPoints() + points);
+        db.update(POINTS_TABLE_NAME, contentValues, "id = ?", new String[]{String.valueOf(id)});
     }
+
     //Method that minuses points to the current balance of points
-    public void minusPoints(int points){
+    public void minusPoints(int points) {
         int id = 1;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("points", getPoints() - points);
-        db.update(TABLE4, contentValues, "id = ?", new String[]{String.valueOf(id)});
+        db.update(POINTS_TABLE_NAME, contentValues, "id = ?", new String[]{String.valueOf(id)});
     }
+
     //Method that stores the reward codes and their cost
-    public void storeRewards(List<String> rewardList){
+    public void storeRewards(List<String> rewardList) {
         SQLiteDatabase db = this.getWritableDatabase();
         //Stores the contents in the two columns specified for the column.
-        String sql = "INSERT INTO " + TABLE3 + '('+ "codes,cost" + ')' +  "VALUES (?,?)";
+        String sql = "INSERT INTO " + REWARD_CODES_TABLE_NAME + '(' + "codes,cost" + ')' + "VALUES (?,?)";
         db.beginTransaction();
         //j is the integer that gets the cost of each code
         int j = 1;
         SQLiteStatement stmt = db.compileStatement(sql);
         //'i' gets the code in the table. Each value increments by two as each two incremented values belong in the same column
-        for(int i=0 ; i< rewardList.size()-1; i+=2) {
+        for (int i = 0; i < rewardList.size() - 1; i += 2) {
             //Values are assigned to each row in the table
-                stmt.bindString(1, rewardList.get(i));
-                stmt.bindString(2, rewardList.get(j));
-                stmt.execute();
-                stmt.clearBindings();
-                j+=2;
+            stmt.bindString(1, rewardList.get(i));
+            stmt.bindString(2, rewardList.get(j));
+            stmt.execute();
+            stmt.clearBindings();
+            j += 2;
         }
         db.setTransactionSuccessful();
         db.endTransaction();
     }
+
     //Method that deletes a given start/stop code from a given table that has been used so the user cannot use again
-    public void deleteCode(String table, String code){
+    public void deleteCode(String table, String code) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DELETE FROM " + table + " WHERE "+ "codes" + "=\"" + code + "\";");
+        db.execSQL("DELETE FROM " + table + " WHERE " + "codes" + "=\"" + code + "\";");
     }
 
     //Method that stores a list of start/stop codes in a given table
-    public void storeCodes(List<String> codesList, String table){
+    public void storeCodes(List<String> codesList, String table) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String sql = "INSERT INTO " + table + '('+ "codes" + ')' +  "VALUES (?)";
+        String sql = "INSERT INTO " + table + '(' + "codes" + ')' + "VALUES (?)";
         db.beginTransaction();
 
         SQLiteStatement stmt = db.compileStatement(sql);
-        for(int i=0 ; i< codesList.size(); i++){
-            stmt.bindString(1,codesList.get(i));
+        for (int i = 0; i < codesList.size(); i++) {
+            stmt.bindString(1, codesList.get(i));
             stmt.execute();
             stmt.clearBindings();
         }
@@ -201,32 +203,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public void addInitialCodes(){
-        List<String> startList = listFromFile.readLine(context.getString(R.string.startcodes_file_name));
-        List<String> stopList = listFromFile.readLine(context.getString(R.string.stopcodes_file_name));
-        List<String> rewardsList = listFromFile.readRewardsLine(context.getString(R.string.rewardcodes_file_name));
-
-        storeCodes(startList, context.getString(R.string.start_codes_table));
-        storeCodes(stopList, context.getString(R.string.stop_codes_table));
-        storeRewards(rewardsList);
+    public void addInitialCodes() {
+        storeCodes(startCodes, START_CODES_TABLE_NAME);
+        storeCodes(stopCodes, STOP_CODES_TABLE_NAME);
+        storeRewards(new ArrayList<>(rewardCodesAndPoints.keySet()));
     }
 
-    public List<String> checkForUpdates(List<String> currCodes, List<String> originalCodes, String table){
+    public List<String> checkForUpdates(List<String> currCodes, List<String> originalCodes, String table) {
         List<String> tempCodes = new ArrayList<>();
         //Loop to check if the elements in the 'currCodes' list exactly matches those in the text file. The ones that
         //match get added into a temporary list
-        for(int i = 0; i<currCodes.size(); i++){
-            for (int j = 0; j<originalCodes.size(); j++){
-                if(originalCodes.get(j).equals(currCodes.get(i))){
+        for (int i = 0; i < currCodes.size(); i++) {
+            for (int j = 0; j < originalCodes.size(); j++) {
+                if (originalCodes.get(j).equals(currCodes.get(i))) {
                     tempCodes.add(currCodes.get(i));
                 }
             }
         }
         //Temporary list is compared with the current codes list. If they are not an
         //exact match, the codes update using the method in the DatabaseHelper class
-        if(!(currCodes.equals(tempCodes))){
+        if (!(currCodes.equals(tempCodes))) {
             currCodes = originalCodes;
-            this.updateCodes(table,originalCodes);
+            this.updateCodes(table, originalCodes);
         }
         return currCodes;
     }
@@ -235,7 +233,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         List<String> codes = new ArrayList<>();
         Cursor c = this.getAllData("codes", table);
         c.moveToFirst();
-        while(!c.isAfterLast()) {
+        while (!c.isAfterLast()) {
             codes.add(c.getString(c.getColumnIndex("codes")));
             c.moveToNext();
         }

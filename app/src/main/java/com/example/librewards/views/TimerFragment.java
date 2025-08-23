@@ -13,7 +13,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.librewards.DatabaseHelper;
-import com.example.librewards.ListFromFile;
 import com.example.librewards.R;
 import com.example.librewards.controllers.codes.CodesManager;
 import com.example.librewards.controllers.codes.StartCodesManager;
@@ -61,8 +60,8 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         StopCodesManager stopCodesManager = new StopCodesManager(myDb);
         TimerHandler timerHandler = new TimerHandler(this, startCodesManager, stopCodesManager);
 
-        startCodesManager.refreshCodes(new ListFromFile(requireContext()));
-        stopCodesManager.refreshCodes(new ListFromFile(requireContext()));
+        startCodesManager.refreshCodes();
+        stopCodesManager.refreshCodes();
 
         startButton.setOnClickListener(v2 -> {
             String inputtedStartCode = timerCodeText.getText().toString();

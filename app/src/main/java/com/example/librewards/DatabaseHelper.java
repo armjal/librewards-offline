@@ -3,13 +3,12 @@ package com.example.librewards;
 import static com.example.librewards.DbConstants.DATABASE_NAME;
 import static com.example.librewards.DbConstants.NAME_TABLE_NAME;
 import static com.example.librewards.DbConstants.POINTS_TABLE_NAME;
-import static com.example.librewards.DbConstants.REWARD_CODES_FILE_NAME;
 import static com.example.librewards.DbConstants.REWARD_CODES_TABLE_NAME;
-import static com.example.librewards.DbConstants.START_CODES_FILE_NAME;
 import static com.example.librewards.DbConstants.START_CODES_TABLE_NAME;
-import static com.example.librewards.DbConstants.STOP_CODES_FILE_NAME;
 import static com.example.librewards.DbConstants.STOP_CODES_TABLE_NAME;
 import static com.example.librewards.resources.RewardCodes.rewardCodesAndPoints;
+import static com.example.librewards.resources.TimerCodes.startCodes;
+import static com.example.librewards.resources.TimerCodes.stopCodes;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -23,11 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private final ListFromFile listFromFile;
-
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
-        this.listFromFile = new ListFromFile(context);
     }
 
     @Override
@@ -208,13 +204,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void addInitialCodes() {
-        List<String> startList = listFromFile.readLine(START_CODES_FILE_NAME);
-        List<String> stopList = listFromFile.readLine(STOP_CODES_FILE_NAME);
-        List<String> rewardsList = listFromFile.readRewardsLine(REWARD_CODES_FILE_NAME);
-
-        storeCodes(startList, START_CODES_TABLE_NAME);
-        storeCodes(stopList, STOP_CODES_TABLE_NAME);
-        storeRewards(rewardsList);
+        storeCodes(startCodes, START_CODES_TABLE_NAME);
+        storeCodes(stopCodes, STOP_CODES_TABLE_NAME);
+        storeRewards(new ArrayList<>(rewardCodesAndPoints.keySet()));
     }
 
     public List<String> checkForUpdates(List<String> currCodes, List<String> originalCodes, String table) {

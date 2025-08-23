@@ -15,7 +15,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.database.sqlite.SQLiteStatement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -131,28 +130,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return new ArrayList<>(rewardCodesAndPoints.keySet());
     }
 
-    //Method that adds points to the current balance of points
     public void addPoints(int points) {
-        int id = 1;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         //Uses the current balance and updates the balance with the sum of he points being passed in
         contentValues.put("points", getPoints() + points);
-        db.update(POINTS_TABLE_NAME, contentValues, "id = ?", new String[]{String.valueOf(id)});
+        db.update(POINTS_TABLE_NAME, contentValues, null, null);
     }
 
-    //Method that minuses points to the current balance of points
     public void minusPoints(int points) {
-        int id = 1;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("points", getPoints() - points);
-        db.update(POINTS_TABLE_NAME, contentValues, "id = ?", new String[]{String.valueOf(id)});
+        db.update(POINTS_TABLE_NAME, contentValues, null, null);
     }
 
-    //Method that stores the reward codes and their cost
-    public void storeRewards() {
-        SQLiteDatabase db = this.getWritableDatabase();
+    private void storeRewards(SQLiteDatabase db) {
         for (Map.Entry<String, Integer> entry : rewardCodesAndPoints.entrySet()) {
             ContentValues contentValues = new ContentValues();
             contentValues.put("codes", entry.getKey());
@@ -161,32 +154,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    //Method that deletes a given start/stop code from a given table that has been used so the user cannot use again
     public void deleteCode(String table, String code) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DELETE FROM " + table + " WHERE " + "codes" + "=\"" + code + "\";");
+        db.delete(table, "codes = ?", new String[]{code});
     }
 
-    //Method that stores a list of start/stop codes in a given table
-    public void storeCodes(List<String> codesList, String table) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        String sql = "INSERT INTO " + table + '(' + "codes" + ')' + "VALUES (?)";
-        db.beginTransaction();
-
-        SQLiteStatement stmt = db.compileStatement(sql);
-        for (int i = 0; i < codesList.size(); i++) {
-            stmt.bindString(1, codesList.get(i));
-            stmt.execute();
-            stmt.clearBindings();
+    private void storeTimerCodes(SQLiteDatabase db, List<String> codesList, String table) {
+        for (String code : codesList) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("codes", code);
+            db.insert(table, null, contentValues);
         }
-        db.setTransactionSuccessful();
-        db.endTransaction();
+
     }
 
     public void addInitialCodes() {
-        storeCodes(startCodes, START_CODES_TABLE_NAME);
-        storeCodes(stopCodes, STOP_CODES_TABLE_NAME);
-        storeRewards();
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+        storeTimerCodes(db, startCodes, START_CODES_TABLE_NAME);
+        storeTimerCodes(db, stopCodes, STOP_CODES_TABLE_NAME);
+        storeRewards(db);
+        db.setTransactionSuccessful();
+        db.endTransaction();
     }
 
     public List<String> checkForUpdates(List<String> currCodes, List<String> originalCodes, String table) {

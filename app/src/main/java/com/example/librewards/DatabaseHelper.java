@@ -9,6 +9,7 @@ import static com.example.librewards.DbConstants.START_CODES_FILE_NAME;
 import static com.example.librewards.DbConstants.START_CODES_TABLE_NAME;
 import static com.example.librewards.DbConstants.STOP_CODES_FILE_NAME;
 import static com.example.librewards.DbConstants.STOP_CODES_TABLE_NAME;
+import static com.example.librewards.resources.RewardCodes.rewardCodesAndPoints;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -19,6 +20,7 @@ import android.database.sqlite.SQLiteStatement;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private final ListFromFile listFromFile;
@@ -128,25 +130,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    //Method that updates the reward codes if the text file is different to the one stored in the database
     public List<String> refreshRewardCodes() {
-        List<String> newCodesList = listFromFile.readRewardsLine(REWARD_CODES_FILE_NAME);
         int id = 1;
-        //'j' is the integer that gets the cost of each code
-        int j = 1;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        //'i' gets the code in the table. Each value increments by two as each two incremented values belong in the same column
-        for (int i = 0; i < newCodesList.size() - 1; i += 2) {
-            contentValues.put("codes", newCodesList.get(i));
-            contentValues.put("cost", newCodesList.get(j));
+        for (Map.Entry<String, Integer> entry: rewardCodesAndPoints.entrySet()) {
+            contentValues.put("codes", entry.getKey());
+            contentValues.put("cost", entry.getValue());
             //Uses the 'id' column to iterate through the list of codes and update each one
             db.update(REWARD_CODES_TABLE_NAME, contentValues, "id = ?", new String[]{String.valueOf(id)});
-            //Iterates through codes by incrementing each id. Each id is assigned to a code and has always got a value
-            id++;
-            j += 2;
+            id ++;
         }
-        return newCodesList;
+        return new ArrayList<>(rewardCodesAndPoints.keySet());
     }
 
     //Method that adds points to the current balance of points

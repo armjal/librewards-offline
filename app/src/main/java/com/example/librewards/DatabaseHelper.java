@@ -1,58 +1,60 @@
 package com.example.librewards;
 
+import static com.example.librewards.DbConstants.DATABASE_NAME;
+import static com.example.librewards.DbConstants.NAME_TABLE_NAME;
+import static com.example.librewards.DbConstants.POINTS_TABLE_NAME;
+import static com.example.librewards.DbConstants.REWARD_CODES_FILE_NAME;
+import static com.example.librewards.DbConstants.REWARD_CODES_TABLE_NAME;
+import static com.example.librewards.DbConstants.START_CODES_FILE_NAME;
+import static com.example.librewards.DbConstants.START_CODES_TABLE_NAME;
+import static com.example.librewards.DbConstants.STOP_CODES_FILE_NAME;
+import static com.example.librewards.DbConstants.STOP_CODES_TABLE_NAME;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteStatement;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    public static final String DATABASE_NAME = "codes.db";
-    public static final String TABLE1 = "start_codes_table";
-    public static final String TABLE2 = "stop_codes_table";
-    public static final String TABLE3 = "reward_codes_table";
-    public static final String TABLE4 = "points_table";
-    public static final String TABLE5 = "name_table";
-    public final Context context;
     private final ListFromFile listFromFile;
 
     public DatabaseHelper(Context context)  {
         super(context, DATABASE_NAME, null, 1);
-        this.context = context;
         this.listFromFile = new ListFromFile(context);
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String table1 = "CREATE TABLE " + TABLE1 + " (id INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT) ";
-        String table2 = "CREATE TABLE " + TABLE2 + " (id INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT) ";
-        String table3 = "CREATE TABLE " + TABLE3 + " (id INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT, cost INTEGER) ";
-        String table4 = "CREATE TABLE " + TABLE4 + " (id INTEGER PRIMARY KEY AUTOINCREMENT,points INTEGER)";
-        String table5 = "CREATE TABLE " + TABLE5 + " (id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT)";
-        db.execSQL(table1);
-        db.execSQL(table2);
-        db.execSQL(table3);
-        db.execSQL(table4);
-        db.execSQL(table5);
-        db.execSQL("INSERT INTO " + TABLE4 + '(' + "points" + ')' + "VALUES (?)");
+        String create_start_codes_query = "CREATE TABLE " + START_CODES_TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT) ";
+        String create_stop_codes_query = "CREATE TABLE " + STOP_CODES_TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT) ";
+        String create_reward_codes_query = "CREATE TABLE " + REWARD_CODES_TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT, cost INTEGER) ";
+        String create_points_query = "CREATE TABLE " + POINTS_TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT,points INTEGER)";
+        String create_name_query = "CREATE TABLE " + NAME_TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT)";
+        db.execSQL(create_start_codes_query);
+        db.execSQL(create_stop_codes_query);
+        db.execSQL(create_reward_codes_query);
+        db.execSQL(create_points_query);
+        db.execSQL(create_name_query);
+        db.execSQL("INSERT INTO " + POINTS_TABLE_NAME + '(' + "points" + ')' + "VALUES (?)");
 
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS "+ TABLE1);
-        db.execSQL("DROP TABLE IF EXISTS "+ TABLE2);
-        db.execSQL("DROP TABLE IF EXISTS "+ TABLE3);
-        db.execSQL("DROP TABLE IF EXISTS "+ TABLE4);
+        db.execSQL("DROP TABLE IF EXISTS "+ START_CODES_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+ STOP_CODES_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+ REWARD_CODES_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+ POINTS_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS "+ NAME_TABLE_NAME);
         onCreate(db);
     }
     //Method that adds the name that the user gives to the database.
     public void addName(String yourName){
         SQLiteDatabase db = this.getWritableDatabase();
-        String sql = ("INSERT INTO " + TABLE5 + '(' + "name" + ')' + "VALUES (?)");
+        String sql = ("INSERT INTO " + NAME_TABLE_NAME + '(' + "name" + ')' + "VALUES (?)");
         db.beginTransaction();
         SQLiteStatement stmt = db.compileStatement(sql);
         stmt.bindString(1,yourName);
@@ -72,7 +74,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public String getName(){
         SQLiteDatabase db = this.getWritableDatabase();
         String output = "";
-        Cursor c = db.rawQuery("SELECT " + "name" + " FROM " + TABLE5, null);
+        Cursor c = db.rawQuery("SELECT " + "name" + " FROM " + NAME_TABLE_NAME, null);
         if(c.getCount() > 0 && c.moveToFirst()) {
                 output = c.getString(c.getColumnIndex("name"));
         }
@@ -84,7 +86,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public int getPoints(){
         SQLiteDatabase db = this.getWritableDatabase();
         int output = 0;
-        Cursor c = db.rawQuery("SELECT " + "points" + " FROM " + TABLE4, null);
+        Cursor c = db.rawQuery("SELECT " + "points" + " FROM " + POINTS_TABLE_NAME, null);
         if(c.getCount() > 0 && c.moveToFirst()){
                 output = c.getInt(0);
             }
@@ -98,7 +100,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public int getCost(String code) {
         SQLiteDatabase db = this.getWritableDatabase();
         int output = 0;
-        Cursor c = db.rawQuery("SELECT " + "cost" + " FROM " + TABLE3 + " WHERE codes = " + "'" + code + "'", null);
+        Cursor c = db.rawQuery("SELECT " + "cost" + " FROM " + REWARD_CODES_TABLE_NAME + " WHERE codes = " + "'" + code + "'", null);
         if (c.getCount() > 0 && c.moveToFirst()) {
                 output = c.getInt(c.getColumnIndex("cost"));
 
@@ -123,7 +125,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
     //Method that updates the reward codes if the text file is different to the one stored in the database
     public List<String> refreshRewardCodes() {
-        List<String> newCodesList = listFromFile.readRewardsLine(context.getString(R.string.rewardcodes_file_name));
+        List<String> newCodesList = listFromFile.readRewardsLine(REWARD_CODES_FILE_NAME);
         int id = 1;
         //'j' is the integer that gets the cost of each code
         int j = 1;
@@ -134,7 +136,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             contentValues.put("codes", newCodesList.get(i));
             contentValues.put("cost", newCodesList.get(j));
             //Uses the 'id' column to iterate through the list of codes and update each one
-            db.update(TABLE3, contentValues, "id = ?", new String[]{String.valueOf(id)});
+            db.update(REWARD_CODES_TABLE_NAME, contentValues, "id = ?", new String[]{String.valueOf(id)});
             //Iterates through codes by incrementing each id. Each id is assigned to a code and has always got a value
             id++;
             j+=2;
@@ -148,7 +150,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         //Uses the current balance and updates the balance with the sum of he points being passed in
         contentValues.put("points", getPoints()+ points);
-        db.update(TABLE4, contentValues, "id = ?", new String[]{String.valueOf(id)});
+        db.update(POINTS_TABLE_NAME, contentValues, "id = ?", new String[]{String.valueOf(id)});
     }
     //Method that minuses points to the current balance of points
     public void minusPoints(int points){
@@ -156,13 +158,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("points", getPoints() - points);
-        db.update(TABLE4, contentValues, "id = ?", new String[]{String.valueOf(id)});
+        db.update(POINTS_TABLE_NAME, contentValues, "id = ?", new String[]{String.valueOf(id)});
     }
     //Method that stores the reward codes and their cost
     public void storeRewards(List<String> rewardList){
         SQLiteDatabase db = this.getWritableDatabase();
         //Stores the contents in the two columns specified for the column.
-        String sql = "INSERT INTO " + TABLE3 + '('+ "codes,cost" + ')' +  "VALUES (?,?)";
+        String sql = "INSERT INTO " + REWARD_CODES_TABLE_NAME + '('+ "codes,cost" + ')' +  "VALUES (?,?)";
         db.beginTransaction();
         //j is the integer that gets the cost of each code
         int j = 1;
@@ -202,12 +204,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public void addInitialCodes(){
-        List<String> startList = listFromFile.readLine(context.getString(R.string.startcodes_file_name));
-        List<String> stopList = listFromFile.readLine(context.getString(R.string.stopcodes_file_name));
-        List<String> rewardsList = listFromFile.readRewardsLine(context.getString(R.string.rewardcodes_file_name));
+        List<String> startList = listFromFile.readLine(START_CODES_FILE_NAME);
+        List<String> stopList = listFromFile.readLine(STOP_CODES_FILE_NAME);
+        List<String> rewardsList = listFromFile.readRewardsLine(REWARD_CODES_FILE_NAME);
 
-        storeCodes(startList, context.getString(R.string.start_codes_table));
-        storeCodes(stopList, context.getString(R.string.stop_codes_table));
+        storeCodes(startList, START_CODES_TABLE_NAME);
+        storeCodes(stopList, STOP_CODES_TABLE_NAME);
         storeRewards(rewardsList);
     }
 

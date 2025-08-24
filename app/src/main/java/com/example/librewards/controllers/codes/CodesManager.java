@@ -21,11 +21,11 @@ public abstract class CodesManager {
     }
 
     public void refreshCodes() {
-        codes = myDb.checkForUpdates(getOriginalCodes(), getCodesTableName());
+        codes = myDb.checkForTimerCodeUpdates(getOriginalCodes(), getCodesTableName());
     }
 
     public void removeUsedCode(String inputtedCode) {
         codes.remove(inputtedCode);
-        myDb.deleteCode(getCodesTableName(), inputtedCode);
+        myDb.deleteTimerCode(getCodesTableName(), inputtedCode);
     }
 }

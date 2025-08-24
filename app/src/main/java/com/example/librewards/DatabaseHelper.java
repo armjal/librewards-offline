@@ -80,7 +80,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return output;
     }
 
-    public int getCost(String code) {
+    public int getRewardCost(String code) {
         int output = 0;
         Cursor c = select(REWARD_CODES_TABLE_NAME, "cost", "codes = ?", new String[]{code});
         if (c.getCount() > 0 && c.moveToFirst()) {
@@ -92,7 +92,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Method that updates the codes in the database by taking in a table name and a list of codes that has been read from a file
-    public void updateCodes(String table, List<String> newCodesList) {
+    public void updateTimerCodes(String table, List<String> newCodesList) {
         int id = 1;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -143,7 +143,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void deleteCode(String table, String code) {
+    public void deleteTimerCode(String table, String code) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(table, "codes = ?", new String[]{code});
     }
@@ -167,8 +167,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public List<String> checkForUpdates(List<String> originalCodes, String table) {
-        List<String> currentCodes = getCurrentCodes(table);
+    public List<String> checkForTimerCodeUpdates(List<String> originalCodes, String table) {
+        List<String> currentCodes = getCurrentTimerCodes(table);
         List<String> tempCodes = new ArrayList<>();
         //Loop to check if the elements in the 'currCodes' list exactly matches those in the text file. The ones that
         //match get added into a temporary list
@@ -183,12 +183,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //exact match, the codes update using the method in the DatabaseHelper class
         if (!(currentCodes.equals(tempCodes))) {
             currentCodes = originalCodes;
-            this.updateCodes(table, originalCodes);
+            this.updateTimerCodes(table, originalCodes);
         }
         return currentCodes;
     }
 
-    public List<String> getCurrentCodes(String table) {
+    public List<String> getCurrentTimerCodes(String table) {
         List<String> codes = new ArrayList<>();
         Cursor c = select(table, "codes", null);
         c.moveToFirst();

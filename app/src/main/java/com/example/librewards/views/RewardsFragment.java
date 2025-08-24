@@ -66,10 +66,10 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
     }
 
     public void purchaseReward(String inputtedRewardCode){
-            if (myDb.getPoints() <= myDb.getCost(inputtedRewardCode)) {
+            if (myDb.getPoints() <= myDb.getRewardCost(inputtedRewardCode)) {
                 showPopup(getString(R.string.insufficientFunds));
             } else {
-                myDb.minusPoints(myDb.getCost(inputtedRewardCode));
+                myDb.minusPoints(myDb.getRewardCost(inputtedRewardCode));
                 showPopup("Code accepted, keep it up! Your new points balance is: " + myDb.getPoints());
                 points.setText(String.valueOf(myDb.getPoints()));
                 UserChangeNotifier.notifyPointsChanged(myDb.getPoints());

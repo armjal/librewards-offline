@@ -4,7 +4,6 @@ import static com.example.librewards.DbConstants.REWARD_CODES_TABLE_NAME;
 import static com.example.librewards.resources.RewardCodes.rewardCodesAndPoints;
 
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.librewards.DatabaseHelper;
@@ -24,14 +23,7 @@ public class RewardsRepository {
 
 
     public int getRewardCost(String code) {
-        int output = 0;
-        Cursor c = dbHelper.select(REWARD_CODES_TABLE_NAME, "cost", "codes = ?", new String[]{code});
-        if (c.getCount() > 0 && c.moveToFirst()) {
-            output = c.getInt(0);
-
-        }
-        c.close();
-        return output;
+        return dbHelper.getInt(REWARD_CODES_TABLE_NAME, "cost", "codes = ?", new String[]{code});
     }
 
     public void storeRewards() {
@@ -50,7 +42,8 @@ public class RewardsRepository {
             contentValues.put("codes", entry.getKey());
             contentValues.put("cost", entry.getValue());
             //Uses the 'id' column to iterate through the list of codes and update each one
-            db.update(REWARD_CODES_TABLE_NAME, contentValues, "id = ?", new String[]{String.valueOf(id)});
+            db.update(REWARD_CODES_TABLE_NAME, contentValues, "id = ?",
+                    new String[]{String.valueOf(id)});
             id++;
         }
         return new ArrayList<>(rewardCodesAndPoints.keySet());

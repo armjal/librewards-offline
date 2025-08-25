@@ -7,7 +7,6 @@ import static com.example.librewards.DbConstants.REWARD_CODES_TABLE_NAME;
 import static com.example.librewards.DbConstants.START_CODES_TABLE_NAME;
 import static com.example.librewards.DbConstants.STOP_CODES_TABLE_NAME;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -20,11 +19,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String create_start_codes_query = "CREATE TABLE " + START_CODES_TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT) ";
-        String create_stop_codes_query = "CREATE TABLE " + STOP_CODES_TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT) ";
-        String create_reward_codes_query = "CREATE TABLE " + REWARD_CODES_TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT, cost INTEGER) ";
-        String create_points_query = "CREATE TABLE " + POINTS_TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT,points INTEGER)";
-        String create_name_query = "CREATE TABLE " + NAME_TABLE_NAME + " (id INTEGER PRIMARY KEY AUTOINCREMENT,name TEXT)";
+        String create_start_codes_query = "CREATE TABLE " + START_CODES_TABLE_NAME + " (id " +
+                "INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT) ";
+        String create_stop_codes_query = "CREATE TABLE " + STOP_CODES_TABLE_NAME + " (id INTEGER " +
+                "PRIMARY KEY AUTOINCREMENT,codes TEXT) ";
+        String create_reward_codes_query = "CREATE TABLE " + REWARD_CODES_TABLE_NAME + " (id " +
+                "INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT, cost INTEGER) ";
+        String create_points_query = "CREATE TABLE " + POINTS_TABLE_NAME + " (id INTEGER PRIMARY " +
+                "KEY AUTOINCREMENT,points INTEGER)";
+        String create_name_query = "CREATE TABLE " + NAME_TABLE_NAME + " (id INTEGER PRIMARY KEY " +
+                "AUTOINCREMENT,name TEXT)";
         db.execSQL(create_start_codes_query);
         db.execSQL(create_stop_codes_query);
         db.execSQL(create_reward_codes_query);
@@ -52,9 +56,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public int getInt(String tableName, String column) {
+    public int getInt(String tableName, String column, String whereClause, String[] whereArgs) {
         int output = 0;
-        Cursor c = selectOne(tableName, column, "1");
+        Cursor c = selectOne(tableName, column, whereClause, whereArgs);
         if (c.getCount() > 0 && c.moveToFirst()) {
             output = c.getInt(0);
         }
@@ -62,22 +66,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return output;
     }
 
-    public String getString(String tableName, String column) {
+    public String getString(String tableName, String column, String whereClause,
+                            String[] whereArgs) {
         String output = "";
-        Cursor c = selectOne(tableName, column, "1");
+        Cursor c = selectOne(tableName, column, whereClause, whereArgs);
         if (c.getCount() > 0 && c.moveToFirst()) {
             output = c.getString(0);
         }
         c.close();
         return output;
     }
-    public Cursor selectOne(String tableName, String column, String limit) {
+
+    public Cursor select(String tableName, String column, String limit) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.query(tableName, new String[]{column}, null, null, null, null, null, limit);
     }
 
-    public Cursor select(String tableName, String column, String whereClause, String[] whereArgs) {
+    public Cursor selectOne(String tableName, String column, String whereClause,
+                            String[] whereArgs) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.query(tableName, new String[]{column}, whereClause, whereArgs, null, null, null, "1");
+        return db.query(tableName, new String[]{column}, whereClause, whereArgs, null, null, null
+                , "1");
     }
 }

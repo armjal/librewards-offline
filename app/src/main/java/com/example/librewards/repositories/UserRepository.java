@@ -4,7 +4,6 @@ import static com.example.librewards.DbConstants.NAME_TABLE_NAME;
 import static com.example.librewards.DbConstants.POINTS_TABLE_NAME;
 
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.librewards.DatabaseHelper;
@@ -25,11 +24,11 @@ public class UserRepository {
     }
 
     public String getName() {
-        return dbHelper.getString(NAME_TABLE_NAME, "name");
+        return dbHelper.getString(NAME_TABLE_NAME, "name", null, null);
     }
 
     public int getPoints() {
-        return dbHelper.getInt(POINTS_TABLE_NAME, "points");
+        return dbHelper.getInt(POINTS_TABLE_NAME, "points", null, null);
     }
 
     public void addPoints(int points) {

@@ -25,23 +25,11 @@ public class UserRepository {
     }
 
     public String getName() {
-        String output = "";
-        Cursor c = dbHelper.select(NAME_TABLE_NAME, "name", "1");
-        if (c.getCount() > 0 && c.moveToFirst()) {
-            output = c.getString(0);
-        }
-        c.close();
-        return output;
+        return dbHelper.getString(NAME_TABLE_NAME, "name");
     }
 
     public int getPoints() {
-        int output = 0;
-        Cursor c = dbHelper.select(POINTS_TABLE_NAME, "points", "1");
-        if (c.getCount() > 0 && c.moveToFirst()) {
-            output = c.getInt(0);
-        }
-        c.close();
-        return output;
+        return dbHelper.getInt(POINTS_TABLE_NAME, "points");
     }
 
     public void addPoints(int points) {

@@ -7,6 +7,7 @@ import static com.example.librewards.DbConstants.REWARD_CODES_TABLE_NAME;
 import static com.example.librewards.DbConstants.START_CODES_TABLE_NAME;
 import static com.example.librewards.DbConstants.STOP_CODES_TABLE_NAME;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -43,7 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void processTransaction(Runnable actions){
+    public void processTransaction(Runnable actions) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
         actions.run();
@@ -51,7 +52,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public Cursor select(String tableName, String column, String limit) {
+    public int getInt(String tableName, String column) {
+        int output = 0;
+        Cursor c = selectOne(tableName, column, "1");
+        if (c.getCount() > 0 && c.moveToFirst()) {
+            output = c.getInt(0);
+        }
+        c.close();
+        return output;
+    }
+
+    public String getString(String tableName, String column) {
+        String output = "";
+        Cursor c = selectOne(tableName, column, "1");
+        if (c.getCount() > 0 && c.moveToFirst()) {
+            output = c.getString(0);
+        }
+        c.close();
+        return output;
+    }
+    public Cursor selectOne(String tableName, String column, String limit) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.query(tableName, new String[]{column}, null, null, null, null, null, limit);
     }

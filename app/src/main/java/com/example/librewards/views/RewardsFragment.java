@@ -21,6 +21,7 @@ import com.example.librewards.DatabaseHelper;
 import com.example.librewards.R;
 import com.example.librewards.models.UserChangeListener;
 import com.example.librewards.models.UserChangeNotifier;
+import com.example.librewards.repositories.UserRepository;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ import java.util.List;
 public class RewardsFragment extends FragmentExtended implements UserChangeListener{
     private static final String TITLE = "Rewards";
     private DatabaseHelper myDb;
+    private UserRepository userRepo;
     private TextView points;
     private TextView name;
     private Button rewardButton;
@@ -49,9 +51,10 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
     @Override
     public void onViewCreated(@NonNull View v, Bundle savedInstanceState){
         myDb = new DatabaseHelper(requireActivity());
+        userRepo = new UserRepository(myDb);
         List<String> rewardCodes = myDb.refreshRewardCodes();
 
-        points.setText(String.valueOf(myDb.getPoints()));
+        points.setText(String.valueOf(userRepo.getPoints()));
 
         rewardButton.setOnClickListener(v1 -> {
             String inputtedRewardCode = rewardText.getText().toString();
@@ -61,18 +64,18 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
         });
         UserChangeNotifier.addListener(this);
 
-        String wholeName = getString(R.string.Hey) + " " + myDb.getName();
+        String wholeName = getString(R.string.Hey) + " " + userRepo.getName();
         name.setText(wholeName);
     }
 
     public void purchaseReward(String inputtedRewardCode){
-            if (myDb.getPoints() <= myDb.getRewardCost(inputtedRewardCode)) {
+            if (userRepo.getPoints() <= myDb.getRewardCost(inputtedRewardCode)) {
                 showPopup(getString(R.string.insufficientFunds));
             } else {
-                myDb.minusPoints(myDb.getRewardCost(inputtedRewardCode));
-                showPopup("Code accepted, keep it up! Your new points balance is: " + myDb.getPoints());
-                points.setText(String.valueOf(myDb.getPoints()));
-                UserChangeNotifier.notifyPointsChanged(myDb.getPoints());
+                userRepo.minusPoints(myDb.getRewardCost(inputtedRewardCode));
+                showPopup("Code accepted, keep it up! Your new points balance is: " + userRepo.getPoints());
+                points.setText(String.valueOf(userRepo.getPoints()));
+                UserChangeNotifier.notifyPointsChanged(userRepo.getPoints());
             }
         }
 

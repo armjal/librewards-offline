@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.example.librewards.DatabaseHelper;
 import com.example.librewards.R;
 import com.example.librewards.models.UserModel;
+import com.example.librewards.repositories.UserRepository;
 import com.example.librewards.views.adapters.ViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -29,6 +30,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity{
     private DatabaseHelper myDb;
+    private UserRepository userRepo;
     private String textToEdit;
     private EditText enterName;
     private Button nameButton;
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity{
 
         setContentView(R.layout.activity_main);
         myDb = new DatabaseHelper(this);
-
+        userRepo = new UserRepository(myDb);
         popupNameContainer = findViewById(R.id.popupNameContainer);
         ViewPager2 viewPager = findViewById(R.id.viewPager);
         TabLayout tabLayout = findViewById(R.id.tabLayout);
@@ -81,7 +83,7 @@ public class MainActivity extends AppCompatActivity{
                 toastMessage("No name was entered, please try again");
             } else {
                 String userName = enterName.getText().toString();
-                myDb.addName(userName);
+                userRepo.addName(userName);
                 popupNameContainer.setVisibility(View.INVISIBLE);
                 userModel.setName(userName);
                 showPopup(getString(R.string.helpInfo));

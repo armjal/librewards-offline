@@ -5,19 +5,13 @@ import static com.example.librewards.DbConstants.STOP_CODES_TABLE_NAME;
 import static com.example.librewards.FirstStartHandler.handleFirstStart;
 import static com.example.librewards.resources.TimerCodes.startCodes;
 import static com.example.librewards.resources.TimerCodes.stopCodes;
-import static java.util.Objects.requireNonNull;
 
-import android.app.Dialog;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
@@ -40,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private UserRepository userRepo;
     private TimerRepository timerRepo;
     private RewardsRepository rewardsRepo;
-    private String textToEdit;
+    private ViewUtils viewUtils;
     private EditText enterName;
     private Button nameButton;
     private FrameLayout popupNameContainer;
@@ -56,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         userRepo = new UserRepository(dbHelper);
         timerRepo = new TimerRepository(dbHelper);
         rewardsRepo = new RewardsRepository(dbHelper);
+        viewUtils = new ViewUtils(this);
         popupNameContainer = findViewById(R.id.popupNameContainer);
         ViewPager2 viewPager = findViewById(R.id.viewPager);
         TabLayout tabLayout = findViewById(R.id.tabLayout);
@@ -79,11 +74,11 @@ public class MainActivity extends AppCompatActivity {
         }
         ).attach();
 
-        helpButton.setOnClickListener(v -> showPopup(getString(R.string.helpInfo)));
+        helpButton.setOnClickListener(v -> viewUtils.showPopup(getString(R.string.helpInfo)));
     }
 
     public void onFirstStart() {
-        showPopupName();
+        requireUserToEnterName();
         dbHelper.processTransaction(() -> {
             timerRepo.storeTimerCodes(startCodes, START_CODES_TABLE_NAME);
             timerRepo.storeTimerCodes(stopCodes, STOP_CODES_TABLE_NAME);
@@ -91,45 +86,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void showPopupName() {
+    public void requireUserToEnterName() {
         popupNameContainer.setVisibility(View.VISIBLE);
         nameButton.setOnClickListener(v -> {
             if (enterName.length() == 0) {
-                toastMessage("No name was entered, please try again");
+                viewUtils.toastMessage(getString(R.string.noNameEntered));
             } else {
                 String userName = enterName.getText().toString();
+                userModel.setName(userName);
                 userRepo.addName(userName);
                 popupNameContainer.setVisibility(View.INVISIBLE);
-                userModel.setName(userName);
-                showPopup(getString(R.string.helpInfo));
+                viewUtils.showPopup(getString(R.string.helpInfo));
             }
-
         });
-    }
-
-    //Method that creates a popup
-    public void showPopup(String text) {
-        Dialog popup = new Dialog(this);
-        requireNonNull(popup.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        popup.setContentView(R.layout.popup_layout);
-        ImageView closeBtn = popup.findViewById(R.id.closeBtn);
-        TextView popupText = popup.findViewById(R.id.popupText);
-        setTextToEdit(text);
-        popupText.setText(getTextToEdit());
-        closeBtn.setOnClickListener(v -> popup.dismiss());
-        popup.show();
-
-    }
-
-    public void setTextToEdit(String textToEdit) {
-        this.textToEdit = textToEdit;
-    }
-
-    public String getTextToEdit() {
-        return textToEdit;
-    }
-
-    public void toastMessage(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 }

@@ -1,19 +1,12 @@
 package com.example.librewards.views;
 
-import static java.util.Objects.requireNonNull;
-
-import android.app.Dialog;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -27,10 +20,11 @@ import com.example.librewards.repositories.UserRepository;
 import java.util.List;
 
 
-public class RewardsFragment extends FragmentExtended implements UserChangeListener{
+public class RewardsFragment extends FragmentExtended implements UserChangeListener {
     private static final String TITLE = "Rewards";
     private UserRepository userRepo;
     private RewardsRepository rewardsRepo;
+    private ViewUtils viewUtils;
     private TextView points;
     private TextView name;
     private Button rewardButton;
@@ -50,17 +44,18 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
     }
 
     @Override
-    public void onViewCreated(@NonNull View v, Bundle savedInstanceState){
-        DatabaseHelper dbHelper = new DatabaseHelper(requireActivity());
+    public void onViewCreated(@NonNull View v, Bundle savedInstanceState) {
+        DatabaseHelper dbHelper = new DatabaseHelper(requireContext());
         userRepo = new UserRepository(dbHelper);
         rewardsRepo = new RewardsRepository(dbHelper);
+        viewUtils = new ViewUtils(requireContext());
         List<String> rewardCodes = rewardsRepo.refreshRewardCodes();
 
         points.setText(String.valueOf(userRepo.getPoints()));
 
         rewardButton.setOnClickListener(v1 -> {
             String inputtedRewardCode = rewardText.getText().toString();
-            if(validateRewardCode(rewardCodes, inputtedRewardCode)) {
+            if (validateRewardCode(rewardCodes, inputtedRewardCode)) {
                 purchaseReward(inputtedRewardCode);
             }
         });
@@ -70,42 +65,26 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
         name.setText(wholeName);
     }
 
-    public void purchaseReward(String inputtedRewardCode){
-            if (userRepo.getPoints() <= rewardsRepo.getRewardCost(inputtedRewardCode)) {
-                showPopup(getString(R.string.insufficientFunds));
-            } else {
-                userRepo.minusPoints(rewardsRepo.getRewardCost(inputtedRewardCode));
-                showPopup("Code accepted, keep it up! Your new points balance is: " + userRepo.getPoints());
-                points.setText(String.valueOf(userRepo.getPoints()));
-                UserChangeNotifier.notifyPointsChanged(userRepo.getPoints());
-            }
+    public void purchaseReward(String inputtedRewardCode) {
+        if (userRepo.getPoints() <= rewardsRepo.getRewardCost(inputtedRewardCode)) {
+            viewUtils.showPopup(getString(R.string.insufficientFunds));
+        } else {
+            userRepo.minusPoints(rewardsRepo.getRewardCost(inputtedRewardCode));
+            viewUtils.showPopup(String.format(getString(R.string.rewardCodeAccepted), userRepo.getPoints()));
+            points.setText(String.valueOf(userRepo.getPoints()));
+            UserChangeNotifier.notifyPointsChanged(userRepo.getPoints());
         }
+    }
 
-    private boolean validateRewardCode(List<String> rewardCodes, String inputtedRewardCode){
+    private boolean validateRewardCode(List<String> rewardCodes, String inputtedRewardCode) {
         if (inputtedRewardCode.isEmpty()) {
-            toastMessage("No code was entered, please try again");
+            viewUtils.toastMessage(getString(R.string.emptyCode));
             return false;
         } else if (!rewardCodes.contains(inputtedRewardCode)) {
-            toastMessage(getString(R.string.invalidCode));
+            viewUtils.toastMessage(getString(R.string.invalidCode));
             return false;
         }
         return true;
-    }
-
-    public void showPopup(String text){
-        Dialog popup = new Dialog(requireActivity());
-        requireNonNull(popup.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        popup.setContentView(R.layout.popup_layout);
-        ImageView closeBtn = popup.findViewById(R.id.closeBtn);
-        TextView popupText = popup.findViewById(R.id.popupText);
-        popupText.setText(text);
-        closeBtn.setOnClickListener(v -> popup.dismiss());
-        popup.show();
-
-    }
-
-    public void toastMessage(String message){
-        Toast.makeText(requireActivity() ,message,Toast.LENGTH_LONG).show();
     }
 
     @Override

@@ -200,12 +200,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return codes;
     }
 
-    private Cursor select(String tableName, String column, String limit) {
+    public Cursor select(String tableName, String column, String limit) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.query(tableName, new String[]{column}, null, null, null, null, null, limit);
     }
 
-    private Cursor select(String tableName, String column, String whereClause, String[] whereArgs) {
+    public Cursor select(String tableName, String column, String whereClause, String[] whereArgs) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.query(tableName, new String[]{column}, whereClause, whereArgs, null, null, null, "1");
     }

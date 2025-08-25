@@ -19,6 +19,7 @@ import com.example.librewards.controllers.codes.StartCodesManager;
 import com.example.librewards.controllers.codes.StopCodesManager;
 import com.example.librewards.models.UserChangeListener;
 import com.example.librewards.models.UserChangeNotifier;
+import com.example.librewards.repositories.TimerRepository;
 import com.example.librewards.repositories.UserRepository;
 
 public class TimerFragment extends FragmentExtended implements UserChangeListener, TimerView {
@@ -51,14 +52,15 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         UserChangeNotifier.addListener(this);
         DatabaseHelper myDb = new DatabaseHelper(requireContext());
         UserRepository userRepo = new UserRepository(myDb);
+        TimerRepository timerRepo = new TimerRepository(myDb);
         viewUtils = new ViewUtils(requireContext());
 
         String wholeName = getString(R.string.Hey) + " " + userRepo.getName();
         name.setText(wholeName);
         points.setText(String.valueOf(userRepo.getPoints()));
 
-        StartCodesManager startCodesManager = new StartCodesManager(myDb);
-        StopCodesManager stopCodesManager = new StopCodesManager(myDb);
+        StartCodesManager startCodesManager = new StartCodesManager(timerRepo);
+        StopCodesManager stopCodesManager = new StopCodesManager(timerRepo);
         TimerHandler timerHandler = new TimerHandler(this, startCodesManager, stopCodesManager);
 
         startCodesManager.refreshCodes();

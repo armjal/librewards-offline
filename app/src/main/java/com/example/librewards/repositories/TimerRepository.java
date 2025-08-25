@@ -22,7 +22,7 @@ public class TimerRepository {
         db.delete(table, "codes = ?", new String[]{code});
     }
 
-    private void storeTimerCodes(List<String> codesList, String table) {
+    public void storeTimerCodes(List<String> codesList, String table) {
         for (String code : codesList) {
             ContentValues contentValues = new ContentValues();
             contentValues.put("codes", code);

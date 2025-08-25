@@ -34,6 +34,15 @@ public class RewardsRepository {
         return output;
     }
 
+    public void storeRewards() {
+        for (Map.Entry<String, Integer> entry : rewardCodesAndPoints.entrySet()) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("codes", entry.getKey());
+            contentValues.put("cost", entry.getValue());
+            db.insert(REWARD_CODES_TABLE_NAME, null, contentValues);
+        }
+    }
+
     public List<String> refreshRewardCodes() {
         int id = 1;
         for (Map.Entry<String, Integer> entry : rewardCodesAndPoints.entrySet()) {

@@ -51,17 +51,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public int getRewardCost(String code) {
-        int output = 0;
-        Cursor c = select(REWARD_CODES_TABLE_NAME, "cost", "codes = ?", new String[]{code});
-        if (c.getCount() > 0 && c.moveToFirst()) {
-            output = c.getInt(0);
-
-        }
-        c.close();
-        return output;
-    }
-
     //Method that updates the codes in the database by taking in a table name and a list of codes that has been read from a file
     public void updateTimerCodes(String table, List<String> newCodesList) {
         int id = 1;
@@ -74,20 +63,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             //Iterates through codes by incrementing each id. Each id is assigned to a code and has always got a value
             id++;
         }
-    }
-
-    public List<String> refreshRewardCodes() {
-        int id = 1;
-        SQLiteDatabase db = this.getWritableDatabase();
-        for (Map.Entry<String, Integer> entry : rewardCodesAndPoints.entrySet()) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("codes", entry.getKey());
-            contentValues.put("cost", entry.getValue());
-            //Uses the 'id' column to iterate through the list of codes and update each one
-            db.update(REWARD_CODES_TABLE_NAME, contentValues, "id = ?", new String[]{String.valueOf(id)});
-            id++;
-        }
-        return new ArrayList<>(rewardCodesAndPoints.keySet());
     }
 
     private void storeRewards(SQLiteDatabase db) {

@@ -21,6 +21,7 @@ import com.example.librewards.DatabaseHelper;
 import com.example.librewards.R;
 import com.example.librewards.models.UserChangeListener;
 import com.example.librewards.models.UserChangeNotifier;
+import com.example.librewards.repositories.RewardsRepository;
 import com.example.librewards.repositories.UserRepository;
 
 import java.util.List;
@@ -28,8 +29,8 @@ import java.util.List;
 
 public class RewardsFragment extends FragmentExtended implements UserChangeListener{
     private static final String TITLE = "Rewards";
-    private DatabaseHelper myDb;
     private UserRepository userRepo;
+    private RewardsRepository rewardsRepo;
     private TextView points;
     private TextView name;
     private Button rewardButton;
@@ -50,9 +51,10 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
 
     @Override
     public void onViewCreated(@NonNull View v, Bundle savedInstanceState){
-        myDb = new DatabaseHelper(requireActivity());
+        DatabaseHelper myDb = new DatabaseHelper(requireActivity());
         userRepo = new UserRepository(myDb);
-        List<String> rewardCodes = myDb.refreshRewardCodes();
+        rewardsRepo = new RewardsRepository(myDb);
+        List<String> rewardCodes = rewardsRepo.refreshRewardCodes();
 
         points.setText(String.valueOf(userRepo.getPoints()));
 
@@ -69,10 +71,10 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
     }
 
     public void purchaseReward(String inputtedRewardCode){
-            if (userRepo.getPoints() <= myDb.getRewardCost(inputtedRewardCode)) {
+            if (userRepo.getPoints() <= rewardsRepo.getRewardCost(inputtedRewardCode)) {
                 showPopup(getString(R.string.insufficientFunds));
             } else {
-                userRepo.minusPoints(myDb.getRewardCost(inputtedRewardCode));
+                userRepo.minusPoints(rewardsRepo.getRewardCost(inputtedRewardCode));
                 showPopup("Code accepted, keep it up! Your new points balance is: " + userRepo.getPoints());
                 points.setText(String.valueOf(userRepo.getPoints()));
                 UserChangeNotifier.notifyPointsChanged(userRepo.getPoints());

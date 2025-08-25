@@ -29,7 +29,6 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     private Button stopButton;
     private EditText timerCodeText;
     private Chronometer timer;
-    private DatabaseHelper myDb;
     private ViewUtils viewUtils;
 
     @Override
@@ -50,7 +49,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         UserChangeNotifier.addListener(this);
-        myDb = new DatabaseHelper(requireContext());
+        DatabaseHelper myDb = new DatabaseHelper(requireContext());
         UserRepository userRepo = new UserRepository(myDb);
         viewUtils = new ViewUtils(requireContext());
 

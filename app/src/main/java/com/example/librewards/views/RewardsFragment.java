@@ -51,9 +51,9 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
 
     @Override
     public void onViewCreated(@NonNull View v, Bundle savedInstanceState){
-        DatabaseHelper myDb = new DatabaseHelper(requireActivity());
-        userRepo = new UserRepository(myDb);
-        rewardsRepo = new RewardsRepository(myDb);
+        DatabaseHelper dbHelper = new DatabaseHelper(requireActivity());
+        userRepo = new UserRepository(dbHelper);
+        rewardsRepo = new RewardsRepository(dbHelper);
         List<String> rewardCodes = rewardsRepo.refreshRewardCodes();
 
         points.setText(String.valueOf(userRepo.getPoints()));

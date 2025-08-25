@@ -50,9 +50,9 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         UserChangeNotifier.addListener(this);
-        DatabaseHelper myDb = new DatabaseHelper(requireContext());
-        UserRepository userRepo = new UserRepository(myDb);
-        TimerRepository timerRepo = new TimerRepository(myDb);
+        DatabaseHelper dbHelper = new DatabaseHelper(requireContext());
+        UserRepository userRepo = new UserRepository(dbHelper);
+        TimerRepository timerRepo = new TimerRepository(dbHelper);
         viewUtils = new ViewUtils(requireContext());
 
         String wholeName = getString(R.string.Hey) + " " + userRepo.getName();

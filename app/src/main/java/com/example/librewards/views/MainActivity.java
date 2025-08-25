@@ -8,7 +8,6 @@ import static com.example.librewards.resources.TimerCodes.stopCodes;
 import static java.util.Objects.requireNonNull;
 
 import android.app.Dialog;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -85,17 +84,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void onFirstStart() {
         showPopupName();
-        addInitialCodes();
-    }
-
-    public void addInitialCodes() {
-        SQLiteDatabase db = myDb.getWritableDatabase();
-        db.beginTransaction();
-        timerRepo.storeTimerCodes(startCodes, START_CODES_TABLE_NAME);
-        timerRepo.storeTimerCodes(stopCodes, STOP_CODES_TABLE_NAME);
-        rewardsRepo.storeRewards();
-        db.setTransactionSuccessful();
-        db.endTransaction();
+        myDb.processTransaction(() -> {
+            timerRepo.storeTimerCodes(startCodes, START_CODES_TABLE_NAME);
+            timerRepo.storeTimerCodes(stopCodes, STOP_CODES_TABLE_NAME);
+            rewardsRepo.storeRewards();
+        });
     }
 
     public void showPopupName() {

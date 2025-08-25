@@ -8,7 +8,6 @@ import static com.example.librewards.resources.TimerCodes.stopCodes;
 import static java.util.Objects.requireNonNull;
 
 import android.app.Dialog;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -37,7 +36,7 @@ import com.google.android.material.tabs.TabLayoutMediator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private DatabaseHelper myDb;
+    private DatabaseHelper dbHelper;
     private UserRepository userRepo;
     private TimerRepository timerRepo;
     private RewardsRepository rewardsRepo;
@@ -53,10 +52,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        myDb = new DatabaseHelper(this);
-        userRepo = new UserRepository(myDb);
-        timerRepo = new TimerRepository(myDb);
-        rewardsRepo = new RewardsRepository(myDb);
+        dbHelper = new DatabaseHelper(this);
+        userRepo = new UserRepository(dbHelper);
+        timerRepo = new TimerRepository(dbHelper);
+        rewardsRepo = new RewardsRepository(dbHelper);
         popupNameContainer = findViewById(R.id.popupNameContainer);
         ViewPager2 viewPager = findViewById(R.id.viewPager);
         TabLayout tabLayout = findViewById(R.id.tabLayout);
@@ -85,17 +84,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void onFirstStart() {
         showPopupName();
-        addInitialCodes();
-    }
-
-    public void addInitialCodes() {
-        SQLiteDatabase db = myDb.getWritableDatabase();
-        db.beginTransaction();
-        timerRepo.storeTimerCodes(startCodes, START_CODES_TABLE_NAME);
-        timerRepo.storeTimerCodes(stopCodes, STOP_CODES_TABLE_NAME);
-        rewardsRepo.storeRewards();
-        db.setTransactionSuccessful();
-        db.endTransaction();
+        dbHelper.processTransaction(() -> {
+            timerRepo.storeTimerCodes(startCodes, START_CODES_TABLE_NAME);
+            timerRepo.storeTimerCodes(stopCodes, STOP_CODES_TABLE_NAME);
+            rewardsRepo.storeRewards();
+        });
     }
 
     public void showPopupName() {

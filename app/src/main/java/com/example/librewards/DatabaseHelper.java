@@ -6,19 +6,11 @@ import static com.example.librewards.DbConstants.POINTS_TABLE_NAME;
 import static com.example.librewards.DbConstants.REWARD_CODES_TABLE_NAME;
 import static com.example.librewards.DbConstants.START_CODES_TABLE_NAME;
 import static com.example.librewards.DbConstants.STOP_CODES_TABLE_NAME;
-import static com.example.librewards.resources.RewardCodes.rewardCodesAndPoints;
-import static com.example.librewards.resources.TimerCodes.startCodes;
-import static com.example.librewards.resources.TimerCodes.stopCodes;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public DatabaseHelper(Context context) {
@@ -49,86 +41,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + POINTS_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + NAME_TABLE_NAME);
         onCreate(db);
-    }
-
-    //Method that updates the codes in the database by taking in a table name and a list of codes that has been read from a file
-    public void updateTimerCodes(String table, List<String> newCodesList) {
-        int id = 1;
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        for (int i = 0; i < newCodesList.size(); i++) {
-            contentValues.put("codes", newCodesList.get(i));
-            //Uses the 'id' column to iterate through the list of codes and update each one
-            db.update(table, contentValues, "id = ?", new String[]{String.valueOf(id)});
-            //Iterates through codes by incrementing each id. Each id is assigned to a code and has always got a value
-            id++;
-        }
-    }
-
-    private void storeRewards(SQLiteDatabase db) {
-        for (Map.Entry<String, Integer> entry : rewardCodesAndPoints.entrySet()) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("codes", entry.getKey());
-            contentValues.put("cost", entry.getValue());
-            db.insert(REWARD_CODES_TABLE_NAME, null, contentValues);
-        }
-    }
-
-    public void deleteTimerCode(String table, String code) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(table, "codes = ?", new String[]{code});
-    }
-
-    private void storeTimerCodes(SQLiteDatabase db, List<String> codesList, String table) {
-        for (String code : codesList) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("codes", code);
-            db.insert(table, null, contentValues);
-        }
-
-    }
-
-    public void addInitialCodes() {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.beginTransaction();
-        storeTimerCodes(db, startCodes, START_CODES_TABLE_NAME);
-        storeTimerCodes(db, stopCodes, STOP_CODES_TABLE_NAME);
-        storeRewards(db);
-        db.setTransactionSuccessful();
-        db.endTransaction();
-    }
-
-    public List<String> checkForTimerCodeUpdates(List<String> originalCodes, String table) {
-        List<String> currentCodes = getCurrentTimerCodes(table);
-        List<String> tempCodes = new ArrayList<>();
-        //Loop to check if the elements in the 'currCodes' list exactly matches those in the text file. The ones that
-        //match get added into a temporary list
-        for (int i = 0; i < currentCodes.size(); i++) {
-            for (int j = 0; j < originalCodes.size(); j++) {
-                if (originalCodes.get(j).equals(currentCodes.get(i))) {
-                    tempCodes.add(currentCodes.get(i));
-                }
-            }
-        }
-        //Temporary list is compared with the current codes list. If they are not an
-        //exact match, the codes update using the method in the DatabaseHelper class
-        if (!(currentCodes.equals(tempCodes))) {
-            currentCodes = originalCodes;
-            this.updateTimerCodes(table, originalCodes);
-        }
-        return currentCodes;
-    }
-
-    public List<String> getCurrentTimerCodes(String table) {
-        List<String> codes = new ArrayList<>();
-        Cursor c = select(table, "codes", null);
-        c.moveToFirst();
-        while (!c.isAfterLast()) {
-            codes.add(c.getString(0));
-            c.moveToNext();
-        }
-        c.close();
-        return codes;
     }
 
     public Cursor select(String tableName, String column, String limit) {

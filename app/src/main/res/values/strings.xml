@@ -24,6 +24,7 @@
     <string name="name">name</string>
     <string name="nameRequest">Welcome to Lib Rewards! Can we start by taking your name, please?</string>
     <string name="enterName">Name</string>
+    <string name="noNameEntered">No name was entered, please try again</string>
     <string name="letsGo">Let\'s Go!</string>
     <string name="Hey">\Hey, </string>
     <string name="insufficientFunds">Woops! Unfortunately you don\'t have sufficient points for this reward. Please choose another reward

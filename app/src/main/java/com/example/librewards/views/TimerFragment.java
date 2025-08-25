@@ -19,6 +19,7 @@ import com.example.librewards.controllers.codes.StartCodesManager;
 import com.example.librewards.controllers.codes.StopCodesManager;
 import com.example.librewards.models.UserChangeListener;
 import com.example.librewards.models.UserChangeNotifier;
+import com.example.librewards.repositories.UserRepository;
 
 public class TimerFragment extends FragmentExtended implements UserChangeListener, TimerView {
     private static final String TITLE = "Timer";
@@ -50,11 +51,12 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         UserChangeNotifier.addListener(this);
         myDb = new DatabaseHelper(requireContext());
+        UserRepository userRepo = new UserRepository(myDb);
         viewUtils = new ViewUtils(requireContext());
 
-        String wholeName = getString(R.string.Hey) + " " + myDb.getName();
+        String wholeName = getString(R.string.Hey) + " " + userRepo.getName();
         name.setText(wholeName);
-        points.setText(String.valueOf(myDb.getPoints()));
+        points.setText(String.valueOf(userRepo.getPoints()));
 
         StartCodesManager startCodesManager = new StartCodesManager(myDb);
         StopCodesManager stopCodesManager = new StopCodesManager(myDb);
@@ -74,7 +76,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
             String inputtedStopCode = timerCodeText.getText().toString();
             if (isValidCode(stopCodesManager, inputtedStopCode)) {
                 long totalDuration = timerHandler.stop(inputtedStopCode);
-                int totalPoints = timerHandler.saveTotalPointsFromDuration(myDb);
+                int totalPoints = timerHandler.saveTotalPointsFromDuration(userRepo);
                 announceAccumulatedPoints(timerHandler.getPointsEarned(), totalDuration, totalPoints);
                 UserChangeNotifier.notifyPointsChanged(totalPoints);
             }

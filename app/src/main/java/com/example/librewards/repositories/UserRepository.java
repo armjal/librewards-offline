@@ -24,7 +24,6 @@ public class UserRepository {
         db.insert(NAME_TABLE_NAME, null, contentValues);
     }
 
-    //Method that returns the name that a user gives using a cursor
     public String getName() {
         String output = "";
         Cursor c = dbHelper.select(NAME_TABLE_NAME, "name", "1");
@@ -47,7 +46,6 @@ public class UserRepository {
 
     public void addPoints(int points) {
         ContentValues contentValues = new ContentValues();
-        //Uses the current balance and updates the balance with the sum of he points being passed in
         contentValues.put("points", getPoints() + points);
         db.update(POINTS_TABLE_NAME, contentValues, null, null);
     }

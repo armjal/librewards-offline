@@ -1,10 +1,10 @@
 package com.example.librewards.views;
 import android.os.SystemClock;
 
-import com.example.librewards.DatabaseHelper;
 import com.example.librewards.PointsCalculator;
 import com.example.librewards.controllers.codes.StartCodesManager;
 import com.example.librewards.controllers.codes.StopCodesManager;
+import com.example.librewards.repositories.UserRepository;
 
 public class TimerHandler {
     private final StartCodesManager startCodesManager;
@@ -37,10 +37,10 @@ public class TimerHandler {
         return totalDuration;
     }
 
-    public int saveTotalPointsFromDuration(DatabaseHelper myDb) {
+    public int saveTotalPointsFromDuration(UserRepository userRepo) {
         pointsEarned = PointsCalculator.calculateFromDuration(totalDuration);
-        myDb.addPoints(pointsEarned);
-        return myDb.getPoints();
+        userRepo.addPoints(pointsEarned);
+        return userRepo.getPoints();
     }
 
     public int getPointsEarned(){

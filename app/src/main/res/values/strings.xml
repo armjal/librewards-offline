@@ -24,20 +24,12 @@
     <string name="name">name</string>
     <string name="nameRequest">Welcome to Lib Rewards! Can we start by taking your name, please?</string>
     <string name="enterName">Name</string>
-    <string name="users_name_to_enter">users name to enter</string>
     <string name="letsGo">Let\'s Go!</string>
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="Hey">\Hey, </string>
     <string name="insufficientFunds">Woops! Unfortunately you don\'t have sufficient points for this reward. Please choose another reward
     or carry on doing a great job at the library to be able to get this</string>
     <string name="invalidCode">The code you entered is not valid, please try again</string>
-    <string name="logo">logo</string>
-    <string name="caption">Reward yourself by studying</string>
-    <string name="stop_codes_table">stop_codes_table</string>
-    <string name="start_codes_table">start_codes_table</string>
-    <string name="startcodes_file_name">startcodes.txt</string>
-    <string name="stopcodes_file_name">stopcodes.txt</string>
-    <string name="rewardcodes_file_name">rewardcodes.txt</string>
+    <string name="rewardCodeAccepted">Code accepted, keep it up! Your new points balance is: %1$d</string>
     <string name="emptyCode">No code was entered, please try again</string>
     <string name="congratsMessage">Well done, you spent %1$d %2$s at the library and have earned %3$d points!\nYour new points balance is: %4$d</string>
     <string name="unfortunatelyMessage">"Unfortunately you have not spent the minimum required time at the library to receive points!"</string>

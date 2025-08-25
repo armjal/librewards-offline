@@ -1,12 +1,14 @@
 package com.example.librewards.views;
 
+import static com.example.librewards.DbConstants.START_CODES_TABLE_NAME;
+import static com.example.librewards.DbConstants.STOP_CODES_TABLE_NAME;
 import static com.example.librewards.FirstStartHandler.handleFirstStart;
+import static com.example.librewards.resources.TimerCodes.startCodes;
+import static com.example.librewards.resources.TimerCodes.stopCodes;
 import static java.util.Objects.requireNonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.splashscreen.SplashScreen;
-import androidx.viewpager2.widget.ViewPager2;
 
 import android.app.Dialog;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -18,17 +20,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
+import androidx.viewpager2.widget.ViewPager2;
+
 import com.example.librewards.DatabaseHelper;
 import com.example.librewards.R;
 import com.example.librewards.models.UserModel;
+import com.example.librewards.repositories.RewardsRepository;
+import com.example.librewards.repositories.TimerRepository;
+import com.example.librewards.repositories.UserRepository;
 import com.example.librewards.views.adapters.ViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
     private DatabaseHelper myDb;
+    private UserRepository userRepo;
+    private TimerRepository timerRepo;
+    private RewardsRepository rewardsRepo;
     private String textToEdit;
     private EditText enterName;
     private Button nameButton;
@@ -42,7 +54,9 @@ public class MainActivity extends AppCompatActivity{
 
         setContentView(R.layout.activity_main);
         myDb = new DatabaseHelper(this);
-
+        userRepo = new UserRepository(myDb);
+        timerRepo = new TimerRepository(myDb);
+        rewardsRepo = new RewardsRepository(myDb);
         popupNameContainer = findViewById(R.id.popupNameContainer);
         ViewPager2 viewPager = findViewById(R.id.viewPager);
         TabLayout tabLayout = findViewById(R.id.tabLayout);
@@ -60,28 +74,38 @@ public class MainActivity extends AppCompatActivity{
         List<FragmentExtended> fragments = List.of(new TimerFragment(), new RewardsFragment());
         viewPagerAdapter.addFragments(fragments);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) ->
-            {
-                tab.setText(fragments.get(position).getTitle());
-                tab.setIcon(fragments.get(position).getIcon());
-            }
+        {
+            tab.setText(fragments.get(position).getTitle());
+            tab.setIcon(fragments.get(position).getIcon());
+        }
         ).attach();
 
         helpButton.setOnClickListener(v -> showPopup(getString(R.string.helpInfo)));
     }
 
-    public void onFirstStart(){
+    public void onFirstStart() {
         showPopupName();
-        myDb.addInitialCodes();
+        addInitialCodes();
     }
 
-    public void showPopupName(){
+    public void addInitialCodes() {
+        SQLiteDatabase db = myDb.getWritableDatabase();
+        db.beginTransaction();
+        timerRepo.storeTimerCodes(startCodes, START_CODES_TABLE_NAME);
+        timerRepo.storeTimerCodes(stopCodes, STOP_CODES_TABLE_NAME);
+        rewardsRepo.storeRewards();
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
+    public void showPopupName() {
         popupNameContainer.setVisibility(View.VISIBLE);
         nameButton.setOnClickListener(v -> {
-            if(enterName.length() == 0) {
+            if (enterName.length() == 0) {
                 toastMessage("No name was entered, please try again");
             } else {
                 String userName = enterName.getText().toString();
-                myDb.addName(userName);
+                userRepo.addName(userName);
                 popupNameContainer.setVisibility(View.INVISIBLE);
                 userModel.setName(userName);
                 showPopup(getString(R.string.helpInfo));
@@ -89,8 +113,9 @@ public class MainActivity extends AppCompatActivity{
 
         });
     }
+
     //Method that creates a popup
-    public void showPopup(String text){
+    public void showPopup(String text) {
         Dialog popup = new Dialog(this);
         requireNonNull(popup.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popup.setContentView(R.layout.popup_layout);
@@ -102,6 +127,7 @@ public class MainActivity extends AppCompatActivity{
         popup.show();
 
     }
+
     public void setTextToEdit(String textToEdit) {
         this.textToEdit = textToEdit;
     }
@@ -110,7 +136,7 @@ public class MainActivity extends AppCompatActivity{
         return textToEdit;
     }
 
-    public void toastMessage(String message){
-        Toast.makeText(this,message,Toast.LENGTH_LONG).show();
+    public void toastMessage(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 }

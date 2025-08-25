@@ -43,6 +43,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public void processTransaction(Runnable actions){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.beginTransaction();
+        actions.run();
+        db.setTransactionSuccessful();
+        db.endTransaction();
+    }
+
     public Cursor select(String tableName, String column, String limit) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.query(tableName, new String[]{column}, null, null, null, null, null, limit);

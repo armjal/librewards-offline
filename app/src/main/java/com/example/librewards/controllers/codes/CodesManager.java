@@ -1,15 +1,15 @@
 package com.example.librewards.controllers.codes;
 
-import com.example.librewards.DatabaseHelper;
+import com.example.librewards.repositories.TimerRepository;
 
 import java.util.List;
 
 public abstract class CodesManager {
-    private final DatabaseHelper myDb;
+    private final TimerRepository timerRepo;
     private List<String> codes;
 
-    CodesManager(DatabaseHelper myDb){
-        this.myDb = myDb;
+    CodesManager(TimerRepository timerRepo){
+        this.timerRepo = timerRepo;
     }
 
     public abstract String getCodesTableName();
@@ -21,11 +21,11 @@ public abstract class CodesManager {
     }
 
     public void refreshCodes() {
-        codes = myDb.checkForTimerCodeUpdates(getOriginalCodes(), getCodesTableName());
+        codes = timerRepo.checkForTimerCodeUpdates(getOriginalCodes(), getCodesTableName());
     }
 
     public void removeUsedCode(String inputtedCode) {
         codes.remove(inputtedCode);
-        myDb.deleteTimerCode(getCodesTableName(), inputtedCode);
+        timerRepo.deleteTimerCode(getCodesTableName(), inputtedCode);
     }
 }

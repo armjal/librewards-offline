@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.librewards.DatabaseHelper;
+import com.example.librewards.models.UserModel;
 
 public class UserRepository {
     private final SQLiteDatabase db;
@@ -23,8 +24,11 @@ public class UserRepository {
         db.insert(NAME_TABLE_NAME, null, contentValues);
     }
 
-    public String getName() {
-        return dbHelper.getString(NAME_TABLE_NAME, "name", null, null);
+    public UserModel getUser() {
+        String name = dbHelper.getString(NAME_TABLE_NAME, "name", null, null);
+        int points = dbHelper.getInt(POINTS_TABLE_NAME, "points", null, null);
+
+        return new UserModel(name, points);
     }
 
     public int getPoints() {

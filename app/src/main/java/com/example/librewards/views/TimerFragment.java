@@ -1,5 +1,7 @@
 package com.example.librewards.views;
 
+import static com.example.librewards.PointsCalculator.calculatePointsFromDuration;
+
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
@@ -79,9 +81,10 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
             String inputtedStopCode = timerCodeText.getText().toString();
             if (isValidCode(stopCodesManager, inputtedStopCode)) {
                 long totalDuration = timerHandler.stop(inputtedStopCode);
-                int totalPoints = timerHandler.saveTotalPointsFromDuration(userRepo);
-                announceAccumulatedPoints(timerHandler.getPointsEarned(), totalDuration, totalPoints);
-                UserChangeNotifier.notifyPointsChanged(totalPoints);
+                int pointsEarned = calculatePointsFromDuration(totalDuration);
+                userRepo.addPoints(user, pointsEarned);
+                announceAccumulatedPoints(pointsEarned, totalDuration, user.getPoints());
+                UserChangeNotifier.notifyPointsChanged(user.getPoints());
             }
         });
     }

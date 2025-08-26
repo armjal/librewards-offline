@@ -35,15 +35,19 @@ public class UserRepository {
         return dbHelper.getInt(POINTS_TABLE_NAME, "points", null, null);
     }
 
-    public void addPoints(int points) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("points", getPoints() + points);
-        db.update(POINTS_TABLE_NAME, contentValues, null, null);
+    public void addPoints(int pointsToUpdate) {
+        int newPoints = getPoints() + pointsToUpdate;
+        updatePoints(newPoints);
     }
 
-    public void minusPoints(int points) {
+    public void minusPoints(int pointsToUpdate) {
+        int newPoints = getPoints() - pointsToUpdate;
+        updatePoints(newPoints);
+    }
+
+    private void updatePoints(int updatedPoints) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put("points", getPoints() - points);
+        contentValues.put("points", updatedPoints);
         db.update(POINTS_TABLE_NAME, contentValues, null, null);
     }
 }

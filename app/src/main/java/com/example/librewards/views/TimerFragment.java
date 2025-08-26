@@ -19,6 +19,7 @@ import com.example.librewards.controllers.codes.StartCodesManager;
 import com.example.librewards.controllers.codes.StopCodesManager;
 import com.example.librewards.models.UserChangeListener;
 import com.example.librewards.models.UserChangeNotifier;
+import com.example.librewards.models.UserModel;
 import com.example.librewards.repositories.TimerRepository;
 import com.example.librewards.repositories.UserRepository;
 
@@ -31,6 +32,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     private EditText timerCodeText;
     private Chronometer timer;
     private ViewUtils viewUtils;
+    private UserModel user;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,14 +52,14 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         UserChangeNotifier.addListener(this);
+        user = (UserModel) getParcelable("user");
         DatabaseHelper dbHelper = new DatabaseHelper(requireContext());
         UserRepository userRepo = new UserRepository(dbHelper);
         TimerRepository timerRepo = new TimerRepository(dbHelper);
         viewUtils = new ViewUtils(requireContext());
 
-        String wholeName = getString(R.string.Hey) + " " + userRepo.getName();
-        name.setText(wholeName);
-        points.setText(String.valueOf(userRepo.getPoints()));
+        name.setText(String.format(getString(R.string.welcome), user.getName()));
+        points.setText(String.valueOf(user.getPoints()));
 
         StartCodesManager startCodesManager = new StartCodesManager(timerRepo);
         StopCodesManager stopCodesManager = new StopCodesManager(timerRepo);
@@ -138,7 +140,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
 
     @Override
     public void onNameChanged(String newName) {
-        String wholeName = getString(R.string.Hey) + " " + newName;
+        String wholeName = String.format(getString(R.string.welcome), user.getName());
         name.setText(wholeName);
     }
 

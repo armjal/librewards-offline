@@ -58,13 +58,15 @@ public class MainActivity extends AppCompatActivity {
         enterName = findViewById(R.id.enterName);
         nameButton = findViewById(R.id.nameButton);
 
-        userModel = userRepo.getUser();
+        user = userRepo.getUser();
         handleFirstStart(this, this::onFirstStart);
 
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this);
         viewPager.setAdapter(viewPagerAdapter);
-
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("user", user);
         List<FragmentExtended> fragments = List.of(new TimerFragment(), new RewardsFragment());
+        passBundle(fragments, bundle);
         viewPagerAdapter.addFragments(fragments);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) ->
         {
@@ -76,6 +78,11 @@ public class MainActivity extends AppCompatActivity {
         helpButton.setOnClickListener(v -> viewUtils.showPopup(getString(R.string.helpInfo)));
     }
 
+    private void passBundle(List<FragmentExtended> fragments, Bundle bundle){
+        for(FragmentExtended f : fragments){
+            f.setArguments(bundle);
+        }
+    }
     public void onFirstStart() {
         requireUserToEnterName();
         dbHelper.processTransaction(() -> {
@@ -92,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
                 viewUtils.toastMessage(getString(R.string.noNameEntered));
             } else {
                 String userName = enterName.getText().toString();
-                userModel.setName(userName);
+                user.setName(userName);
                 userRepo.addName(userName);
                 popupNameContainer.setVisibility(View.INVISIBLE);
                 viewUtils.showPopup(getString(R.string.helpInfo));

@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText enterName;
     private Button nameButton;
     private FrameLayout popupNameContainer;
-    private UserModel userModel;
+    private UserModel user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +58,7 @@ public class MainActivity extends AppCompatActivity {
         enterName = findViewById(R.id.enterName);
         nameButton = findViewById(R.id.nameButton);
 
-        userModel = new UserModel();
-
+        userModel = userRepo.getUser();
         handleFirstStart(this, this::onFirstStart);
 
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this);

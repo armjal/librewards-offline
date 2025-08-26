@@ -14,6 +14,7 @@ import com.example.librewards.DatabaseHelper;
 import com.example.librewards.R;
 import com.example.librewards.models.UserChangeListener;
 import com.example.librewards.models.UserChangeNotifier;
+import com.example.librewards.models.UserModel;
 import com.example.librewards.repositories.RewardsRepository;
 import com.example.librewards.repositories.UserRepository;
 
@@ -23,6 +24,7 @@ import java.util.List;
 public class RewardsFragment extends FragmentExtended implements UserChangeListener {
     private static final String TITLE = "Rewards";
     private UserRepository userRepo;
+    private UserModel user;
     private RewardsRepository rewardsRepo;
     private ViewUtils viewUtils;
     private TextView points;
@@ -45,13 +47,16 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
 
     @Override
     public void onViewCreated(@NonNull View v, Bundle savedInstanceState) {
+        UserChangeNotifier.addListener(this);
+        user = (UserModel) getParcelable("user");
         DatabaseHelper dbHelper = new DatabaseHelper(requireContext());
         userRepo = new UserRepository(dbHelper);
         rewardsRepo = new RewardsRepository(dbHelper);
         viewUtils = new ViewUtils(requireContext());
         List<String> rewardCodes = rewardsRepo.refreshRewardCodes();
 
-        points.setText(String.valueOf(userRepo.getPoints()));
+        name.setText(String.format(getString(R.string.welcome), user.getName()));
+        points.setText(String.valueOf(user.getPoints()));
 
         rewardButton.setOnClickListener(v1 -> {
             String inputtedRewardCode = rewardText.getText().toString();
@@ -59,10 +64,6 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
                 purchaseReward(inputtedRewardCode);
             }
         });
-        UserChangeNotifier.addListener(this);
-
-        String wholeName = getString(R.string.Hey) + " " + userRepo.getName();
-        name.setText(wholeName);
     }
 
     public void purchaseReward(String inputtedRewardCode) {
@@ -89,7 +90,7 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
 
     @Override
     public void onNameChanged(String newName) {
-        String wholeName = getString(R.string.Hey) + " " + newName;
+        String wholeName = String.format(getString(R.string.welcome), user.getName());
         name.setText(wholeName);
     }
 

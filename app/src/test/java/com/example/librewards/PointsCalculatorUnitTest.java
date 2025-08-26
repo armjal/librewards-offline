@@ -2,10 +2,10 @@ package com.example.librewards;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+
 import java.util.stream.Stream;
 
 
@@ -24,8 +24,9 @@ class PointsCalculatorUnitTest {
 
     @ParameterizedTest
     @MethodSource("provideInputsForPointsCalculatorTest")
-    void calculateFromDuration_givenRangeOfTimes_returnsExpectedPointsEarned(long timeSpentInLibrary, int expectedPointsEarned) {
-        int actualPointsEarned = PointsCalculator.calculateFromDuration(timeSpentInLibrary);
+    void calculateFromDuration_givenRangeOfTimes_returnsExpectedPointsEarned(long timeSpentInLibrary,
+                                                                             int expectedPointsEarned) {
+        int actualPointsEarned = PointsCalculator.calculatePointsFromDuration(timeSpentInLibrary);
 
         assertEquals(expectedPointsEarned, actualPointsEarned);
 

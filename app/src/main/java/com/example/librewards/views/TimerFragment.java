@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.librewards.DatabaseHelper;
+import com.example.librewards.PointsCalculator;
 import com.example.librewards.R;
 import com.example.librewards.controllers.codes.CodesManager;
 import com.example.librewards.controllers.codes.StartCodesManager;
@@ -79,9 +80,10 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
             String inputtedStopCode = timerCodeText.getText().toString();
             if (isValidCode(stopCodesManager, inputtedStopCode)) {
                 long totalDuration = timerHandler.stop(inputtedStopCode);
-                int totalPoints = timerHandler.saveTotalPointsFromDuration(userRepo);
-                announceAccumulatedPoints(timerHandler.getPointsEarned(), totalDuration, totalPoints);
-                UserChangeNotifier.notifyPointsChanged(totalPoints);
+                int pointsEarned = PointsCalculator.calculateFromDuration(totalDuration);
+                userRepo.addPoints(user, pointsEarned);
+                announceAccumulatedPoints(pointsEarned, totalDuration, user.getPoints());
+                UserChangeNotifier.notifyPointsChanged(user.getPoints());
             }
         });
     }

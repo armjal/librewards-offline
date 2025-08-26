@@ -1,17 +1,13 @@
 package com.example.librewards.views;
 import android.os.SystemClock;
 
-import com.example.librewards.PointsCalculator;
 import com.example.librewards.controllers.codes.StartCodesManager;
 import com.example.librewards.controllers.codes.StopCodesManager;
-import com.example.librewards.repositories.UserRepository;
 
 public class TimerHandler {
     private final StartCodesManager startCodesManager;
     private final StopCodesManager stopCodesManager;
     private final TimerView timerView;
-    private long totalDuration = 0;
-    private int pointsEarned = 0;
 
     public TimerHandler(TimerView timerView, StartCodesManager startCodesManager, StopCodesManager stopCodesManager) {
         this.startCodesManager = startCodesManager;
@@ -32,18 +28,7 @@ public class TimerHandler {
     public long stop(String inputtedCode) {
         stopCodesManager.removeUsedCode(inputtedCode);
         timerView.changeTimerToDesiredState("stop");
-        totalDuration = SystemClock.elapsedRealtime() - timerView.getTimer().getBase();
 
-        return totalDuration;
-    }
-
-    public int saveTotalPointsFromDuration(UserRepository userRepo) {
-        pointsEarned = PointsCalculator.calculateFromDuration(totalDuration);
-        userRepo.addPoints(pointsEarned);
-        return userRepo.getPoints();
-    }
-
-    public int getPointsEarned(){
-        return pointsEarned;
+        return SystemClock.elapsedRealtime() - timerView.getTimer().getBase();
     }
 }

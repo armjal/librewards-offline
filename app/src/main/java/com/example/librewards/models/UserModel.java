@@ -7,7 +7,7 @@ public class UserModel implements Parcelable {
     private String name;
     private int points;
 
-    public UserModel(String name, Integer points){
+    public UserModel(String name, Integer points) {
         this.name = name;
         this.points = points;
     }
@@ -33,7 +33,7 @@ public class UserModel implements Parcelable {
     public UserModel(Parcel in) {
         name = in.readString();
         points = in.readInt();
-        }
+    }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {

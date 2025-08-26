@@ -78,11 +78,12 @@ public class MainActivity extends AppCompatActivity {
         helpButton.setOnClickListener(v -> viewUtils.showPopup(getString(R.string.helpInfo)));
     }
 
-    private void passBundle(List<FragmentExtended> fragments, Bundle bundle){
-        for(FragmentExtended f : fragments){
+    private void passBundle(List<FragmentExtended> fragments, Bundle bundle) {
+        for (FragmentExtended f : fragments) {
             f.setArguments(bundle);
         }
     }
+
     public void onFirstStart() {
         requireUserToEnterName();
         dbHelper.processTransaction(() -> {

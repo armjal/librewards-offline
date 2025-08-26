@@ -154,10 +154,12 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         String popUpMessage;
 
         if (timeSpentMinutes == 1) {
-            popUpMessage = String.format(getString(R.string.congratsMessage), timeSpentMinutes, "minute", pointsEarned, totalPoints);
+            popUpMessage = String.format(getString(R.string.congratsMessage), timeSpentMinutes, "minute", pointsEarned
+                    , totalPoints);
 
         } else if (timeSpentMinutes > 1) {
-            popUpMessage = String.format(getString(R.string.congratsMessage), timeSpentMinutes, "minutes", pointsEarned, totalPoints);
+            popUpMessage = String.format(getString(R.string.congratsMessage), timeSpentMinutes, "minutes",
+                    pointsEarned, totalPoints);
 
         } else {
             popUpMessage = getString(R.string.unfortunatelyMessage);

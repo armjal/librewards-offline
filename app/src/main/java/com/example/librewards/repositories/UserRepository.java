@@ -24,7 +24,7 @@ public class UserRepository {
         db.insert(NAME_TABLE_NAME, null, contentValues);
     }
 
-    public UserModel getUser(){
+    public UserModel getUser() {
         String name = dbHelper.getString(NAME_TABLE_NAME, "name", null, null);
         int points = dbHelper.getInt(POINTS_TABLE_NAME, "points", null, null);
 

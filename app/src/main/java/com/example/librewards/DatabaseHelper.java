@@ -11,6 +11,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -19,9 +22,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String create_start_codes_query = "CREATE TABLE " + START_CODES_TABLE_NAME + " (id " +
-                "INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT) ";
+                "INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT, used TEXT DEFAULT 'false') ";
         String create_stop_codes_query = "CREATE TABLE " + STOP_CODES_TABLE_NAME + " (id INTEGER " +
-                "PRIMARY KEY AUTOINCREMENT,codes TEXT) ";
+                "PRIMARY KEY AUTOINCREMENT,codes TEXT, used TEXT DEFAULT 'false') ";
         String create_reward_codes_query = "CREATE TABLE " + REWARD_CODES_TABLE_NAME + " (id " +
                 "INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT, cost INTEGER) ";
         String create_user_query = "CREATE TABLE " + USER_TABLE_NAME + " (id INTEGER PRIMARY " +
@@ -51,8 +54,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int getInt(String tableName, String column, String whereClause, String[] whereArgs) {
+        SQLiteDatabase db = this.getWritableDatabase();
         int output = 0;
-        Cursor c = selectOne(tableName, column, whereClause, whereArgs);
+        Cursor c = db.query(tableName, new String[]{column}, whereClause, whereArgs, null, null, null, "1");
         if (c.getCount() > 0 && c.moveToFirst()) {
             output = c.getInt(0);
         }
@@ -62,8 +66,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public String getString(String tableName, String column, String whereClause,
                             String[] whereArgs) {
+        SQLiteDatabase db = this.getWritableDatabase();
         String output = "";
-        Cursor c = selectOne(tableName, column, whereClause, whereArgs);
+        Cursor c = db.query(tableName, new String[]{column}, whereClause, whereArgs, null, null, null, "1");
         if (c.getCount() > 0 && c.moveToFirst()) {
             output = c.getString(0);
         }
@@ -71,15 +76,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return output;
     }
 
-    public Cursor select(String tableName, String column, String limit) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        return db.query(tableName, new String[]{column}, null, null, null, null, null, limit);
-    }
 
-    public Cursor selectOne(String tableName, String column, String whereClause,
-                            String[] whereArgs) {
+    public List<String> getAllStrings(String tableName, String columnName, String whereClause, String[] whereArgs) {
         SQLiteDatabase db = this.getWritableDatabase();
-        return db.query(tableName, new String[]{column}, whereClause, whereArgs, null, null, null
-                , "1");
+        List<String> strings = new ArrayList<>();
+        Cursor c = db.query(tableName, new String[]{columnName}, whereClause, whereArgs, null, null, null, null);
+        c.moveToFirst();
+        while (!c.isAfterLast()) {
+            strings.add(c.getString(0));
+            c.moveToNext();
+        }
+        c.close();
+        return strings;
     }
 }

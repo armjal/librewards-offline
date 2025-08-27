@@ -1,7 +1,6 @@
 package com.example.librewards.repositories;
 
-import static com.example.librewards.DbConstants.NAME_TABLE_NAME;
-import static com.example.librewards.DbConstants.POINTS_TABLE_NAME;
+import static com.example.librewards.DbConstants.USER_TABLE_NAME;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
@@ -21,35 +20,36 @@ public class UserRepository {
     public void addName(String yourName) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("name", yourName);
-        db.insert(NAME_TABLE_NAME, null, contentValues);
+        db.insert(USER_TABLE_NAME, null, contentValues);
     }
 
     public UserModel getUser() {
-        String name = dbHelper.getString(NAME_TABLE_NAME, "name", null, null);
-        int points = dbHelper.getInt(POINTS_TABLE_NAME, "points", null, null);
+        int id = 1;
+        String name = dbHelper.getString(USER_TABLE_NAME, "name", null, null);
+        int points = dbHelper.getInt(USER_TABLE_NAME, "points", null, null);
 
-        return new UserModel(name, points);
+        return new UserModel(id, name, points);
     }
 
     public int getPoints() {
-        return dbHelper.getInt(POINTS_TABLE_NAME, "points", null, null);
+        return dbHelper.getInt(USER_TABLE_NAME, "points", null, null);
     }
 
     public void addPoints(UserModel user, int pointsToUpdate) {
         int newPoints = user.getPoints() + pointsToUpdate;
-        updatePoints(newPoints);
+        updatePoints(String.valueOf(user.getId()), newPoints);
         user.setPoints(newPoints);
     }
 
     public void minusPoints(UserModel user, int pointsToUpdate) {
         int newPoints = user.getPoints() - pointsToUpdate;
-        updatePoints(newPoints);
         user.setPoints(newPoints);
+        updatePoints(String.valueOf(user.getId()), newPoints);
     }
 
-    private void updatePoints(int updatedPoints){
+    private void updatePoints(String id, int updatedPoints) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("points", updatedPoints);
-        db.update(POINTS_TABLE_NAME, contentValues, null, null);
+        db.update(USER_TABLE_NAME, contentValues, "id = ?", new String[]{String.valueOf(id)});
     }
 }

@@ -54,8 +54,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public int getInt(String tableName, String column, String whereClause, String[] whereArgs) {
+        SQLiteDatabase db = this.getWritableDatabase();
         int output = 0;
-        Cursor c = selectOne(tableName, column, whereClause, whereArgs);
+        Cursor c = db.query(tableName, new String[]{column}, whereClause, whereArgs, null, null, null, "1");
         if (c.getCount() > 0 && c.moveToFirst()) {
             output = c.getInt(0);
         }
@@ -65,8 +66,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public String getString(String tableName, String column, String whereClause,
                             String[] whereArgs) {
+        SQLiteDatabase db = this.getWritableDatabase();
         String output = "";
-        Cursor c = selectOne(tableName, column, whereClause, whereArgs);
+        Cursor c = db.query(tableName, new String[]{column}, whereClause, whereArgs, null, null, null, "1");
         if (c.getCount() > 0 && c.moveToFirst()) {
             output = c.getString(0);
         }
@@ -75,10 +77,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    public List<String> getAllStrings(String table, String columnName, String whereClause, String[] whereArgs) {
+    public List<String> getAllStrings(String tableName, String columnName, String whereClause, String[] whereArgs) {
+        SQLiteDatabase db = this.getWritableDatabase();
         List<String> strings = new ArrayList<>();
-        Cursor c = select(table, columnName, whereClause,
-                whereArgs, null);
+        Cursor c = db.query(tableName, new String[]{columnName}, whereClause, whereArgs, null, null, null, null);
         c.moveToFirst();
         while (!c.isAfterLast()) {
             strings.add(c.getString(0));
@@ -86,18 +88,5 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         c.close();
         return strings;
-    }
-
-    public Cursor select(String tableName, String column, String whereClause,
-                         String[] whereArgs, String limit) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        return db.query(tableName, new String[]{column}, null, null, null, null, null, limit);
-    }
-
-    public Cursor selectOne(String tableName, String column, String whereClause,
-                            String[] whereArgs) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        return db.query(tableName, new String[]{column}, whereClause, whereArgs, null, null, null
-                , "1");
     }
 }

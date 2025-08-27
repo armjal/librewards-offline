@@ -22,7 +22,7 @@ public class TimerRepository {
 
     public void deleteTimerCode(String table, String code) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(USED_CODE_COLUMN_NAME, true);
+        contentValues.put(USED_CODE_COLUMN_NAME, "true");
         db.update(table, contentValues, CODES_COLUMN_NAME + " = ?", new String[]{code});
     }
 

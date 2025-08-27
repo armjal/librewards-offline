@@ -11,6 +11,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -71,7 +74,22 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return output;
     }
 
-    public Cursor select(String tableName, String column, String limit) {
+
+    public List<String> getAllStrings(String table, String columnName, String whereClause, String[] whereArgs) {
+        List<String> strings = new ArrayList<>();
+        Cursor c = select(table, columnName, whereClause,
+                whereArgs, null);
+        c.moveToFirst();
+        while (!c.isAfterLast()) {
+            strings.add(c.getString(0));
+            c.moveToNext();
+        }
+        c.close();
+        return strings;
+    }
+
+    public Cursor select(String tableName, String column, String whereClause,
+                         String[] whereArgs, String limit) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.query(tableName, new String[]{column}, null, null, null, null, null, limit);
     }

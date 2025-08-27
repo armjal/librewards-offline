@@ -4,10 +4,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class UserModel implements Parcelable {
+    private int id;
     private String name;
     private int points;
 
-    public UserModel(String name, Integer points) {
+    public UserModel(int id, String name, Integer points) {
+        this.id = id;
         this.name = name;
         this.points = points;
     }
@@ -20,6 +22,10 @@ public class UserModel implements Parcelable {
     public void setName(String name) {
         this.name = name;
         UserChangeNotifier.notifyNameChange(name);
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getName() {

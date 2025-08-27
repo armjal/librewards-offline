@@ -1,5 +1,8 @@
 package com.example.librewards.repositories;
 
+import static com.example.librewards.DbConstants.CODES_COLUMN_NAME;
+import static com.example.librewards.DbConstants.ID_COLUMN_NAME;
+
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -19,13 +22,13 @@ public class TimerRepository {
     }
 
     public void deleteTimerCode(String table, String code) {
-        db.delete(table, "codes = ?", new String[]{code});
+        db.delete(table, CODES_COLUMN_NAME + " = ?", new String[]{code});
     }
 
     public void storeTimerCodes(List<String> codesList, String table) {
         for (String code : codesList) {
             ContentValues contentValues = new ContentValues();
-            contentValues.put("codes", code);
+            contentValues.put(CODES_COLUMN_NAME, code);
             db.insert(table, null, contentValues);
         }
     }
@@ -55,9 +58,9 @@ public class TimerRepository {
         int id = 1;
         ContentValues contentValues = new ContentValues();
         for (int i = 0; i < newCodesList.size(); i++) {
-            contentValues.put("codes", newCodesList.get(i));
+            contentValues.put(CODES_COLUMN_NAME, newCodesList.get(i));
             //Uses the 'id' column to iterate through the list of codes and update each one
-            db.update(table, contentValues, "id = ?", new String[]{String.valueOf(id)});
+            db.update(table, contentValues, ID_COLUMN_NAME + " = ?", new String[]{String.valueOf(id)});
             //Iterates through codes by incrementing each id. Each id is assigned to a code and has always got a value
             id++;
         }
@@ -65,7 +68,7 @@ public class TimerRepository {
 
     public List<String> getCurrentTimerCodes(String table) {
         List<String> codes = new ArrayList<>();
-        Cursor c = dbHelper.select(table, "codes", null);
+        Cursor c = dbHelper.select(table, CODES_COLUMN_NAME, null);
         c.moveToFirst();
         while (!c.isAfterLast()) {
             codes.add(c.getString(0));

@@ -2,14 +2,13 @@ package com.example.librewards.repositories;
 
 import static com.example.librewards.DbConstants.CODES_COLUMN_NAME;
 import static com.example.librewards.DbConstants.ID_COLUMN_NAME;
+import static com.example.librewards.DbConstants.USED_CODE_COLUMN_NAME;
 
 import android.content.ContentValues;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.librewards.DatabaseHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class TimerRepository {
@@ -22,7 +21,9 @@ public class TimerRepository {
     }
 
     public void deleteTimerCode(String table, String code) {
-        db.delete(table, CODES_COLUMN_NAME + " = ?", new String[]{code});
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(USED_CODE_COLUMN_NAME, true);
+        db.update(table, contentValues, CODES_COLUMN_NAME + " = ?", new String[]{code});
     }
 
     public void storeTimerCodes(List<String> codesList, String table) {

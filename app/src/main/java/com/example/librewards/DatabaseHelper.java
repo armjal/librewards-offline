@@ -19,9 +19,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String create_start_codes_query = "CREATE TABLE " + START_CODES_TABLE_NAME + " (id " +
-                "INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT, used TEXT DEFAULT false) ";
+                "INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT, used TEXT DEFAULT 'false') ";
         String create_stop_codes_query = "CREATE TABLE " + STOP_CODES_TABLE_NAME + " (id INTEGER " +
-                "PRIMARY KEY AUTOINCREMENT,codes TEXT, used TEXT DEFAULT false) ";
+                "PRIMARY KEY AUTOINCREMENT,codes TEXT, used TEXT DEFAULT 'false') ";
         String create_reward_codes_query = "CREATE TABLE " + REWARD_CODES_TABLE_NAME + " (id " +
                 "INTEGER PRIMARY KEY AUTOINCREMENT,codes TEXT, cost INTEGER) ";
         String create_user_query = "CREATE TABLE " + USER_TABLE_NAME + " (id INTEGER PRIMARY " +

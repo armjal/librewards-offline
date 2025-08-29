@@ -14,10 +14,15 @@ import com.example.librewards.DatabaseHelper;
 
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class RewardsRepository {
     private final SQLiteDatabase db;
     private final DatabaseHelper dbHelper;
 
+    @Inject
     public RewardsRepository(DatabaseHelper dbHelper) {
         this.dbHelper = dbHelper;
         db = dbHelper.getWritableDatabase();

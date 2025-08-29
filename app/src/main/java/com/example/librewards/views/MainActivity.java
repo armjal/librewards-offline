@@ -27,11 +27,22 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
-    private DatabaseHelper dbHelper;
-    private UserRepository userRepo;
-    private StartCodesRepository startCodesRepo;
-    private StopCodesRepository stopCodesRepo;
+    @Inject
+    public DatabaseHelper dbHelper;
+    @Inject
+    public UserRepository userRepo;
+    @Inject
+    public StartCodesRepository startCodesRepo;
+    @Inject
+    public StopCodesRepository stopCodesRepo;
+    @Inject
+    public RewardsRepository rewardsRepo;
     private ViewUtils viewUtils;
     private EditText enterName;
     private Button nameButton;
@@ -39,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
     private UserModel user;
     private TimerFragment timerFragment;
     private RewardsFragment rewardsFragment;
-    private RewardsRepository rewardsRepo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +57,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        dbHelper = new DatabaseHelper(this);
-        userRepo = new UserRepository(dbHelper);
-        startCodesRepo = new StartCodesRepository(dbHelper);
-        stopCodesRepo = new StopCodesRepository(dbHelper);
-        rewardsRepo = new RewardsRepository(dbHelper);
         viewUtils = new ViewUtils(this);
         popupNameContainer = findViewById(R.id.popupNameContainer);
         ViewPager2 viewPager = findViewById(R.id.viewPager);

@@ -23,8 +23,19 @@ import com.example.librewards.repositories.StartCodesRepository;
 import com.example.librewards.repositories.StopCodesRepository;
 import com.example.librewards.repositories.UserRepository;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class TimerFragment extends FragmentExtended implements UserChangeListener, TimerView {
     private static final String TITLE = "Timer";
+    @Inject
+    public UserRepository userRepo;
+    @Inject
+    public StartCodesRepository startCodesRepo;
+    @Inject
+    public StopCodesRepository stopCodesRepo;
     private TextView points;
     private TextView name;
     private Button startButton;
@@ -33,9 +44,6 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     private Chronometer timer;
     private ViewUtils viewUtils;
     private UserModel user;
-    private UserRepository userRepo;
-    private StartCodesRepository startCodesRepo;
-    private StopCodesRepository stopCodesRepo;
 
 
     @Override
@@ -175,17 +183,5 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     @Override
     public int getIcon() {
         return R.drawable.timer;
-    }
-
-    public void setUserRepo(UserRepository userRepo) {
-        this.userRepo = userRepo;
-    }
-
-    public void setStartCodesRepo(StartCodesRepository startCodesRepo) {
-        this.startCodesRepo = startCodesRepo;
-    }
-
-    public void setStopCodesRepo(StopCodesRepository stopCodesRepo) {
-        this.stopCodesRepo = stopCodesRepo;
     }
 }

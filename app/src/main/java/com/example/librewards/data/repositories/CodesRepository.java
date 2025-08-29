@@ -1,13 +1,13 @@
-package com.example.librewards.repositories;
+package com.example.librewards.data.repositories;
 
-import static com.example.librewards.DbConstants.CODES_COLUMN_NAME;
-import static com.example.librewards.DbConstants.ID_COLUMN_NAME;
-import static com.example.librewards.DbConstants.USED_CODE_COLUMN_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.CODES_COLUMN_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.ID_COLUMN_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.USED_CODE_COLUMN_NAME;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.librewards.DatabaseHelper;
+import com.example.librewards.data.db.DatabaseHelper;
 
 import java.util.List;
 

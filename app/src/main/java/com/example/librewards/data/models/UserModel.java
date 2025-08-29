@@ -1,4 +1,4 @@
-package com.example.librewards.models;
+package com.example.librewards.data.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

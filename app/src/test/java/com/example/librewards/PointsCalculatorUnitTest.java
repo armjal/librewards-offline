@@ -1,5 +1,6 @@
 package com.example.librewards;
 
+import static com.example.librewards.utils.PointsCalculator.calculatePointsFromDuration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.params.ParameterizedTest;
@@ -26,7 +27,7 @@ class PointsCalculatorUnitTest {
     @MethodSource("provideInputsForPointsCalculatorTest")
     void calculateFromDuration_givenRangeOfTimes_returnsExpectedPointsEarned(long timeSpentInLibrary,
                                                                              int expectedPointsEarned) {
-        int actualPointsEarned = PointsCalculator.calculatePointsFromDuration(timeSpentInLibrary);
+        int actualPointsEarned = calculatePointsFromDuration(timeSpentInLibrary);
 
         assertEquals(expectedPointsEarned, actualPointsEarned);
 

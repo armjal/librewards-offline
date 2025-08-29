@@ -11,11 +11,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.librewards.R;
-import com.example.librewards.models.UserChangeListener;
-import com.example.librewards.models.UserChangeNotifier;
-import com.example.librewards.models.UserModel;
-import com.example.librewards.repositories.RewardsRepository;
-import com.example.librewards.repositories.UserRepository;
+import com.example.librewards.data.notifiers.UserChangeListener;
+import com.example.librewards.data.notifiers.UserChangeNotifier;
+import com.example.librewards.data.models.UserModel;
+import com.example.librewards.data.repositories.RewardsRepository;
+import com.example.librewards.data.repositories.UserRepository;
+import com.example.librewards.utils.ViewUtils;
 
 import javax.inject.Inject;
 

@@ -1,7 +1,7 @@
 package com.example.librewards.views;
 
 
-import static com.example.librewards.FirstStartHandler.handleFirstStart;
+import static com.example.librewards.utils.FirstStartHandler.handleFirstStart;
 
 import android.os.Bundle;
 import android.view.View;
@@ -14,13 +14,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.librewards.DatabaseHelper;
+import com.example.librewards.data.db.DatabaseHelper;
 import com.example.librewards.R;
-import com.example.librewards.models.UserModel;
-import com.example.librewards.repositories.RewardsRepository;
-import com.example.librewards.repositories.StartCodesRepository;
-import com.example.librewards.repositories.StopCodesRepository;
-import com.example.librewards.repositories.UserRepository;
+import com.example.librewards.data.models.UserModel;
+import com.example.librewards.data.repositories.RewardsRepository;
+import com.example.librewards.data.repositories.StartCodesRepository;
+import com.example.librewards.data.repositories.StopCodesRepository;
+import com.example.librewards.data.repositories.UserRepository;
+import com.example.librewards.utils.ViewUtils;
 import com.example.librewards.views.adapters.ViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;

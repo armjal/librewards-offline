@@ -1,16 +1,16 @@
-package com.example.librewards.repositories;
+package com.example.librewards.data.repositories;
 
 import static android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE;
-import static com.example.librewards.DbConstants.CODES_COLUMN_NAME;
-import static com.example.librewards.DbConstants.COST_COLUMN_NAME;
-import static com.example.librewards.DbConstants.ID_COLUMN_NAME;
-import static com.example.librewards.DbConstants.REWARD_CODES_TABLE_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.CODES_COLUMN_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.COST_COLUMN_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.ID_COLUMN_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.REWARD_CODES_TABLE_NAME;
 import static com.example.librewards.resources.RewardCodes.rewardCodesAndPoints;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.librewards.DatabaseHelper;
+import com.example.librewards.data.db.DatabaseHelper;
 
 import java.util.Map;
 

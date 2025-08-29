@@ -1,4 +1,4 @@
-package com.example.librewards;
+package com.example.librewards.utils;
 
 import android.app.Activity;
 import android.content.Context;

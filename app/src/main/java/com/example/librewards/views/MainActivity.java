@@ -48,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
     private Button nameButton;
     private FrameLayout popupNameContainer;
     private UserModel user;
+    private TabLayout tabLayout;
+    private ViewPager2 viewPager;
+    private ImageView helpButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,43 +59,21 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
         viewUtils = new ViewUtils(this);
-        popupNameContainer = findViewById(R.id.popupNameContainer);
-        ViewPager2 viewPager = findViewById(R.id.viewPager);
-        TabLayout tabLayout = findViewById(R.id.tabLayout);
-        ImageView helpButton = findViewById(R.id.helpButton);
-        enterName = findViewById(R.id.enterName);
-        nameButton = findViewById(R.id.nameButton);
+        setupViews();
 
         rewardsRepo.populate();
         user = userRepo.getUser();
         handleFirstStart(this, this::onFirstStart);
+        requireUserNameIfNotSet();
 
-        if(user.getName().isEmpty()){
-            requireUserToEnterName();
-        }
-
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this);
-        viewPager.setAdapter(viewPagerAdapter);
         Bundle bundle = new Bundle();
         bundle.putParcelable("user", user);
 
         List<FragmentExtended> fragments = List.of(new TimerFragment(), new RewardsFragment());
+        setupTabLayout(fragments);
         passBundle(fragments, bundle);
-        viewPagerAdapter.addFragments(fragments);
-        new TabLayoutMediator(tabLayout, viewPager, (tab, position) ->
-        {
-            tab.setText(fragments.get(position).getTitle());
-            tab.setIcon(fragments.get(position).getIcon());
-        }
-        ).attach();
 
         helpButton.setOnClickListener(v -> viewUtils.showPopup(getString(R.string.helpInfo)));
-    }
-
-    private void passBundle(List<FragmentExtended> fragments, Bundle bundle) {
-        for (FragmentExtended f : fragments) {
-            f.setArguments(bundle);
-        }
     }
 
     public void onFirstStart() {
@@ -101,6 +82,12 @@ public class MainActivity extends AppCompatActivity {
             startCodesRepo.populate();
             stopCodesRepo.populate();
         });
+    }
+
+    private void requireUserNameIfNotSet() {
+        if (user.getName().isEmpty()) {
+            requireUserToEnterName();
+        }
     }
 
     public void requireUserToEnterName() {
@@ -116,5 +103,32 @@ public class MainActivity extends AppCompatActivity {
                 viewUtils.showPopup(getString(R.string.helpInfo));
             }
         });
+    }
+
+    private void setupViews() {
+        popupNameContainer = findViewById(R.id.popupNameContainer);
+        viewPager = findViewById(R.id.viewPager);
+        tabLayout = findViewById(R.id.tabLayout);
+        helpButton = findViewById(R.id.helpButton);
+        enterName = findViewById(R.id.enterName);
+        nameButton = findViewById(R.id.nameButton);
+    }
+
+    private void setupTabLayout(List<FragmentExtended> fragments) {
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this);
+        viewPager.setAdapter(viewPagerAdapter);
+        viewPagerAdapter.addFragments(fragments);
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) ->
+        {
+            tab.setText(fragments.get(position).getTitle());
+            tab.setIcon(fragments.get(position).getIcon());
+        }
+        ).attach();
+    }
+
+    private void passBundle(List<FragmentExtended> fragments, Bundle bundle) {
+        for (FragmentExtended f : fragments) {
+            f.setArguments(bundle);
+        }
     }
 }

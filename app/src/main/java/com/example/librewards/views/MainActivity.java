@@ -87,8 +87,8 @@ public class MainActivity extends AppCompatActivity {
     public void onFirstStart() {
         requireUserToEnterName();
         dbHelper.processTransaction(() -> {
-            startCodesRepo.storeTimerCodes();
-            stopCodesRepo.storeTimerCodes();
+            startCodesRepo.populate();
+            stopCodesRepo.populate();
             rewardsRepo.storeRewards();
         });
     }

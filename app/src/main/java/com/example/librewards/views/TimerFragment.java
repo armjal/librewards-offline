@@ -62,8 +62,8 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
 
         name.setText(String.format(getString(R.string.welcome), user.getName()));
         points.setText(String.valueOf(user.getPoints()));
-        startCodesRepo.checkForTimerCodeUpdates();
-        stopCodesRepo.checkForTimerCodeUpdates();
+        startCodesRepo.checkForUpdates();
+        stopCodesRepo.checkForUpdates();
 
         TimerHandler timerHandler = new TimerHandler(this);
 
@@ -71,7 +71,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
             String inputtedStartCode = timerCodeText.getText().toString();
             if (isValidCode(startCodesRepo, inputtedStartCode)) {
                 timerHandler.start();
-                startCodesRepo.deleteTimerCode(inputtedStartCode);
+                startCodesRepo.delete(inputtedStartCode);
             }
         });
 
@@ -79,7 +79,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
             String inputtedStopCode = timerCodeText.getText().toString();
             if (isValidCode(stopCodesRepo, inputtedStopCode)) {
                 long totalDuration = timerHandler.stop();
-                stopCodesRepo.deleteTimerCode(inputtedStopCode);
+                stopCodesRepo.delete(inputtedStopCode);
                 int pointsEarned = calculatePointsFromDuration(totalDuration);
                 userRepo.addPoints(user, pointsEarned);
                 announceAccumulatedPoints(pointsEarned, totalDuration, user.getPoints());
@@ -92,7 +92,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         if (inputtedCode.isEmpty()) {
             viewUtils.toastMessage(getString(R.string.emptyCode));
             return false;
-        } else if (codesRepo.getCode(inputtedCode).isEmpty()) {
+        } else if (codesRepo.get(inputtedCode).isEmpty()) {
             viewUtils.toastMessage(getString(R.string.invalidCode));
             return false;
         }

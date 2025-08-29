@@ -1,6 +1,6 @@
-package com.example.librewards;
+package com.example.librewards.data.db;
 
-public class DbConstants {
+public class DatabaseConstants {
     public static final String DATABASE_NAME = "librewards.db";
     public static final String START_CODES_TABLE_NAME = "start_codes_table";
     public static final String STOP_CODES_TABLE_NAME = "stop_codes_table";

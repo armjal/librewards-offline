@@ -1,6 +1,6 @@
 package com.example.librewards.views;
 
-import static com.example.librewards.PointsCalculator.calculatePointsFromDuration;
+import static com.example.librewards.utils.PointsCalculator.calculatePointsFromDuration;
 
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -15,13 +15,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.librewards.R;
-import com.example.librewards.models.UserChangeListener;
-import com.example.librewards.models.UserChangeNotifier;
-import com.example.librewards.models.UserModel;
-import com.example.librewards.repositories.CodesRepository;
-import com.example.librewards.repositories.StartCodesRepository;
-import com.example.librewards.repositories.StopCodesRepository;
-import com.example.librewards.repositories.UserRepository;
+import com.example.librewards.data.notifiers.UserChangeListener;
+import com.example.librewards.data.notifiers.UserChangeNotifier;
+import com.example.librewards.data.models.UserModel;
+import com.example.librewards.data.repositories.CodesRepository;
+import com.example.librewards.data.repositories.StartCodesRepository;
+import com.example.librewards.data.repositories.StopCodesRepository;
+import com.example.librewards.data.repositories.UserRepository;
+import com.example.librewards.utils.ViewUtils;
 
 import javax.inject.Inject;
 
@@ -138,7 +139,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         timer.setBase(SystemClock.elapsedRealtime());
         timer.stop();
         enableStartButton();
-        viewUtils.showPopup("No stop code was entered for 24 hours. The timer has been reset");
+        viewUtils.showPopup(getString(R.string.noCodeEnteredInADay));
     }
 
     private void enableStartButton() {

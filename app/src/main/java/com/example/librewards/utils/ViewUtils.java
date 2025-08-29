@@ -1,4 +1,4 @@
-package com.example.librewards.views;
+package com.example.librewards.utils;
 
 import static java.util.Objects.requireNonNull;
 

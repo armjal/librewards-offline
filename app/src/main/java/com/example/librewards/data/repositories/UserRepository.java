@@ -1,16 +1,16 @@
-package com.example.librewards.repositories;
+package com.example.librewards.data.repositories;
 
-import static com.example.librewards.DbConstants.ID_COLUMN_NAME;
-import static com.example.librewards.DbConstants.NAME_COLUMN_NAME;
-import static com.example.librewards.DbConstants.POINTS_COLUMN_NAME;
-import static com.example.librewards.DbConstants.USER_TABLE_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.ID_COLUMN_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.NAME_COLUMN_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.POINTS_COLUMN_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.USER_TABLE_NAME;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.librewards.DatabaseHelper;
-import com.example.librewards.models.UserChangeNotifier;
-import com.example.librewards.models.UserModel;
+import com.example.librewards.data.db.DatabaseHelper;
+import com.example.librewards.data.notifiers.UserChangeNotifier;
+import com.example.librewards.data.models.UserModel;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

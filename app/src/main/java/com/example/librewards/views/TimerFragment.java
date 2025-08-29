@@ -28,7 +28,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
-public class TimerFragment extends FragmentExtended implements UserChangeListener, TimerView {
+public class TimerFragment extends FragmentExtended implements UserChangeListener {
     private static final String TITLE = "Timer";
     @Inject
     public UserRepository userRepo;
@@ -72,12 +72,10 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         startCodesRepo.checkForUpdates();
         stopCodesRepo.checkForUpdates();
 
-        TimerHandler timerHandler = new TimerHandler(this);
-
         startButton.setOnClickListener(v2 -> {
             String inputtedStartCode = timerCodeText.getText().toString();
             if (isValidCode(startCodesRepo, inputtedStartCode)) {
-                timerHandler.start();
+                startTimer();
                 startCodesRepo.delete(inputtedStartCode);
             }
         });
@@ -85,13 +83,27 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         stopButton.setOnClickListener(v1 -> {
             String inputtedStopCode = timerCodeText.getText().toString();
             if (isValidCode(stopCodesRepo, inputtedStopCode)) {
-                long totalDuration = timerHandler.stop();
+                long totalDuration = stopTimer();
                 int pointsEarned = calculatePointsFromDuration(totalDuration);
                 stopCodesRepo.delete(inputtedStopCode);
                 userRepo.addPoints(user, pointsEarned);
                 announceAccumulatedPoints(pointsEarned, totalDuration, user.getPoints());
             }
         });
+    }
+
+    public void startTimer() {
+        changeTimerToDesiredState("start");
+        timer.setOnChronometerTickListener(chronometer -> {
+            if ((SystemClock.elapsedRealtime() - timer.getBase()) >= 500000) {
+                enforceTimerDayLimit();
+            }
+        });
+    }
+
+    public long stopTimer() {
+        changeTimerToDesiredState("stop");
+        return SystemClock.elapsedRealtime() - timer.getBase();
     }
 
     private boolean isValidCode(CodesRepository codesRepo, String inputtedCode) {
@@ -105,7 +117,6 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         return true;
     }
 
-    @Override
     public void changeTimerToDesiredState(String desiredState) {
         String userCodeRequest = "Please enter the %s code";
         timer.setBase(SystemClock.elapsedRealtime());
@@ -123,17 +134,11 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         }
     }
 
-    @Override
     public void enforceTimerDayLimit() {
         timer.setBase(SystemClock.elapsedRealtime());
         timer.stop();
         enableStartButton();
         viewUtils.showPopup("No stop code was entered for 24 hours. The timer has been reset");
-    }
-
-    @Override
-    public Chronometer getTimer() {
-        return timer;
     }
 
     private void enableStartButton() {

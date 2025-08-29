@@ -20,39 +20,6 @@ public abstract class CodesRepository {
         db = dbHelper.getWritableDatabase();
     }
 
-    public void deleteTimerCode(String code) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(USED_CODE_COLUMN_NAME, "true");
-        db.update(getTableName(), contentValues, CODES_COLUMN_NAME + " = ?", new String[]{code});
-    }
-
-    public void storeTimerCodes() {
-        for (String code : getOriginalCodes()) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(CODES_COLUMN_NAME, code);
-            db.insert(getTableName(), null, contentValues);
-        }
-    }
-
-    public void checkForTimerCodeUpdates() {
-        List<String> allCodes = getAllCodes(getTableName());
-        if (!(allCodes.equals(getOriginalCodes()))) {
-            this.updateTimerCodes(getTableName(), getOriginalCodes());
-        }
-    }
-
-    public void updateTimerCodes(String table, List<String> newCodesList) {
-        ContentValues contentValues = new ContentValues();
-        for (int i = 1, k = 0; i < newCodesList.size() - 1; i++, k++) {
-            contentValues.put(CODES_COLUMN_NAME, newCodesList.get(k));
-            db.update(table, contentValues, ID_COLUMN_NAME + " = ?", new String[]{String.valueOf(i)});
-        }
-    }
-
-    public List<String> getAllCodes(String table) {
-        return dbHelper.getAllStrings(table, CODES_COLUMN_NAME, null, null);
-    }
-
     public abstract String getTableName();
 
     public abstract List<String> getOriginalCodes();
@@ -61,5 +28,39 @@ public abstract class CodesRepository {
         return dbHelper.getString(getTableName(), CODES_COLUMN_NAME,
                 USED_CODE_COLUMN_NAME + " = ? AND " + CODES_COLUMN_NAME + " = ?",
                 new String[]{"false", value});
+    }
+
+    public void deleteCode(String code) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(USED_CODE_COLUMN_NAME, "true");
+        db.update(getTableName(), contentValues, CODES_COLUMN_NAME + " = ?", new String[]{code});
+    }
+
+    public void storeCodes() {
+        for (String code : getOriginalCodes()) {
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(CODES_COLUMN_NAME, code);
+            db.insert(getTableName(), null, contentValues);
+        }
+    }
+
+    public void checkForCodeUpdates() {
+        List<String> originalCodes = getOriginalCodes();
+        List<String> allCodes = getAllCodes();
+        if (!(allCodes.equals(originalCodes))) {
+            this.updateCodes(getTableName(), originalCodes);
+        }
+    }
+
+    private void updateCodes(String table, List<String> newCodesList) {
+        ContentValues contentValues = new ContentValues();
+        for (int i = 1, k = 0; i < newCodesList.size() - 1; i++, k++) {
+            contentValues.put(CODES_COLUMN_NAME, newCodesList.get(k));
+            db.update(table, contentValues, ID_COLUMN_NAME + " = ?", new String[]{String.valueOf(i)});
+        }
+    }
+
+    private List<String> getAllCodes() {
+        return dbHelper.getAllStrings(getTableName(), CODES_COLUMN_NAME, null, null);
     }
 }

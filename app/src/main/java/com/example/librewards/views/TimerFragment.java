@@ -62,8 +62,8 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
 
         name.setText(String.format(getString(R.string.welcome), user.getName()));
         points.setText(String.valueOf(user.getPoints()));
-        startCodesRepo.checkForTimerCodeUpdates();
-        stopCodesRepo.checkForTimerCodeUpdates();
+        startCodesRepo.checkForCodeUpdates();
+        stopCodesRepo.checkForCodeUpdates();
 
         TimerHandler timerHandler = new TimerHandler(this);
 
@@ -71,7 +71,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
             String inputtedStartCode = timerCodeText.getText().toString();
             if (isValidCode(startCodesRepo, inputtedStartCode)) {
                 timerHandler.start();
-                startCodesRepo.deleteTimerCode(inputtedStartCode);
+                startCodesRepo.deleteCode(inputtedStartCode);
             }
         });
 
@@ -79,7 +79,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
             String inputtedStopCode = timerCodeText.getText().toString();
             if (isValidCode(stopCodesRepo, inputtedStopCode)) {
                 long totalDuration = timerHandler.stop();
-                stopCodesRepo.deleteTimerCode(inputtedStopCode);
+                stopCodesRepo.deleteCode(inputtedStopCode);
                 int pointsEarned = calculatePointsFromDuration(totalDuration);
                 userRepo.addPoints(user, pointsEarned);
                 announceAccumulatedPoints(pointsEarned, totalDuration, user.getPoints());

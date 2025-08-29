@@ -11,8 +11,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.example.librewards.DatabaseHelper;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class RewardsRepository {
@@ -35,24 +33,14 @@ public class RewardsRepository {
     }
 
     public void populate() {
-        for (Map.Entry<String, Integer> entry : rewardCodesAndPoints.entrySet()) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(CODES_COLUMN_NAME, entry.getKey());
-            contentValues.put(COST_COLUMN_NAME, entry.getValue());
-            db.insert(REWARD_CODES_TABLE_NAME, null, contentValues);
-        }
-    }
-
-    public List<String> refresh() {
         int id = 1;
         for (Map.Entry<String, Integer> entry : rewardCodesAndPoints.entrySet()) {
             ContentValues contentValues = new ContentValues();
+            contentValues.put(ID_COLUMN_NAME, id);
             contentValues.put(CODES_COLUMN_NAME, entry.getKey());
             contentValues.put(COST_COLUMN_NAME, entry.getValue());
-            db.update(REWARD_CODES_TABLE_NAME, contentValues, ID_COLUMN_NAME + " = ?",
-                    new String[]{String.valueOf(id)});
+            db.insert(REWARD_CODES_TABLE_NAME, null, contentValues);
             id++;
         }
-        return new ArrayList<>(rewardCodesAndPoints.keySet());
     }
 }

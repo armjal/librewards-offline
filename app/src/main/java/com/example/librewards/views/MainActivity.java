@@ -67,6 +67,10 @@ public class MainActivity extends AppCompatActivity {
         user = userRepo.getUser();
         handleFirstStart(this, this::onFirstStart);
 
+        if(user.getName().isEmpty()){
+            requireUserToEnterName();
+        }
+
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(this);
         viewPager.setAdapter(viewPagerAdapter);
         Bundle bundle = new Bundle();

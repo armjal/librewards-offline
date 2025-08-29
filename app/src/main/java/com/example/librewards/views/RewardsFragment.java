@@ -17,12 +17,18 @@ import com.example.librewards.models.UserModel;
 import com.example.librewards.repositories.RewardsRepository;
 import com.example.librewards.repositories.UserRepository;
 
+import javax.inject.Inject;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class RewardsFragment extends FragmentExtended implements UserChangeListener {
     private static final String TITLE = "Rewards";
+    @Inject
+    public UserRepository userRepo;
+    @Inject
+    public RewardsRepository rewardsRepo;
     private UserModel user;
-    private UserRepository userRepo;
-    private RewardsRepository rewardsRepo;
     private ViewUtils viewUtils;
     private TextView points;
     private TextView name;
@@ -99,13 +105,5 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
     @Override
     public int getIcon() {
         return R.drawable.reward;
-    }
-
-    public void setUserRepo(UserRepository userRepo) {
-        this.userRepo = userRepo;
-    }
-
-    public void setRewardsRepo(RewardsRepository rewardsRepo) {
-        this.rewardsRepo = rewardsRepo;
     }
 }

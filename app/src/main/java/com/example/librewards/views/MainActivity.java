@@ -27,19 +27,27 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
-    private DatabaseHelper dbHelper;
-    private UserRepository userRepo;
-    private StartCodesRepository startCodesRepo;
-    private StopCodesRepository stopCodesRepo;
+    @Inject
+    public DatabaseHelper dbHelper;
+    @Inject
+    public UserRepository userRepo;
+    @Inject
+    public StartCodesRepository startCodesRepo;
+    @Inject
+    public StopCodesRepository stopCodesRepo;
+    @Inject
+    public RewardsRepository rewardsRepo;
     private ViewUtils viewUtils;
     private EditText enterName;
     private Button nameButton;
     private FrameLayout popupNameContainer;
     private UserModel user;
-    private TimerFragment timerFragment;
-    private RewardsFragment rewardsFragment;
-    private RewardsRepository rewardsRepo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +55,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        dbHelper = new DatabaseHelper(this);
-        userRepo = new UserRepository(dbHelper);
-        startCodesRepo = new StartCodesRepository(dbHelper);
-        stopCodesRepo = new StopCodesRepository(dbHelper);
-        rewardsRepo = new RewardsRepository(dbHelper);
         viewUtils = new ViewUtils(this);
         popupNameContainer = findViewById(R.id.popupNameContainer);
         ViewPager2 viewPager = findViewById(R.id.viewPager);
@@ -69,9 +72,7 @@ public class MainActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putParcelable("user", user);
 
-        setupTimerFragment();
-        setupRewardsFragment();
-        List<FragmentExtended> fragments = List.of(timerFragment, rewardsFragment);
+        List<FragmentExtended> fragments = List.of(new TimerFragment(), new RewardsFragment());
         passBundle(fragments, bundle);
         viewPagerAdapter.addFragments(fragments);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) ->
@@ -82,19 +83,6 @@ public class MainActivity extends AppCompatActivity {
         ).attach();
 
         helpButton.setOnClickListener(v -> viewUtils.showPopup(getString(R.string.helpInfo)));
-    }
-
-    private void setupTimerFragment() {
-        timerFragment = new TimerFragment();
-        timerFragment.setUserRepo(userRepo);
-        timerFragment.setStartCodesRepo(startCodesRepo);
-        timerFragment.setStopCodesRepo(stopCodesRepo);
-    }
-
-    private void setupRewardsFragment() {
-        rewardsFragment = new RewardsFragment();
-        rewardsFragment.setUserRepo(userRepo);
-        rewardsFragment.setRewardsRepo(rewardsRepo);
     }
 
     private void passBundle(List<FragmentExtended> fragments, Bundle bundle) {

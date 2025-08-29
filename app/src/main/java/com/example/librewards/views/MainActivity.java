@@ -85,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
         helpButton.setOnClickListener(v -> viewUtils.showPopup(getString(R.string.helpInfo)));
     }
 
-
     private void passBundle(List<FragmentExtended> fragments, Bundle bundle) {
         for (FragmentExtended f : fragments) {
             f.setArguments(bundle);

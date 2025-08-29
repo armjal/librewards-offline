@@ -1,5 +1,8 @@
 package com.example.librewards.views;
 
+import static com.example.librewards.views.utils.ViewUtils.showPopup;
+import static com.example.librewards.views.utils.ViewUtils.toastMessage;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +14,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.librewards.R;
+import com.example.librewards.data.models.UserModel;
 import com.example.librewards.data.notifiers.UserChangeListener;
 import com.example.librewards.data.notifiers.UserChangeNotifier;
-import com.example.librewards.data.models.UserModel;
 import com.example.librewards.data.repositories.RewardsRepository;
 import com.example.librewards.data.repositories.UserRepository;
-import com.example.librewards.utils.ViewUtils;
+import com.example.librewards.views.utils.FragmentExtended;
 
 import javax.inject.Inject;
 
@@ -30,7 +33,6 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
     @Inject
     public RewardsRepository rewardsRepo;
     private UserModel user;
-    private ViewUtils viewUtils;
     private TextView points;
     private TextView name;
     private Button rewardButton;
@@ -53,7 +55,6 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
     public void onViewCreated(@NonNull View v, Bundle savedInstanceState) {
         UserChangeNotifier.addListener(this);
         user = (UserModel) getParcelable("user");
-        viewUtils = new ViewUtils(requireContext());
 
         name.setText(String.format(getString(R.string.welcome), user.getName()));
         points.setText(String.valueOf(user.getPoints()));
@@ -68,20 +69,20 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
 
     public void purchaseReward(String inputtedRewardCode) {
         if (user.getPoints() <= rewardsRepo.getCost(inputtedRewardCode)) {
-            viewUtils.showPopup(getString(R.string.insufficientFunds));
+            showPopup(requireContext(), getString(R.string.insufficientFunds));
         } else {
             userRepo.minusPoints(user, rewardsRepo.getCost(inputtedRewardCode));
-            viewUtils.showPopup(String.format(getString(R.string.rewardCodeAccepted), userRepo.getPoints()));
+            showPopup(requireContext(), String.format(getString(R.string.rewardCodeAccepted), userRepo.getPoints()));
             points.setText(String.valueOf(userRepo.getPoints()));
         }
     }
 
     private boolean validateRewardCode(String inputtedRewardCode) {
         if (inputtedRewardCode.isEmpty()) {
-            viewUtils.toastMessage(getString(R.string.emptyCode));
+            toastMessage(requireContext(), getString(R.string.emptyCode));
             return false;
         } else if (rewardsRepo.getCode(inputtedRewardCode).isEmpty()) {
-            viewUtils.toastMessage(getString(R.string.invalidCode));
+            toastMessage(requireContext(), getString(R.string.invalidCode));
             return false;
         }
         return true;

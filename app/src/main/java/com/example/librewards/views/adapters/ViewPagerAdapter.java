@@ -5,7 +5,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import com.example.librewards.views.FragmentExtended;
+import com.example.librewards.views.utils.FragmentExtended;
 
 import java.util.ArrayList;
 import java.util.List;

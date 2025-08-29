@@ -1,4 +1,4 @@
-package com.example.librewards.views;
+package com.example.librewards.views.utils;
 
 import android.os.Parcelable;
 

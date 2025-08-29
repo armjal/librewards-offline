@@ -1,4 +1,4 @@
-package com.example.librewards;
+package com.example.librewards.utils;
 
 public class PointsCalculator {
     public static int calculatePointsFromDuration(long totalDurationAtLibrary) {

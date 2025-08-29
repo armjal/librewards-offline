@@ -1,6 +1,8 @@
-package com.example.librewards;
+package com.example.librewards.dependency_injection;
 
 import android.content.Context;
+
+import com.example.librewards.data.db.DatabaseHelper;
 
 import javax.inject.Singleton;
 

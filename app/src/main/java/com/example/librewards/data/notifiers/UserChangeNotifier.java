@@ -1,4 +1,4 @@
-package com.example.librewards.models;
+package com.example.librewards.data.notifiers;
 
 import java.util.ArrayList;
 import java.util.List;

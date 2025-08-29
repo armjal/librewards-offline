@@ -1,9 +1,9 @@
-package com.example.librewards.repositories;
+package com.example.librewards.data.repositories;
 
-import static com.example.librewards.DbConstants.STOP_CODES_TABLE_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.STOP_CODES_TABLE_NAME;
 import static com.example.librewards.resources.TimerCodes.stopCodes;
 
-import com.example.librewards.DatabaseHelper;
+import com.example.librewards.data.db.DatabaseHelper;
 
 import java.util.List;
 

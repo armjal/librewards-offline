@@ -1,10 +1,10 @@
-package com.example.librewards;
+package com.example.librewards.data.db;
 
-import static com.example.librewards.DbConstants.DATABASE_NAME;
-import static com.example.librewards.DbConstants.REWARD_CODES_TABLE_NAME;
-import static com.example.librewards.DbConstants.START_CODES_TABLE_NAME;
-import static com.example.librewards.DbConstants.STOP_CODES_TABLE_NAME;
-import static com.example.librewards.DbConstants.USER_TABLE_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.DATABASE_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.REWARD_CODES_TABLE_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.START_CODES_TABLE_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.STOP_CODES_TABLE_NAME;
+import static com.example.librewards.data.db.DatabaseConstants.USER_TABLE_NAME;
 
 import android.content.Context;
 import android.database.Cursor;

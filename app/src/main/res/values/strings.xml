@@ -32,6 +32,7 @@
     <string name="invalidCode">The code you entered is not valid, please try again</string>
     <string name="rewardCodeAccepted">Code accepted, keep it up! Your new points balance is: %1$d</string>
     <string name="emptyCode">No code was entered, please try again</string>
+    <string name="noCodeEnteredInADay">"No stop code was entered for 24 hours. The timer has been reset"</string>
     <string name="congratsMessage">Well done, you spent %1$d %2$s at the library and have earned %3$d points!\nYour new points balance is: %4$d</string>
     <string name="unfortunatelyMessage">"Unfortunately you have not spent the minimum required time at the library to receive points!"</string>
 </resources>

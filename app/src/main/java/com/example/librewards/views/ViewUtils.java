@@ -14,12 +14,13 @@ import com.example.librewards.R;
 
 public class ViewUtils {
     private final Context context;
-    public ViewUtils(Context context){
+
+    public ViewUtils(Context context) {
         this.context = context;
     }
 
-    public void toastMessage(String message){
-        Toast.makeText(context.getApplicationContext(),message,Toast.LENGTH_LONG).show();
+    public void toastMessage(String message) {
+        Toast.makeText(context.getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 
     public void showPopup(String text) {

@@ -18,9 +18,10 @@ public class ViewPagerAdapter extends FragmentStateAdapter {
         super(fa);
     }
 
-    public void addFragments(List<FragmentExtended> fragments){
+    public void addFragments(List<FragmentExtended> fragments) {
         this.fragments.addAll(fragments);
     }
+
     @NonNull
     @Override
     public Fragment createFragment(int position) {

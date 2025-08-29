@@ -18,8 +18,6 @@ import com.example.librewards.models.UserModel;
 import com.example.librewards.repositories.RewardsRepository;
 import com.example.librewards.repositories.UserRepository;
 
-import java.util.List;
-
 
 public class RewardsFragment extends FragmentExtended implements UserChangeListener {
     private static final String TITLE = "Rewards";
@@ -53,35 +51,34 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
         userRepo = new UserRepository(dbHelper);
         rewardsRepo = new RewardsRepository(dbHelper);
         viewUtils = new ViewUtils(requireContext());
-        List<String> rewardCodes = rewardsRepo.refreshRewardCodes();
 
         name.setText(String.format(getString(R.string.welcome), user.getName()));
         points.setText(String.valueOf(user.getPoints()));
 
         rewardButton.setOnClickListener(v1 -> {
             String inputtedRewardCode = rewardText.getText().toString();
-            if (validateRewardCode(rewardCodes, inputtedRewardCode)) {
+            if (validateRewardCode(inputtedRewardCode)) {
                 purchaseReward(inputtedRewardCode);
             }
         });
     }
 
     public void purchaseReward(String inputtedRewardCode) {
-        if (user.getPoints() <= rewardsRepo.getRewardCost(inputtedRewardCode)) {
+        if (user.getPoints() <= rewardsRepo.getCost(inputtedRewardCode)) {
             viewUtils.showPopup(getString(R.string.insufficientFunds));
         } else {
-            userRepo.minusPoints(user, rewardsRepo.getRewardCost(inputtedRewardCode));
+            userRepo.minusPoints(user, rewardsRepo.getCost(inputtedRewardCode));
             viewUtils.showPopup(String.format(getString(R.string.rewardCodeAccepted), userRepo.getPoints()));
             points.setText(String.valueOf(userRepo.getPoints()));
             UserChangeNotifier.notifyPointsChanged(userRepo.getPoints());
         }
     }
 
-    private boolean validateRewardCode(List<String> rewardCodes, String inputtedRewardCode) {
+    private boolean validateRewardCode(String inputtedRewardCode) {
         if (inputtedRewardCode.isEmpty()) {
             viewUtils.toastMessage(getString(R.string.emptyCode));
             return false;
-        } else if (!rewardCodes.contains(inputtedRewardCode)) {
+        } else if (rewardsRepo.getCode(inputtedRewardCode).isEmpty()) {
             viewUtils.toastMessage(getString(R.string.invalidCode));
             return false;
         }

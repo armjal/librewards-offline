@@ -10,20 +10,20 @@ public class FirstStartHandler {
 
     private static SharedPreferences sharedPreferences;
 
-    private FirstStartHandler(){
+    private FirstStartHandler() {
     }
 
-    public static void handleFirstStart(Activity activity, Runnable actions){
+    public static void handleFirstStart(Activity activity, Runnable actions) {
         sharedPreferences = activity.getSharedPreferences(LIBREWARDS_PREFS, Context.MODE_PRIVATE);
         boolean isFirstStart = sharedPreferences.getBoolean(FIRST_START_PREFS_BOOL, true);
 
-        if (isFirstStart){
+        if (isFirstStart) {
             actions.run();
         }
         disableFirstStart();
     }
 
-    private static void disableFirstStart(){
+    private static void disableFirstStart() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(FIRST_START_PREFS_BOOL, false);
         editor.apply();

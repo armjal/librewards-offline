@@ -19,9 +19,9 @@ import com.example.librewards.R;
 import com.example.librewards.models.UserChangeListener;
 import com.example.librewards.models.UserChangeNotifier;
 import com.example.librewards.models.UserModel;
+import com.example.librewards.repositories.CodesRepository;
 import com.example.librewards.repositories.StartCodesRepository;
 import com.example.librewards.repositories.StopCodesRepository;
-import com.example.librewards.repositories.CodesRepository;
 import com.example.librewards.repositories.UserRepository;
 
 public class TimerFragment extends FragmentExtended implements UserChangeListener, TimerView {

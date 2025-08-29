@@ -60,7 +60,7 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
 
         rewardButton.setOnClickListener(v1 -> {
             String inputtedRewardCode = rewardText.getText().toString();
-            if (validateRewardCode(rewardCodes, inputtedRewardCode)) {
+            if (validateRewardCode(inputtedRewardCode)) {
                 purchaseReward(inputtedRewardCode);
             }
         });
@@ -77,11 +77,11 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
         }
     }
 
-    private boolean validateRewardCode(List<String> rewardCodes, String inputtedRewardCode) {
+    private boolean validateRewardCode(String inputtedRewardCode) {
         if (inputtedRewardCode.isEmpty()) {
             viewUtils.toastMessage(getString(R.string.emptyCode));
             return false;
-        } else if (!rewardCodes.contains(inputtedRewardCode)) {
+        } else if (rewardsRepo.getCode(inputtedRewardCode).isEmpty()) {
             viewUtils.toastMessage(getString(R.string.invalidCode));
             return false;
         }

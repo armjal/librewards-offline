@@ -25,12 +25,12 @@ public class RewardsRepository {
     }
 
 
-    public int getRewardCost(String code) {
+    public int getCost(String code) {
         return dbHelper.getInt(REWARD_CODES_TABLE_NAME, COST_COLUMN_NAME, CODES_COLUMN_NAME + " = ?",
                 new String[]{code});
     }
 
-    public void storeRewards() {
+    public void populate() {
         for (Map.Entry<String, Integer> entry : rewardCodesAndPoints.entrySet()) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(CODES_COLUMN_NAME, entry.getKey());
@@ -39,19 +39,17 @@ public class RewardsRepository {
         }
     }
 
-    public List<String> refreshRewardCodes() {
+    public List<String> refresh() {
         int id = 1;
         for (Map.Entry<String, Integer> entry : rewardCodesAndPoints.entrySet()) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(CODES_COLUMN_NAME, entry.getKey());
             contentValues.put(COST_COLUMN_NAME, entry.getValue());
-            //Uses the 'id' column to iterate through the list of codes and update each one
+            //Uses the 'id' column to iterate through the l            //Uses the 'id' column to iterate through the list of codes and update each oneist of codes and update each one
             db.update(REWARD_CODES_TABLE_NAME, contentValues, ID_COLUMN_NAME + " = ?",
                     new String[]{String.valueOf(id)});
             id++;
         }
         return new ArrayList<>(rewardCodesAndPoints.keySet());
     }
-
-
 }

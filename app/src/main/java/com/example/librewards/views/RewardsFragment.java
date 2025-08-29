@@ -53,7 +53,7 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
         userRepo = new UserRepository(dbHelper);
         rewardsRepo = new RewardsRepository(dbHelper);
         viewUtils = new ViewUtils(requireContext());
-        List<String> rewardCodes = rewardsRepo.refreshRewardCodes();
+        List<String> rewardCodes = rewardsRepo.refresh();
 
         name.setText(String.format(getString(R.string.welcome), user.getName()));
         points.setText(String.valueOf(user.getPoints()));
@@ -67,10 +67,10 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
     }
 
     public void purchaseReward(String inputtedRewardCode) {
-        if (user.getPoints() <= rewardsRepo.getRewardCost(inputtedRewardCode)) {
+        if (user.getPoints() <= rewardsRepo.getCost(inputtedRewardCode)) {
             viewUtils.showPopup(getString(R.string.insufficientFunds));
         } else {
-            userRepo.minusPoints(user, rewardsRepo.getRewardCost(inputtedRewardCode));
+            userRepo.minusPoints(user, rewardsRepo.getCost(inputtedRewardCode));
             viewUtils.showPopup(String.format(getString(R.string.rewardCodeAccepted), userRepo.getPoints()));
             points.setText(String.valueOf(userRepo.getPoints()));
             UserChangeNotifier.notifyPointsChanged(userRepo.getPoints());

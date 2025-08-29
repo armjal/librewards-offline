@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         dbHelper.processTransaction(() -> {
             startCodesRepo.populate();
             stopCodesRepo.populate();
-            rewardsRepo.storeRewards();
+            rewardsRepo.populate();
         });
     }
 

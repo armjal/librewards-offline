@@ -12,6 +12,9 @@ import com.example.librewards.DatabaseHelper;
 import java.util.List;
 
 public abstract class CodesRepository {
+    public static final String USED_CODE_VAL = "true";
+    public static final String UNUSED_CODE_VAL = "false";
+
     private final SQLiteDatabase db;
     private final DatabaseHelper dbHelper;
 
@@ -27,12 +30,12 @@ public abstract class CodesRepository {
     public String getCode(String value) {
         return dbHelper.getString(getTableName(), CODES_COLUMN_NAME,
                 USED_CODE_COLUMN_NAME + " = ? AND " + CODES_COLUMN_NAME + " = ?",
-                new String[]{"false", value});
+                new String[]{UNUSED_CODE_VAL, value});
     }
 
     public void deleteCode(String code) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(USED_CODE_COLUMN_NAME, "true");
+        contentValues.put(USED_CODE_COLUMN_NAME, USED_CODE_VAL);
         db.update(getTableName(), contentValues, CODES_COLUMN_NAME + " = ?", new String[]{code});
     }
 

@@ -1,10 +1,7 @@
 package com.example.librewards.views;
 
-import static com.example.librewards.DbConstants.START_CODES_TABLE_NAME;
-import static com.example.librewards.DbConstants.STOP_CODES_TABLE_NAME;
+
 import static com.example.librewards.FirstStartHandler.handleFirstStart;
-import static com.example.librewards.resources.TimerCodes.startCodes;
-import static com.example.librewards.resources.TimerCodes.stopCodes;
 
 import android.os.Bundle;
 import android.view.View;
@@ -21,7 +18,8 @@ import com.example.librewards.DatabaseHelper;
 import com.example.librewards.R;
 import com.example.librewards.models.UserModel;
 import com.example.librewards.repositories.RewardsRepository;
-import com.example.librewards.repositories.TimerRepository;
+import com.example.librewards.repositories.StartCodesRepository;
+import com.example.librewards.repositories.StopCodesRepository;
 import com.example.librewards.repositories.UserRepository;
 import com.example.librewards.views.adapters.ViewPagerAdapter;
 import com.google.android.material.tabs.TabLayout;
@@ -32,7 +30,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private DatabaseHelper dbHelper;
     private UserRepository userRepo;
-    private TimerRepository timerRepo;
+    private StartCodesRepository startCodesRepo;
+    private StopCodesRepository stopCodesRepo;
     private RewardsRepository rewardsRepo;
     private ViewUtils viewUtils;
     private EditText enterName;
@@ -48,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         dbHelper = new DatabaseHelper(this);
         userRepo = new UserRepository(dbHelper);
-        timerRepo = new TimerRepository(dbHelper);
+        startCodesRepo = new StartCodesRepository(dbHelper);
+        stopCodesRepo = new StopCodesRepository(dbHelper);
         rewardsRepo = new RewardsRepository(dbHelper);
         viewUtils = new ViewUtils(this);
         popupNameContainer = findViewById(R.id.popupNameContainer);
@@ -87,8 +87,8 @@ public class MainActivity extends AppCompatActivity {
     public void onFirstStart() {
         requireUserToEnterName();
         dbHelper.processTransaction(() -> {
-            timerRepo.storeTimerCodes(startCodes, START_CODES_TABLE_NAME);
-            timerRepo.storeTimerCodes(stopCodes, STOP_CODES_TABLE_NAME);
+            startCodesRepo.storeTimerCodes();
+            stopCodesRepo.storeTimerCodes();
             rewardsRepo.storeRewards();
         });
     }

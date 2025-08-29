@@ -1,6 +1,8 @@
 package com.example.librewards.views;
 
 import static com.example.librewards.utils.PointsCalculator.calculatePointsFromDuration;
+import static com.example.librewards.views.utils.ViewUtils.showPopup;
+import static com.example.librewards.views.utils.ViewUtils.toastMessage;
 
 import android.os.Bundle;
 import android.os.SystemClock;
@@ -15,14 +17,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.example.librewards.R;
+import com.example.librewards.data.models.UserModel;
 import com.example.librewards.data.notifiers.UserChangeListener;
 import com.example.librewards.data.notifiers.UserChangeNotifier;
-import com.example.librewards.data.models.UserModel;
 import com.example.librewards.data.repositories.CodesRepository;
 import com.example.librewards.data.repositories.StartCodesRepository;
 import com.example.librewards.data.repositories.StopCodesRepository;
 import com.example.librewards.data.repositories.UserRepository;
-import com.example.librewards.utils.ViewUtils;
+import com.example.librewards.views.utils.FragmentExtended;
 
 import javax.inject.Inject;
 
@@ -43,7 +45,6 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     private Button stopButton;
     private EditText timerCodeText;
     private Chronometer timer;
-    private ViewUtils viewUtils;
     private UserModel user;
 
 
@@ -66,7 +67,6 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         UserChangeNotifier.addListener(this);
         user = (UserModel) getParcelable("user");
-        viewUtils = new ViewUtils(requireContext());
 
         name.setText(String.format(getString(R.string.welcome), user.getName()));
         points.setText(String.valueOf(user.getPoints()));
@@ -109,10 +109,10 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
 
     private boolean isValidCode(CodesRepository codesRepo, String inputtedCode) {
         if (inputtedCode.isEmpty()) {
-            viewUtils.toastMessage(getString(R.string.emptyCode));
+            toastMessage(requireContext(), getString(R.string.emptyCode));
             return false;
         } else if (codesRepo.get(inputtedCode).isEmpty()) {
-            viewUtils.toastMessage(getString(R.string.invalidCode));
+            toastMessage(requireContext(), getString(R.string.invalidCode));
             return false;
         }
         return true;
@@ -139,7 +139,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         timer.setBase(SystemClock.elapsedRealtime());
         timer.stop();
         enableStartButton();
-        viewUtils.showPopup(getString(R.string.noCodeEnteredInADay));
+        showPopup(requireContext(), getString(R.string.noCodeEnteredInADay));
     }
 
     private void enableStartButton() {
@@ -178,7 +178,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         } else {
             popUpMessage = getString(R.string.unfortunatelyMessage);
         }
-        viewUtils.showPopup(popUpMessage);
+        showPopup(requireContext(), popUpMessage);
     }
 
     @Override

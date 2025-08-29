@@ -11,11 +11,11 @@ import com.example.librewards.DatabaseHelper;
 
 import java.util.List;
 
-public abstract class TimerRepository {
+public abstract class CodesRepository {
     private final SQLiteDatabase db;
     private final DatabaseHelper dbHelper;
 
-    public TimerRepository(DatabaseHelper dbHelper) {
+    public CodesRepository(DatabaseHelper dbHelper) {
         this.dbHelper = dbHelper;
         db = dbHelper.getWritableDatabase();
     }

@@ -7,7 +7,7 @@ import com.example.librewards.DatabaseHelper;
 
 import java.util.List;
 
-public class StartCodesRepository extends TimerRepository {
+public class StartCodesRepository extends CodesRepository {
     public StartCodesRepository(DatabaseHelper dbHelper) {
         super(dbHelper);
     }

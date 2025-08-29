@@ -16,13 +16,12 @@ import androidx.annotation.NonNull;
 
 import com.example.librewards.DatabaseHelper;
 import com.example.librewards.R;
-import com.example.librewards.controllers.codes.CodesManager;
-import com.example.librewards.controllers.codes.StartCodesManager;
-import com.example.librewards.controllers.codes.StopCodesManager;
 import com.example.librewards.models.UserChangeListener;
 import com.example.librewards.models.UserChangeNotifier;
 import com.example.librewards.models.UserModel;
-import com.example.librewards.repositories.TimerRepository;
+import com.example.librewards.repositories.StartCodesRepository;
+import com.example.librewards.repositories.StopCodesRepository;
+import com.example.librewards.repositories.CodesRepository;
 import com.example.librewards.repositories.UserRepository;
 
 public class TimerFragment extends FragmentExtended implements UserChangeListener, TimerView {
@@ -57,30 +56,30 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         user = (UserModel) getParcelable("user");
         DatabaseHelper dbHelper = new DatabaseHelper(requireContext());
         UserRepository userRepo = new UserRepository(dbHelper);
-        TimerRepository timerRepo = new TimerRepository(dbHelper);
+        StartCodesRepository startCodesRepo = new StartCodesRepository(dbHelper);
+        StopCodesRepository stopCodesRepo = new StopCodesRepository(dbHelper);
         viewUtils = new ViewUtils(requireContext());
 
         name.setText(String.format(getString(R.string.welcome), user.getName()));
         points.setText(String.valueOf(user.getPoints()));
+        startCodesRepo.checkForTimerCodeUpdates();
+        stopCodesRepo.checkForTimerCodeUpdates();
 
-        StartCodesManager startCodesManager = new StartCodesManager(timerRepo);
-        StopCodesManager stopCodesManager = new StopCodesManager(timerRepo);
-        TimerHandler timerHandler = new TimerHandler(this, startCodesManager, stopCodesManager);
-
-        startCodesManager.refreshCodes();
-        stopCodesManager.refreshCodes();
+        TimerHandler timerHandler = new TimerHandler(this);
 
         startButton.setOnClickListener(v2 -> {
             String inputtedStartCode = timerCodeText.getText().toString();
-            if (isValidCode(startCodesManager, inputtedStartCode)) {
-                timerHandler.start(inputtedStartCode);
+            if (isValidCode(startCodesRepo, inputtedStartCode)) {
+                timerHandler.start();
+                startCodesRepo.deleteTimerCode(inputtedStartCode);
             }
         });
 
         stopButton.setOnClickListener(v1 -> {
             String inputtedStopCode = timerCodeText.getText().toString();
-            if (isValidCode(stopCodesManager, inputtedStopCode)) {
-                long totalDuration = timerHandler.stop(inputtedStopCode);
+            if (isValidCode(stopCodesRepo, inputtedStopCode)) {
+                long totalDuration = timerHandler.stop();
+                stopCodesRepo.deleteTimerCode(inputtedStopCode);
                 int pointsEarned = calculatePointsFromDuration(totalDuration);
                 userRepo.addPoints(user, pointsEarned);
                 announceAccumulatedPoints(pointsEarned, totalDuration, user.getPoints());
@@ -89,11 +88,11 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         });
     }
 
-    private boolean isValidCode(CodesManager codesManager, String inputtedCode) {
+    private boolean isValidCode(CodesRepository codesRepo, String inputtedCode) {
         if (inputtedCode.isEmpty()) {
             viewUtils.toastMessage(getString(R.string.emptyCode));
             return false;
-        } else if (codesManager.notInCodesList(inputtedCode)) {
+        } else if (codesRepo.getCode(inputtedCode).isEmpty()) {
             viewUtils.toastMessage(getString(R.string.invalidCode));
             return false;
         }

@@ -11,36 +11,34 @@ import com.example.librewards.DatabaseHelper;
 
 import java.util.List;
 
-public class TimerRepository {
+public abstract class CodesRepository {
     private final SQLiteDatabase db;
     private final DatabaseHelper dbHelper;
 
-    public TimerRepository(DatabaseHelper dbHelper) {
+    public CodesRepository(DatabaseHelper dbHelper) {
         this.dbHelper = dbHelper;
         db = dbHelper.getWritableDatabase();
     }
 
-    public void deleteTimerCode(String table, String code) {
+    public void deleteTimerCode(String code) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(USED_CODE_COLUMN_NAME, "true");
-        db.update(table, contentValues, CODES_COLUMN_NAME + " = ?", new String[]{code});
+        db.update(getTableName(), contentValues, CODES_COLUMN_NAME + " = ?", new String[]{code});
     }
 
-    public void storeTimerCodes(List<String> codesList, String table) {
-        for (String code : codesList) {
+    public void storeTimerCodes() {
+        for (String code : getOriginalCodes()) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(CODES_COLUMN_NAME, code);
-            db.insert(table, null, contentValues);
+            db.insert(getTableName(), null, contentValues);
         }
     }
 
-    public List<String> checkForTimerCodeUpdates(List<String> originalCodes, String table) {
-        List<String> allCodes = getAllCodes(table);
-        if (!(allCodes.equals(originalCodes))) {
-            allCodes = originalCodes;
-            this.updateTimerCodes(table, originalCodes);
+    public void checkForTimerCodeUpdates() {
+        List<String> allCodes = getAllCodes(getTableName());
+        if (!(allCodes.equals(getOriginalCodes()))) {
+            this.updateTimerCodes(getTableName(), getOriginalCodes());
         }
-        return allCodes;
     }
 
     public void updateTimerCodes(String table, List<String> newCodesList) {
@@ -53,5 +51,15 @@ public class TimerRepository {
 
     public List<String> getAllCodes(String table) {
         return dbHelper.getAllStrings(table, CODES_COLUMN_NAME, null, null);
+    }
+
+    public abstract String getTableName();
+
+    public abstract List<String> getOriginalCodes();
+
+    public String getCode(String value) {
+        return dbHelper.getString(getTableName(), CODES_COLUMN_NAME,
+                USED_CODE_COLUMN_NAME + " = ? AND " + CODES_COLUMN_NAME + " = ?",
+                new String[]{"false", value});
     }
 }

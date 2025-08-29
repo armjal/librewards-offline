@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.librewards.DatabaseHelper;
+import com.example.librewards.models.UserChangeNotifier;
 import com.example.librewards.models.UserModel;
 
 public class UserRepository {
@@ -20,10 +21,11 @@ public class UserRepository {
         db = dbHelper.getWritableDatabase();
     }
 
-    public void addName(String yourName) {
+    public void addName(String name) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(NAME_COLUMN_NAME, yourName);
+        contentValues.put(NAME_COLUMN_NAME, name);
         db.insert(USER_TABLE_NAME, null, contentValues);
+        UserChangeNotifier.notifyNameChange(name);
     }
 
     public UserModel getUser() {
@@ -54,5 +56,6 @@ public class UserRepository {
         ContentValues contentValues = new ContentValues();
         contentValues.put(POINTS_COLUMN_NAME, updatedPoints);
         db.update(USER_TABLE_NAME, contentValues, ID_COLUMN_NAME + " = ?", new String[]{String.valueOf(id)});
+        UserChangeNotifier.notifyPointsChanged(updatedPoints);
     }
 }

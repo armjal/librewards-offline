@@ -12,10 +12,15 @@ import com.example.librewards.DatabaseHelper;
 import com.example.librewards.models.UserChangeNotifier;
 import com.example.librewards.models.UserModel;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class UserRepository {
     private final SQLiteDatabase db;
     private final DatabaseHelper dbHelper;
 
+    @Inject
     public UserRepository(DatabaseHelper dbHelper) {
         this.dbHelper = dbHelper;
         db = dbHelper.getWritableDatabase();

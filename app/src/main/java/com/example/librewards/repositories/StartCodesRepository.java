@@ -7,7 +7,13 @@ import com.example.librewards.DatabaseHelper;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+@Singleton
 public class StartCodesRepository extends CodesRepository {
+
+    @Inject
     public StartCodesRepository(DatabaseHelper dbHelper) {
         super(dbHelper);
     }

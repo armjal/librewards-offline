@@ -48,8 +48,6 @@ public class MainActivity extends AppCompatActivity {
     private Button nameButton;
     private FrameLayout popupNameContainer;
     private UserModel user;
-    private TimerFragment timerFragment;
-    private RewardsFragment rewardsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,9 +72,7 @@ public class MainActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putParcelable("user", user);
 
-        setupTimerFragment();
-        setupRewardsFragment();
-        List<FragmentExtended> fragments = List.of(timerFragment, rewardsFragment);
+        List<FragmentExtended> fragments = List.of(new TimerFragment(), new RewardsFragment());
         passBundle(fragments, bundle);
         viewPagerAdapter.addFragments(fragments);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) ->
@@ -89,18 +85,6 @@ public class MainActivity extends AppCompatActivity {
         helpButton.setOnClickListener(v -> viewUtils.showPopup(getString(R.string.helpInfo)));
     }
 
-    private void setupTimerFragment() {
-        timerFragment = new TimerFragment();
-        timerFragment.setUserRepo(userRepo);
-        timerFragment.setStartCodesRepo(startCodesRepo);
-        timerFragment.setStopCodesRepo(stopCodesRepo);
-    }
-
-    private void setupRewardsFragment() {
-        rewardsFragment = new RewardsFragment();
-        rewardsFragment.setUserRepo(userRepo);
-        rewardsFragment.setRewardsRepo(rewardsRepo);
-    }
 
     private void passBundle(List<FragmentExtended> fragments, Bundle bundle) {
         for (FragmentExtended f : fragments) {

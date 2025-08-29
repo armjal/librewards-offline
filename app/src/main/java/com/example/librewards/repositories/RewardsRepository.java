@@ -1,5 +1,6 @@
 package com.example.librewards.repositories;
 
+import static android.database.sqlite.SQLiteDatabase.CONFLICT_REPLACE;
 import static com.example.librewards.DbConstants.CODES_COLUMN_NAME;
 import static com.example.librewards.DbConstants.COST_COLUMN_NAME;
 import static com.example.librewards.DbConstants.ID_COLUMN_NAME;
@@ -39,7 +40,7 @@ public class RewardsRepository {
             contentValues.put(ID_COLUMN_NAME, id);
             contentValues.put(CODES_COLUMN_NAME, entry.getKey());
             contentValues.put(COST_COLUMN_NAME, entry.getValue());
-            db.insert(REWARD_CODES_TABLE_NAME, null, contentValues);
+            db.insertWithOnConflict(REWARD_CODES_TABLE_NAME, null, contentValues, CONFLICT_REPLACE);
             id++;
         }
     }

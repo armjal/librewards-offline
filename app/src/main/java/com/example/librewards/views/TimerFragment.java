@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.example.librewards.DatabaseHelper;
 import com.example.librewards.R;
 import com.example.librewards.models.UserChangeListener;
 import com.example.librewards.models.UserChangeNotifier;
@@ -34,6 +33,10 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     private Chronometer timer;
     private ViewUtils viewUtils;
     private UserModel user;
+    private UserRepository userRepo;
+    private StartCodesRepository startCodesRepo;
+    private StopCodesRepository stopCodesRepo;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -54,10 +57,6 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         UserChangeNotifier.addListener(this);
         user = (UserModel) getParcelable("user");
-        DatabaseHelper dbHelper = new DatabaseHelper(requireContext());
-        UserRepository userRepo = new UserRepository(dbHelper);
-        StartCodesRepository startCodesRepo = new StartCodesRepository(dbHelper);
-        StopCodesRepository stopCodesRepo = new StopCodesRepository(dbHelper);
         viewUtils = new ViewUtils(requireContext());
 
         name.setText(String.format(getString(R.string.welcome), user.getName()));
@@ -177,5 +176,17 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
     @Override
     public int getIcon() {
         return R.drawable.timer;
+    }
+
+    public void setUserRepo(UserRepository userRepo) {
+        this.userRepo = userRepo;
+    }
+
+    public void setStartCodesRepo(StartCodesRepository startCodesRepo) {
+        this.startCodesRepo = startCodesRepo;
+    }
+
+    public void setStopCodesRepo(StopCodesRepository stopCodesRepo) {
+        this.stopCodesRepo = stopCodesRepo;
     }
 }

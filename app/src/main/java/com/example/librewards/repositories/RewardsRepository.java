@@ -24,6 +24,10 @@ public class RewardsRepository {
         db = dbHelper.getWritableDatabase();
     }
 
+    public String getCode(String code) {
+        return dbHelper.getString(REWARD_CODES_TABLE_NAME, CODES_COLUMN_NAME, CODES_COLUMN_NAME + " = ?",
+                new String[]{code});
+    }
 
     public int getCost(String code) {
         return dbHelper.getInt(REWARD_CODES_TABLE_NAME, COST_COLUMN_NAME, CODES_COLUMN_NAME + " = ?",
@@ -45,7 +49,6 @@ public class RewardsRepository {
             ContentValues contentValues = new ContentValues();
             contentValues.put(CODES_COLUMN_NAME, entry.getKey());
             contentValues.put(COST_COLUMN_NAME, entry.getValue());
-            //Uses the 'id' column to iterate through the l            //Uses the 'id' column to iterate through the list of codes and update each oneist of codes and update each one
             db.update(REWARD_CODES_TABLE_NAME, contentValues, ID_COLUMN_NAME + " = ?",
                     new String[]{String.valueOf(id)});
             id++;

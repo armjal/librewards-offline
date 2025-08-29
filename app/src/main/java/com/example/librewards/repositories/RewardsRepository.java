@@ -11,8 +11,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.example.librewards.DatabaseHelper;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class RewardsRepository {
@@ -24,34 +22,25 @@ public class RewardsRepository {
         db = dbHelper.getWritableDatabase();
     }
 
+    public String getCode(String code) {
+        return dbHelper.getString(REWARD_CODES_TABLE_NAME, CODES_COLUMN_NAME, CODES_COLUMN_NAME + " = ?",
+                new String[]{code});
+    }
 
-    public int getRewardCost(String code) {
+    public int getCost(String code) {
         return dbHelper.getInt(REWARD_CODES_TABLE_NAME, COST_COLUMN_NAME, CODES_COLUMN_NAME + " = ?",
                 new String[]{code});
     }
 
-    public void storeRewards() {
-        for (Map.Entry<String, Integer> entry : rewardCodesAndPoints.entrySet()) {
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(CODES_COLUMN_NAME, entry.getKey());
-            contentValues.put(COST_COLUMN_NAME, entry.getValue());
-            db.insert(REWARD_CODES_TABLE_NAME, null, contentValues);
-        }
-    }
-
-    public List<String> refreshRewardCodes() {
+    public void populate() {
         int id = 1;
         for (Map.Entry<String, Integer> entry : rewardCodesAndPoints.entrySet()) {
             ContentValues contentValues = new ContentValues();
+            contentValues.put(ID_COLUMN_NAME, id);
             contentValues.put(CODES_COLUMN_NAME, entry.getKey());
             contentValues.put(COST_COLUMN_NAME, entry.getValue());
-            //Uses the 'id' column to iterate through the list of codes and update each one
-            db.update(REWARD_CODES_TABLE_NAME, contentValues, ID_COLUMN_NAME + " = ?",
-                    new String[]{String.valueOf(id)});
+            db.insert(REWARD_CODES_TABLE_NAME, null, contentValues);
             id++;
         }
-        return new ArrayList<>(rewardCodesAndPoints.keySet());
     }
-
-
 }

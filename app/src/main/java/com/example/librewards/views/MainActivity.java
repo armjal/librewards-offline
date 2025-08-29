@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
     private UserRepository userRepo;
     private StartCodesRepository startCodesRepo;
     private StopCodesRepository stopCodesRepo;
-    private RewardsRepository rewardsRepo;
     private ViewUtils viewUtils;
     private EditText enterName;
     private Button nameButton;
@@ -49,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         userRepo = new UserRepository(dbHelper);
         startCodesRepo = new StartCodesRepository(dbHelper);
         stopCodesRepo = new StopCodesRepository(dbHelper);
-        rewardsRepo = new RewardsRepository(dbHelper);
+        RewardsRepository rewardsRepo = new RewardsRepository(dbHelper);
         viewUtils = new ViewUtils(this);
         popupNameContainer = findViewById(R.id.popupNameContainer);
         ViewPager2 viewPager = findViewById(R.id.viewPager);
@@ -58,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         enterName = findViewById(R.id.enterName);
         nameButton = findViewById(R.id.nameButton);
 
+        rewardsRepo.populate();
         user = userRepo.getUser();
         handleFirstStart(this, this::onFirstStart);
 
@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
         dbHelper.processTransaction(() -> {
             startCodesRepo.populate();
             stopCodesRepo.populate();
-            rewardsRepo.storeRewards();
         });
     }
 

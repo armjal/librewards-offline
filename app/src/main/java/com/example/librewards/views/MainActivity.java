@@ -37,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
     private Button nameButton;
     private FrameLayout popupNameContainer;
     private UserModel user;
+    private TimerFragment timerFragment;
+    private RewardsFragment rewardsFragment;
+    private RewardsRepository rewardsRepo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         userRepo = new UserRepository(dbHelper);
         startCodesRepo = new StartCodesRepository(dbHelper);
         stopCodesRepo = new StopCodesRepository(dbHelper);
-        RewardsRepository rewardsRepo = new RewardsRepository(dbHelper);
+        rewardsRepo = new RewardsRepository(dbHelper);
         viewUtils = new ViewUtils(this);
         popupNameContainer = findViewById(R.id.popupNameContainer);
         ViewPager2 viewPager = findViewById(R.id.viewPager);
@@ -65,7 +68,10 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(viewPagerAdapter);
         Bundle bundle = new Bundle();
         bundle.putParcelable("user", user);
-        List<FragmentExtended> fragments = List.of(new TimerFragment(), new RewardsFragment());
+
+        setupTimerFragment();
+        setupRewardsFragment();
+        List<FragmentExtended> fragments = List.of(timerFragment, rewardsFragment);
         passBundle(fragments, bundle);
         viewPagerAdapter.addFragments(fragments);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) ->
@@ -76,6 +82,19 @@ public class MainActivity extends AppCompatActivity {
         ).attach();
 
         helpButton.setOnClickListener(v -> viewUtils.showPopup(getString(R.string.helpInfo)));
+    }
+
+    private void setupTimerFragment() {
+        timerFragment = new TimerFragment();
+        timerFragment.setUserRepo(userRepo);
+        timerFragment.setStartCodesRepo(startCodesRepo);
+        timerFragment.setStopCodesRepo(stopCodesRepo);
+    }
+
+    private void setupRewardsFragment() {
+        rewardsFragment = new RewardsFragment();
+        rewardsFragment.setUserRepo(userRepo);
+        rewardsFragment.setRewardsRepo(rewardsRepo);
     }
 
     private void passBundle(List<FragmentExtended> fragments, Bundle bundle) {

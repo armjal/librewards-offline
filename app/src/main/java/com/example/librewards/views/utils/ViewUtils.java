@@ -1,4 +1,4 @@
-package com.example.librewards.utils;
+package com.example.librewards.views.utils;
 
 import static java.util.Objects.requireNonNull;
 
@@ -13,17 +13,12 @@ import android.widget.Toast;
 import com.example.librewards.R;
 
 public class ViewUtils {
-    private final Context context;
 
-    public ViewUtils(Context context) {
-        this.context = context;
-    }
-
-    public void toastMessage(String message) {
+    public static void toastMessage(Context context, String message) {
         Toast.makeText(context.getApplicationContext(), message, Toast.LENGTH_LONG).show();
     }
 
-    public void showPopup(String text) {
+    public static void showPopup(Context context, String text) {
         Dialog popup = new Dialog(context);
         requireNonNull(popup.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popup.setContentView(R.layout.popup_layout);

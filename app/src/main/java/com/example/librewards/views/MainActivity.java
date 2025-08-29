@@ -2,6 +2,8 @@ package com.example.librewards.views;
 
 
 import static com.example.librewards.utils.FirstStartHandler.handleFirstStart;
+import static com.example.librewards.views.utils.ViewUtils.showPopup;
+import static com.example.librewards.views.utils.ViewUtils.toastMessage;
 
 import android.os.Bundle;
 import android.view.View;
@@ -14,15 +16,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.librewards.data.db.DatabaseHelper;
 import com.example.librewards.R;
+import com.example.librewards.data.db.DatabaseHelper;
 import com.example.librewards.data.models.UserModel;
 import com.example.librewards.data.repositories.RewardsRepository;
 import com.example.librewards.data.repositories.StartCodesRepository;
 import com.example.librewards.data.repositories.StopCodesRepository;
 import com.example.librewards.data.repositories.UserRepository;
-import com.example.librewards.utils.ViewUtils;
 import com.example.librewards.views.adapters.ViewPagerAdapter;
+import com.example.librewards.views.utils.FragmentExtended;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -44,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     public StopCodesRepository stopCodesRepo;
     @Inject
     public RewardsRepository rewardsRepo;
-    private ViewUtils viewUtils;
     private EditText enterName;
     private Button nameButton;
     private FrameLayout popupNameContainer;
@@ -59,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        viewUtils = new ViewUtils(this);
         setupViews();
 
         rewardsRepo.populate();
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         setupTabLayout(fragments);
         passBundle(fragments, bundle);
 
-        helpButton.setOnClickListener(v -> viewUtils.showPopup(getString(R.string.helpInfo)));
+        helpButton.setOnClickListener(v -> showPopup(this, getString(R.string.helpInfo)));
     }
 
     public void onFirstStart() {
@@ -95,13 +95,13 @@ public class MainActivity extends AppCompatActivity {
         popupNameContainer.setVisibility(View.VISIBLE);
         nameButton.setOnClickListener(v -> {
             if (enterName.length() == 0) {
-                viewUtils.toastMessage(getString(R.string.noNameEntered));
+                toastMessage(this, getString(R.string.noNameEntered));
             } else {
                 String userName = enterName.getText().toString();
                 user.setName(userName);
                 userRepo.addName(userName);
                 popupNameContainer.setVisibility(View.INVISIBLE);
-                viewUtils.showPopup(getString(R.string.helpInfo));
+                showPopup(this, getString(R.string.helpInfo));
             }
         });
     }

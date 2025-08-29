@@ -40,7 +40,6 @@ public class UserModel implements Parcelable {
 
     public void setName(String name) {
         this.name = name;
-        UserChangeNotifier.notifyNameChange(name);
     }
 
     public int getPoints() {
@@ -49,7 +48,6 @@ public class UserModel implements Parcelable {
 
     public void setPoints(Integer points) {
         this.points = points;
-        UserChangeNotifier.notifyPointsChanged(points);
     }
 
     @Override

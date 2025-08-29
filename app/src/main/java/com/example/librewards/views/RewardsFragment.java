@@ -66,7 +66,6 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
             userRepo.minusPoints(user, rewardsRepo.getCost(inputtedRewardCode));
             viewUtils.showPopup(String.format(getString(R.string.rewardCodeAccepted), userRepo.getPoints()));
             points.setText(String.valueOf(userRepo.getPoints()));
-            UserChangeNotifier.notifyPointsChanged(userRepo.getPoints());
         }
     }
 

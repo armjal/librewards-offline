@@ -18,8 +18,6 @@ import com.example.librewards.models.UserModel;
 import com.example.librewards.repositories.RewardsRepository;
 import com.example.librewards.repositories.UserRepository;
 
-import java.util.List;
-
 
 public class RewardsFragment extends FragmentExtended implements UserChangeListener {
     private static final String TITLE = "Rewards";
@@ -53,7 +51,6 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
         userRepo = new UserRepository(dbHelper);
         rewardsRepo = new RewardsRepository(dbHelper);
         viewUtils = new ViewUtils(requireContext());
-        List<String> rewardCodes = rewardsRepo.refresh();
 
         name.setText(String.format(getString(R.string.welcome), user.getName()));
         points.setText(String.valueOf(user.getPoints()));

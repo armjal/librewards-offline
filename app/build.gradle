@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     id 'dagger.hilt.android.plugin'
-
 }
 
 android {
@@ -28,6 +27,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+
+    defaultConfig {
+        testInstrumentationRunner "com.example.librewards.HiltTestRunner"
+    }
 }
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
@@ -43,13 +46,18 @@ dependencies {
     implementation libs.material
     implementation libs.core.splashscreen
     implementation libs.viewpager2
+    implementation libs.ext.junit
+    implementation libs.hilt.android
+    annotationProcessor libs.hilt.android.compiler
 
     testImplementation platform(libs.junit)
     testImplementation libs.junit.jupiter
     testRuntimeOnly libs.junit.platform.launcher
+    testAnnotationProcessor libs.hilt.android.compiler
 
     androidTestImplementation platform(libs.junit)
     androidTestImplementation libs.espresso.core
-    implementation libs.hilt.android
-    annotationProcessor libs.hilt.compiler
+    debugImplementation libs.fragment.testing
+    androidTestImplementation libs.hilt.android.testing
+    androidTestAnnotationProcessor libs.hilt.android.compiler
 }

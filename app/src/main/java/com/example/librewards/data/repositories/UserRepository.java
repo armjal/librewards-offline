@@ -16,7 +16,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class UserRepository {
+public class UserRepository implements UserRepositoryInterface{
     private final SQLiteDatabase db;
     private final DatabaseHelper dbHelper;
 

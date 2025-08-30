@@ -1,4 +1,4 @@
-package com.example.librewards.models;
+package com.example.librewards.repositories;
 
 import com.example.librewards.data.models.UserModel;
 import com.example.librewards.data.repositories.UserRepositoryInterface;

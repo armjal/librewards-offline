@@ -1,18 +1,20 @@
-package com.example.librewards.models;
+package com.example.librewards.repositories;
 
+import com.example.librewards.data.db.DatabaseHelper;
 import com.example.librewards.data.models.UserModel;
-import com.example.librewards.data.repositories.UserRepositoryInterface;
+import com.example.librewards.data.repositories.UserRepository;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class UserRepositoryFake implements UserRepositoryInterface {
+public class UserRepositoryFake extends UserRepository {
     String name = "";
     int points = 0;
 
     @Inject
-    public UserRepositoryFake() {
+    public UserRepositoryFake(DatabaseHelper dbHelper) {
+        super(dbHelper);
     }
 
     @Override

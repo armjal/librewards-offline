@@ -1,8 +1,14 @@
 package com.example.librewards.dependency_injection;
-import com.example.librewards.data.repositories.UserRepositoryInterface;
-import com.example.librewards.models.UserRepositoryFake;
+
+import com.example.librewards.data.repositories.StartCodesRepository;
+import com.example.librewards.data.repositories.StopCodesRepository;
+import com.example.librewards.data.repositories.UserRepository;
+import com.example.librewards.repositories.StartCodesRepositoryFake;
+import com.example.librewards.repositories.StopCodesRepositoryFake;
+import com.example.librewards.repositories.UserRepositoryFake;
 
 import javax.inject.Singleton;
+
 import dagger.Binds;
 import dagger.Module;
 import dagger.hilt.InstallIn;
@@ -14,5 +20,13 @@ public abstract class TestRepositoryModule {
 
     @Binds
     @Singleton
-    public abstract UserRepositoryInterface bindFakeUserRepository(UserRepositoryFake fakeUserRepository);
+    public abstract UserRepository bindFakeUserRepository(UserRepositoryFake userRepositoryFake);
+
+    @Binds
+    @Singleton
+    public abstract StartCodesRepository bindFakeStartCodesRepository(StartCodesRepositoryFake startCodesRepositoryFake);
+
+    @Binds
+    @Singleton
+    public abstract StopCodesRepository bindFakeStopCodesRepository(StopCodesRepositoryFake stopCodesRepositoryFake);
 }

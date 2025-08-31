@@ -11,7 +11,7 @@ import com.example.librewards.data.db.DatabaseHelper;
 
 import java.util.List;
 
-public abstract class CodesRepository {
+public abstract class CodesRepository implements CodesRepositoryInterface {
     public static final String USED_CODE_VAL = "true";
     public static final String UNUSED_CODE_VAL = "false";
 

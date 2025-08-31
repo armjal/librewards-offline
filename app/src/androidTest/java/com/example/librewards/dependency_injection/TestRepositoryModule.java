@@ -2,6 +2,7 @@ package com.example.librewards.dependency_injection;
 
 import com.example.librewards.data.repositories.CodesRepositoryInterface;
 import com.example.librewards.data.repositories.UserRepositoryInterface;
+import com.example.librewards.data.repositories.UserRepository;
 import com.example.librewards.repositories.StartCodesRepositoryFake;
 import com.example.librewards.repositories.UserRepositoryFake;
 
@@ -18,7 +19,7 @@ public abstract class TestRepositoryModule {
 
     @Binds
     @Singleton
-    public abstract UserRepositoryInterface bindFakeUserRepository(UserRepositoryFake userRepositoryFake);
+    public abstract UserRepository bindFakeUserRepository(UserRepositoryFake userRepositoryFake);
 
     @Binds
     @Singleton

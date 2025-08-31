@@ -19,6 +19,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, 1);
     }
 
+    public DatabaseHelper(Context context, String databaseName) {
+        super(context, databaseName, null, 1);
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
         String create_start_codes_query = "CREATE TABLE " + START_CODES_TABLE_NAME + " (id " +

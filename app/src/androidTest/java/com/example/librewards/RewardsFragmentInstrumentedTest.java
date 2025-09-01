@@ -77,8 +77,20 @@ public class RewardsFragmentInstrumentedTest {
         onView(withId(POINTS_VALUE_ID)).check(matches(isDisplayed())).check(matches(withText("10")));
         onView(withId(REWARDS_TEXT_ID)).perform(typeText("123456"));
         onView(withId(REWARDS_BUTTON_ID)).perform(click());
-        onView(withId(POPUP_TEXT)).inRoot(isDialog()).check(matches(withText("Code accepted, keep it up! Your new points balance is: 5")));
+        onView(withId(POPUP_TEXT)).inRoot(isDialog()).check(matches(withText("Code accepted, keep it up! Your new " +
+                "points balance is: 5")));
         onView(withId(POPUP_CLOSE_BUTTON)).inRoot(isDialog()).perform(click());
         onView(withId(POINTS_VALUE_ID)).check(matches(isDisplayed())).check(matches(withText("5")));
+    }
+
+    @Test
+    public void test_rewardsFragment_givenCorrectCodeButInsufficientPoints_providesInsufficientPointsMessage() {
+        onView(withId(POINTS_VALUE_ID)).check(matches(isDisplayed())).check(matches(withText("0")));
+        onView(withId(REWARDS_TEXT_ID)).perform(typeText("123456"));
+        onView(withId(REWARDS_BUTTON_ID)).perform(click());
+        onView(withId(POPUP_TEXT)).inRoot(isDialog()).check(matches(withText("Woops! Unfortunately you don't have " +
+                "sufficient points for this reward. Please choose another reward or carry on doing a great job at the " +
+                "library to be able to get this")));
+        onView(withId(POPUP_CLOSE_BUTTON)).inRoot(isDialog()).perform(click());
     }
 }

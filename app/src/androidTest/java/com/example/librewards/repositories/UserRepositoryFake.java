@@ -2,6 +2,7 @@ package com.example.librewards.repositories;
 
 import com.example.librewards.data.db.DatabaseHelper;
 import com.example.librewards.data.models.UserModel;
+import com.example.librewards.data.notifiers.UserChangeNotifier;
 import com.example.librewards.data.repositories.UserRepository;
 
 import javax.inject.Inject;
@@ -19,7 +20,6 @@ public class UserRepositoryFake extends UserRepository {
 
     @Override
     public void addName(String name) {
-
     }
 
     @Override
@@ -37,6 +37,7 @@ public class UserRepositoryFake extends UserRepository {
         int newPoints = user.getPoints() + pointsToUpdate;
         user.setPoints(newPoints);
         points = newPoints;
+        UserChangeNotifier.notifyPointsChanged(newPoints);
     }
 
     @Override
@@ -44,10 +45,11 @@ public class UserRepositoryFake extends UserRepository {
         int newPoints = user.getPoints() - pointsToUpdate;
         user.setPoints(newPoints);
         points = newPoints;
+        UserChangeNotifier.notifyPointsChanged(newPoints);
     }
 
-    public void setUser(String name, int points) {
-        this.name = name;
-        this.points = points;
+    public void setUser(UserModel user) {
+        this.name = user.getName();
+        this.points = user.getPoints();
     }
 }

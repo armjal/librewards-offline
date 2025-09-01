@@ -15,6 +15,7 @@ import android.os.Bundle;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.librewards.data.models.UserModel;
 import com.example.librewards.repositories.StartCodesRepositoryFake;
 import com.example.librewards.repositories.StopCodesRepositoryFake;
 import com.example.librewards.repositories.UserRepositoryFake;
@@ -42,6 +43,7 @@ public class TimerFragmentInstrumentedTest {
     StartCodesRepositoryFake startCodesRepositoryFake;
     @Inject
     StopCodesRepositoryFake stopCodesRepositoryFake;
+    private UserModel user;
     private static final int POINTS_VALUE_ID = R.id.pointsTimer;
     private static final int NAME_VALUE_ID = R.id.nameTimer;
     private static final int POINTS_LABEL_ID = R.id.pointsLabelTimer;
@@ -55,12 +57,14 @@ public class TimerFragmentInstrumentedTest {
     @Before
     public void setUp() {
         hiltRule.inject();
+        user = new UserModel(1, "test-name", 0);
+
         startCodesRepositoryFake.populate();
         stopCodesRepositoryFake.populate();
-        userRepositoryFake.setUser("test-name", 0);
+        userRepositoryFake.setUser(user);
 
         Bundle bundle = new Bundle();
-        bundle.putParcelable("user", userRepositoryFake.getUser());
+        bundle.putParcelable("user", user);
 
         launchFragmentInHiltContainer(TimerFragment.class, bundle, R.style.AppTheme, null);
     }

@@ -57,7 +57,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         timerCodeText = v.findViewById(R.id.timerCodeText);
         startButton = v.findViewById(R.id.startButton);
         stopButton = v.findViewById(R.id.stopButton);
-        points = v.findViewById(R.id.points);
+        points = v.findViewById(R.id.pointsTimer);
         name = v.findViewById(R.id.nameTimer);
 
         return v;

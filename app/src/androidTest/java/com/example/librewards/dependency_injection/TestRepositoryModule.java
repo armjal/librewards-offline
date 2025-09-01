@@ -1,8 +1,10 @@
 package com.example.librewards.dependency_injection;
 
+import com.example.librewards.data.repositories.RewardsRepository;
 import com.example.librewards.data.repositories.StartCodesRepository;
 import com.example.librewards.data.repositories.StopCodesRepository;
 import com.example.librewards.data.repositories.UserRepository;
+import com.example.librewards.repositories.RewardsRepositoryFake;
 import com.example.librewards.repositories.StartCodesRepositoryFake;
 import com.example.librewards.repositories.StopCodesRepositoryFake;
 import com.example.librewards.repositories.UserRepositoryFake;
@@ -29,4 +31,8 @@ public abstract class TestRepositoryModule {
     @Binds
     @Singleton
     public abstract StopCodesRepository bindFakeStopCodesRepository(StopCodesRepositoryFake stopCodesRepositoryFake);
+
+    @Binds
+    @Singleton
+    public abstract RewardsRepository bindFakeRewardsRepository(RewardsRepositoryFake rewardsRepositoryFake);
 }

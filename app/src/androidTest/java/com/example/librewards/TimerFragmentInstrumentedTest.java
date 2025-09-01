@@ -5,6 +5,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withHint;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.example.librewards.utils.FragmentTestUtils.launchFragmentInHiltContainer;
@@ -45,7 +46,7 @@ public class TimerFragmentInstrumentedTest {
     private static final int NAME_VALUE_ID = R.id.nameTimer;
     private static final int POINTS_LABEL_ID = R.id.textView2;
     private static final int START_BUTTON_ID = R.id.startButton;
-    private static final int START_TEXT_ID = R.id.startText;
+    private static final int TIMER_CODE_TEXT = R.id.timerCodeText;
     private static final int STOP_BUTTON_ID = R.id.stopButton;
     private static final int TIMER_ID = R.id.timer;
 
@@ -73,14 +74,16 @@ public class TimerFragmentInstrumentedTest {
         onView(withId(POINTS_VALUE_ID)).check(matches(isDisplayed())).check(matches(withText("0")));
         onView(withId(POINTS_LABEL_ID)).check(matches(isDisplayed())).check(matches(withText("Points")));
         onView(withId(START_BUTTON_ID)).check(matches(isDisplayed())).check(matches(withText("start")));
+        onView(withId(TIMER_CODE_TEXT)).check(matches(withHint("Please enter the start code")));
         onView(withId(STOP_BUTTON_ID)).check(matches(not(isDisplayed()))).check(matches(withText("stop")));
         onView(withId(TIMER_ID)).check(matches(isDisplayed())).check(matches(withText("00:00")));
     }
 
     @Test
     public void test_timerFragment_startsTimerWithCorrectCode() throws InterruptedException {
-        onView(withId(START_TEXT_ID)).perform(typeText("123456"));
+        onView(withId(TIMER_CODE_TEXT)).perform(typeText("123456"));
         onView(withId(START_BUTTON_ID)).perform(click());
+        onView(withId(TIMER_CODE_TEXT)).check(matches(withHint("Please enter the stop code")));
         onView(withId(STOP_BUTTON_ID)).check(matches(isDisplayed()));
         Thread.sleep(1000);
         onView(withId(TIMER_ID)).check(matches(not(withText("00:00"))));

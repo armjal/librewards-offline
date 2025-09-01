@@ -93,4 +93,13 @@ public class RewardsFragmentInstrumentedTest {
                 "library to be able to get this")));
         onView(withId(POPUP_CLOSE_BUTTON)).inRoot(isDialog()).perform(click());
     }
+
+    @Test
+    public void test_rewardsFragment_givenIncorrectCode_doesNotPurchaseItem() {
+        userRepositoryFake.addPoints(user, 10);
+        onView(withId(POINTS_VALUE_ID)).check(matches(isDisplayed())).check(matches(withText("10")));
+        onView(withId(REWARDS_TEXT_ID)).perform(typeText("incorrect-code"));
+        onView(withId(REWARDS_BUTTON_ID)).perform(click());
+        onView(withId(POINTS_VALUE_ID)).check(matches(isDisplayed())).check(matches(withText("10")));
+    }
 }

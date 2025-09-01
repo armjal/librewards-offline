@@ -10,13 +10,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.example.librewards.utils.FragmentTestUtils.launchFragmentInHiltContainer;
 import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertEquals;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.example.librewards.repositories.StartCodesRepositoryFake;
 import com.example.librewards.repositories.StopCodesRepositoryFake;
@@ -53,6 +50,7 @@ public class TimerFragmentInstrumentedTest {
     private static final int STOP_BUTTON_ID = R.id.stopButton;
     private static final int TIMER_ID = R.id.timer;
     private static final int POPUP_TEXT = R.id.popupText;
+    private static final int POPUP_CLOSE_BUTTON = R.id.closeBtn;
 
     @Before
     public void setUp() {
@@ -65,12 +63,6 @@ public class TimerFragmentInstrumentedTest {
         bundle.putParcelable("user", userRepositoryFake.getUser());
 
         launchFragmentInHiltContainer(TimerFragment.class, bundle, R.style.AppTheme, null);
-    }
-
-    @Test
-    public void useAppContext() {
-        Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        assertEquals("com.example.librewards", appContext.getPackageName());
     }
 
     @Test
@@ -90,21 +82,23 @@ public class TimerFragmentInstrumentedTest {
         onView(withId(START_BUTTON_ID)).perform(click());
         onView(withId(TIMER_CODE_TEXT)).check(matches(withHint("Please enter the stop code")));
         onView(withId(STOP_BUTTON_ID)).check(matches(isDisplayed()));
-        Thread.sleep(1000);
+        Thread.sleep(1000);  // Wait a second for the timer to increment from default state
         onView(withId(TIMER_ID)).check(matches(not(withText("00:00"))));
         onView(withId(START_BUTTON_ID)).check(matches(not(isDisplayed())));
     }
 
 
     @Test
-    public void test_timerFragment_startsTimerWithCorrectCodeAndStopsTooEarly() {
+    public void test_timerFragment_startsTimerWithCorrectCodeAndStopsWithCorrectCode() {
         onView(withId(TIMER_CODE_TEXT)).perform(typeText("123456"));
         onView(withId(START_BUTTON_ID)).perform(click());
         onView(withId(TIMER_CODE_TEXT)).perform(typeText("111111"));
         onView(withId(STOP_BUTTON_ID)).check(matches(withText("stop"))).perform(click());
         onView(withId(POPUP_TEXT)).check(matches(withText("Unfortunately you have not spent the minimum required time " +
                 "at the library to receive points!")));
-
+        onView(withId(POPUP_CLOSE_BUTTON)).perform(click());
+        onView(withId(TIMER_ID)).check(matches(withText("00:00")));
+        onView(withId(TIMER_CODE_TEXT)).check(matches(withHint("Please enter the start code")));
+        onView(withId(START_BUTTON_ID)).check(matches(isDisplayed()));
     }
-
 }

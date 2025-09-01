@@ -54,7 +54,7 @@ public class TimerFragment extends FragmentExtended implements UserChangeListene
         View v = inflater.inflate(R.layout.fragment_timer, container, false);
 
         timer = v.findViewById(R.id.timer);
-        timerCodeText = v.findViewById(R.id.startText);
+        timerCodeText = v.findViewById(R.id.timerCodeText);
         startButton = v.findViewById(R.id.startButton);
         stopButton = v.findViewById(R.id.stopButton);
         points = v.findViewById(R.id.points);

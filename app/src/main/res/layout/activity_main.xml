@@ -142,7 +142,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/timeContainer"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/startText" />
+                app:layout_constraintTop_toBottomOf="@+id/timerCodeText" />
 
 
         </LinearLayout>

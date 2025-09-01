@@ -45,7 +45,7 @@ public class RewardsFragment extends FragmentExtended implements UserChangeListe
 
         rewardButton = v.findViewById(R.id.rewardButton);
         rewardText = v.findViewById(R.id.rewardText);
-        points = v.findViewById(R.id.points2);
+        points = v.findViewById(R.id.pointsRewards);
         name = v.findViewById(R.id.nameRewards);
 
         return v;

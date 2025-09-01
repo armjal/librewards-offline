@@ -19,6 +19,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.example.librewards.repositories.StartCodesRepositoryFake;
+import com.example.librewards.repositories.StopCodesRepositoryFake;
 import com.example.librewards.repositories.UserRepositoryFake;
 import com.example.librewards.views.TimerFragment;
 
@@ -42,6 +43,8 @@ public class TimerFragmentInstrumentedTest {
     UserRepositoryFake userRepositoryFake;
     @Inject
     StartCodesRepositoryFake startCodesRepositoryFake;
+    @Inject
+    StopCodesRepositoryFake stopCodesRepositoryFake;
     private static final int POINTS_VALUE_ID = R.id.points;
     private static final int NAME_VALUE_ID = R.id.nameTimer;
     private static final int POINTS_LABEL_ID = R.id.textView2;
@@ -49,11 +52,13 @@ public class TimerFragmentInstrumentedTest {
     private static final int TIMER_CODE_TEXT = R.id.timerCodeText;
     private static final int STOP_BUTTON_ID = R.id.stopButton;
     private static final int TIMER_ID = R.id.timer;
+    private static final int POPUP_TEXT = R.id.popupText;
 
     @Before
     public void setUp() {
         hiltRule.inject();
         startCodesRepositoryFake.populate();
+        stopCodesRepositoryFake.populate();
         userRepositoryFake.setUser("test-name", 0);
 
         Bundle bundle = new Bundle();
@@ -89,4 +94,17 @@ public class TimerFragmentInstrumentedTest {
         onView(withId(TIMER_ID)).check(matches(not(withText("00:00"))));
         onView(withId(START_BUTTON_ID)).check(matches(not(isDisplayed())));
     }
+
+
+    @Test
+    public void test_timerFragment_startsTimerWithCorrectCodeAndStopsTooEarly() {
+        onView(withId(TIMER_CODE_TEXT)).perform(typeText("123456"));
+        onView(withId(START_BUTTON_ID)).perform(click());
+        onView(withId(TIMER_CODE_TEXT)).perform(typeText("111111"));
+        onView(withId(STOP_BUTTON_ID)).check(matches(withText("stop"))).perform(click());
+        onView(withId(POPUP_TEXT)).check(matches(withText("Unfortunately you have not spent the minimum required time " +
+                "at the library to receive points!")));
+
+    }
+
 }

@@ -42,9 +42,9 @@ public class TimerFragmentInstrumentedTest {
     StartCodesRepositoryFake startCodesRepositoryFake;
     @Inject
     StopCodesRepositoryFake stopCodesRepositoryFake;
-    private static final int POINTS_VALUE_ID = R.id.points;
+    private static final int POINTS_VALUE_ID = R.id.pointsTimer;
     private static final int NAME_VALUE_ID = R.id.nameTimer;
-    private static final int POINTS_LABEL_ID = R.id.textView2;
+    private static final int POINTS_LABEL_ID = R.id.pointsLabelTimer;
     private static final int START_BUTTON_ID = R.id.startButton;
     private static final int TIMER_CODE_TEXT = R.id.timerCodeText;
     private static final int STOP_BUTTON_ID = R.id.stopButton;

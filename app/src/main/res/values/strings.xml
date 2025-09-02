@@ -10,7 +10,7 @@
         shop to spend them. A full list of goodies and their cost will be on display in there. The more points you rack up, the more rewards
         you\'ll get. Here\'s how many points you\'ll get for the time spent at the library:<b> \n\n10 - 30 minutes = 10 points\n30 - 45 minutes =
         50 points\n45 - 60 minutes = 75 points\n1 - 2 hours = 125 points\n2 - 3 hours = 225 points\n3 - 5 hours = 400 points\n5 or more hours
-            = 700 points</b>\n\nPlease note that after 24 hours of not entering a stop code the stopwatch will reset. </string>
+            = 700 points</b>\n\nPlease note that after 24 hours of not entering a stop code the stopwatch will reset.</string>
     <string name="getRewardedNow">Get Rewarded Now!</string>
     <string name="rewardsText">Please enter your chosen reward code</string>
     <string name="pointsRewards">TextView</string>

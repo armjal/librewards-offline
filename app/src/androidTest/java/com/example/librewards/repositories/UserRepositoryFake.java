@@ -20,6 +20,7 @@ public class UserRepositoryFake extends UserRepository {
 
     @Override
     public void addName(String name) {
+        UserChangeNotifier.notifyNameChange(name);
     }
 
     @Override

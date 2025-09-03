@@ -1,9 +1,8 @@
 package com.example.librewards.repositories;
 
-import static com.example.librewards.resources.TimerCodes.startCodesTest;
-
 import com.example.librewards.data.db.DatabaseHelper;
-import com.example.librewards.data.repositories.StartCodesRepository;
+import com.example.librewards.data.repositories.StopCodesRepository;
+import com.example.librewards.resources.TimerCodes;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,16 +15,16 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class StartCodesRepositoryFake extends StartCodesRepository {
+public class StopCodesRepositoryFake extends StopCodesRepository {
     Map<String, String> codesMap = new HashMap<>();
 
     @Inject
-    public StartCodesRepositoryFake(DatabaseHelper dbHelper) {
+    public StopCodesRepositoryFake(DatabaseHelper dbHelper) {
         super(dbHelper);
     }
 
     public String getTableName() {
-        return "test_start_codes_table";
+        return "test_stop_codes_table";
     }
 
     @Override
@@ -48,14 +47,14 @@ public class StartCodesRepositoryFake extends StartCodesRepository {
 
     @Override
     public void populate() {
-        for (String code : startCodesTest) {
+        for (String code : TimerCodes.stopCodesTest) {
             codesMap.put(code, "false");
         }
     }
 
     @Override
     public void checkForUpdates() {
-        if (!(new ArrayList<>(codesMap.keySet()).equals(startCodesTest))) {
+        if (!(new ArrayList<>(codesMap.keySet()).equals(TimerCodes.stopCodesTest))) {
             codesMap = new HashMap<>();
             populate();
         }

@@ -4,17 +4,22 @@ import static android.content.Context.MODE_PRIVATE;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.core.IsNot.not;
 
 import android.content.SharedPreferences;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.example.librewards.data.models.UserModel;
@@ -44,6 +49,7 @@ public class MainActivityInstrumentedTest {
     @Rule
     public TestName testName = new TestName();
     private ActivityScenario<MainActivity> scenario;
+    public UserModel user;
     @Inject
     public UserRepositoryFake userRepositoryFake;
     @Inject
@@ -56,20 +62,22 @@ public class MainActivityInstrumentedTest {
     @Before
     public void setUp() {
         hiltRule.inject();
-        if (!testName.getMethodName().equals("test_mainActivity_givenFirstStart_AsksForNameAndProvidesHelp")) {
-            userRepositoryFake.setUser(new UserModel(1, "test-name", 0));
-            setNotFirstStartGlobally();
+        user = new UserModel(1, "test-name", 0);
+        setFirstStartGlobally(true);
+        if (!testName.getMethodName().equals("test_mainActivity_givenFirstStart_asksForNameAndProvidesHelp")) {
+            userRepositoryFake.setUser(user);
+            setFirstStartGlobally(false);
         }
         scenario = ActivityScenario.launch(MainActivity.class);
         scenario.moveToState(Lifecycle.State.RESUMED);
     }
 
-    private void setNotFirstStartGlobally() {
+    private void setFirstStartGlobally(boolean isFirstStart) {
         SharedPreferences sharedPreferences = ApplicationProvider.getApplicationContext().getSharedPreferences(
                 "librewards_prefs",
                 MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("firstStart", false);
+        editor.putBoolean("firstStart", isFirstStart);
         editor.commit();
     }
 
@@ -95,9 +103,46 @@ public class MainActivityInstrumentedTest {
     }
 
     @Test
+    public void test_mainActivity_hasCoreUiElementsCorrectlySetup() {
+        onView(withId(R.id.logo)).check(matches(isDisplayed()));
+        onView(withId(R.id.tabLayout)).check(matches(isDisplayed()));
+        onView(withId(R.id.viewPager)).check(matches(isDisplayed()));
+        onView(withId(R.id.helpButton)).check(matches(isDisplayed()));
+        onView(withId(R.id.nameTimer)).check(matches(withText("Hey, test-name")));
+        onView(withId(R.id.popupNameContainer)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.timer)).check(matches(isDisplayed()));
+        onView(withId(R.id.pointsTimer)).check(matches(isDisplayed()));
+        onView(withId(R.id.pointsLabelTimer)).check(matches(isDisplayed()));
+        onView(withId(R.id.timerCodeText)).check(matches(isDisplayed()));
+        onView(withId(R.id.startButton)).check(matches(isDisplayed()));
+    }
+
+    @Test
     public void test_mainActivity_givenUserRequiresHelp_clicksHelpButtonForGuidance() {
         onView(withId(R.id.helpButton)).check(matches(isDisplayed())).perform(click());
         onView(withId(R.id.popupText)).inRoot(isDialog()).check(matches(withText(expectedHelpText)));
         onView(withId(R.id.closeBtn)).inRoot(isDialog()).perform(click());
+    }
+
+    @Test
+    public void test_mainActivity_givenUserClicksOnTabs_shouldNavigateToEitherFragment() {
+        onView(withId(R.id.timer)).check(matches(isDisplayed()));
+        onView(withId(R.id.rewardButton)).check(doesNotExist());
+        onView(withId(R.id.nameTimer)).check(matches(withText("Hey, test-name")));
+        onView(allOf(withText("Rewards"), isDescendantOfA(ViewMatchers.withId(R.id.tabLayout)))).perform(click());
+        onView(withId(R.id.nameRewards)).check(matches(withText("Hey, test-name")));
+        onView(withId(R.id.rewardButton)).check(matches(isDisplayed()));
+        onView(withId(R.id.timer)).check(doesNotExist());
+        onView(allOf(withText("Timer"), isDescendantOfA(ViewMatchers.withId(R.id.tabLayout)))).perform(click());
+        onView(withId(R.id.rewardButton)).check(doesNotExist());
+    }
+
+    @Test
+    public void test_mainActivity_givenPointsUpdate_amendsBothFragments() {
+        onView(withId(R.id.pointsTimer)).check(matches(withText("0")));
+        scenario.onActivity(activity -> userRepositoryFake.addPoints(user, 10));
+        onView(withId(R.id.pointsTimer)).check(matches(withText("10")));
+        onView(allOf(withText("Rewards"), isDescendantOfA(ViewMatchers.withId(R.id.tabLayout)))).perform(click());
+        onView(withId(R.id.pointsRewards)).check(matches(withText("10")));
     }
 }

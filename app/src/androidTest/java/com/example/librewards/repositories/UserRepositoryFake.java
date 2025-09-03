@@ -10,8 +10,7 @@ import javax.inject.Singleton;
 
 @Singleton
 public class UserRepositoryFake extends UserRepository {
-    String name = "";
-    int points = 0;
+    UserModel userModel = new UserModel(1, "test-name", 0);
 
     @Inject
     public UserRepositoryFake(DatabaseHelper dbHelper) {
@@ -20,37 +19,35 @@ public class UserRepositoryFake extends UserRepository {
 
     @Override
     public void addName(String name) {
+        userModel.setName(name);
         UserChangeNotifier.notifyNameChange(name);
     }
 
     @Override
     public UserModel getUser() {
-        return new UserModel(1, name, points);
+        return userModel;
     }
 
     @Override
     public int getPoints() {
-        return points;
+        return userModel.getPoints();
     }
 
     @Override
     public void addPoints(UserModel user, int pointsToUpdate) {
         int newPoints = user.getPoints() + pointsToUpdate;
-        user.setPoints(newPoints);
-        points = newPoints;
+        userModel.setPoints(newPoints);
         UserChangeNotifier.notifyPointsChanged(newPoints);
     }
 
     @Override
     public void minusPoints(UserModel user, int pointsToUpdate) {
         int newPoints = user.getPoints() - pointsToUpdate;
-        user.setPoints(newPoints);
-        points = newPoints;
+        userModel.setPoints(newPoints);
         UserChangeNotifier.notifyPointsChanged(newPoints);
     }
 
     public void setUser(UserModel user) {
-        this.name = user.getName();
-        this.points = user.getPoints();
+        userModel = user;
     }
 }

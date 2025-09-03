@@ -11,6 +11,7 @@ import dagger.Provides;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import dagger.hilt.testing.TestInstallIn;
+
 @Module
 @TestInstallIn(
         components = SingletonComponent.class,
@@ -18,6 +19,7 @@ import dagger.hilt.testing.TestInstallIn;
 )
 public class TestDatabaseModule {
     public static final String TEST_DATABASE_NAME = "test_librewards.db";
+
     @Provides
     @Singleton
     public static DatabaseHelper provideDbHelper(@ApplicationContext Context context) {

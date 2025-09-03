@@ -5,9 +5,9 @@ plugins {
 
 android {
     namespace 'com.example.librewards'
-    compileSdk 36
 
     defaultConfig {
+        compileSdkVersion 36
         applicationId "com.example.librewards"
         minSdk 24
         targetSdk 36
@@ -15,6 +15,10 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "com.example.librewards.HiltTestRunner"
+    }
+
+    testFixtures {
+        enable = true
     }
 
     buildTypes {
@@ -50,10 +54,15 @@ dependencies {
     testImplementation libs.junit.jupiter
     testRuntimeOnly libs.junit.platform.launcher
     testAnnotationProcessor libs.hilt.android.compiler
+    testImplementation(testFixtures(project(":app")))
+    debugImplementation libs.fragment.testing
 
+    androidTestImplementation(testFixtures(project(":app")))
     androidTestImplementation platform(libs.junit)
     androidTestImplementation libs.espresso.core
-    debugImplementation libs.fragment.testing
     androidTestImplementation libs.hilt.android.testing
     androidTestAnnotationProcessor libs.hilt.android.compiler
+
+    testFixturesAnnotationProcessor(libs.hilt.android.compiler)
+    testFixturesImplementation(libs.hilt.android.testing)
 }

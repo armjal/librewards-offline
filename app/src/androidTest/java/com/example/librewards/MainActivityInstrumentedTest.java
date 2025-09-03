@@ -84,7 +84,7 @@ public class MainActivityInstrumentedTest {
             "hours of not entering a stop code the stopwatch will reset.";
 
     @Test
-    public void test_mainActivity_givenFirstStart_AsksForNameAndProvidesHelp() {
+    public void test_mainActivity_givenFirstStart_asksForNameAndProvidesHelp() {
         onView(withId(R.id.welcomeText)).check(matches(isDisplayed())).check(matches(withText(
                 "Welcome to Lib Rewards! Can we start by taking your name, please?")));
         onView(withId(R.id.enterName)).perform(typeText("random name"));
@@ -92,5 +92,12 @@ public class MainActivityInstrumentedTest {
         onView(withId(R.id.popupText)).inRoot(isDialog()).check(matches(withText(expectedHelpText)));
         onView(withId(R.id.closeBtn)).inRoot(isDialog()).perform(click());
         onView(withId(R.id.nameTimer)).check(matches(withText("Hey, random name")));
+    }
+
+    @Test
+    public void test_mainActivity_givenUserRequiresHelp_clicksHelpButtonForGuidance() {
+        onView(withId(R.id.helpButton)).check(matches(isDisplayed())).perform(click());
+        onView(withId(R.id.popupText)).inRoot(isDialog()).check(matches(withText(expectedHelpText)));
+        onView(withId(R.id.closeBtn)).inRoot(isDialog()).perform(click());
     }
 }

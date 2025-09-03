@@ -43,7 +43,6 @@ public class TimerFragmentInstrumentedTest {
     StartCodesRepositoryFake startCodesRepositoryFake;
     @Inject
     StopCodesRepositoryFake stopCodesRepositoryFake;
-    private UserModel user;
     private static final int POINTS_VALUE_ID = R.id.pointsTimer;
     private static final int NAME_VALUE_ID = R.id.nameTimer;
     private static final int POINTS_LABEL_ID = R.id.pointsLabelTimer;
@@ -57,7 +56,7 @@ public class TimerFragmentInstrumentedTest {
     @Before
     public void setUp() {
         hiltRule.inject();
-        user = new UserModel(1, "test-name", 0);
+        UserModel user = new UserModel(1, "test-name", 0);
 
         startCodesRepositoryFake.populate();
         stopCodesRepositoryFake.populate();

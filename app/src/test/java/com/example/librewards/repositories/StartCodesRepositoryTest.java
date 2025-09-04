@@ -1,18 +1,13 @@
 package com.example.librewards.repositories;
 
 import static com.example.librewards.resources.TimerCodesTest.startCodesTest;
-
-
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
 import android.os.Build;
 
 import com.example.librewards.data.db.DatabaseHelper;
 import com.example.librewards.data.repositories.StartCodesRepository;
 import com.example.librewards.resources.TimerCodes;
-import com.example.librewards.resources.TimerCodesTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,6 +35,7 @@ public class StartCodesRepositoryTest {
     @Inject
     public DatabaseHelper databaseHelper;
     MockedStatic<TimerCodes> mockedTimerCodes;
+
     @Before
     public void setUp() {
         hiltAndroidRule.inject();
@@ -49,14 +45,14 @@ public class StartCodesRepositoryTest {
     }
 
     @Test
-    public void test_startCodeRepo_getOriginalCodes_returnsOriginalCodes(){
+    public void test_startCodeRepo_getOriginalCodes_returnsOriginalCodes() {
         StartCodesRepository startCodesRepo = new StartCodesRepository(databaseHelper);
 
         assert startCodesRepo.getOriginalCodes() == startCodesTest;
     }
 
     @Test
-    public void test_startCodeRepo_get_returnsExistingCodeFromDb(){
+    public void test_startCodeRepo_get_returnsExistingCodeFromDb() {
         StartCodesRepository startCodesRepo = new StartCodesRepository(databaseHelper);
         startCodesRepo.populate();
 
@@ -64,7 +60,7 @@ public class StartCodesRepositoryTest {
     }
 
     @Test
-    public void test_startCodeRepo_get_givenIncorrectCode_returnsEmptyString(){
+    public void test_startCodeRepo_get_givenIncorrectCode_returnsEmptyString() {
         StartCodesRepository startCodesRepo = new StartCodesRepository(databaseHelper);
         startCodesRepo.populate();
 
@@ -72,7 +68,7 @@ public class StartCodesRepositoryTest {
     }
 
     @Test
-    public void test_startCodeRepo_delete_successfullyDeletesCodeFromDb(){
+    public void test_startCodeRepo_delete_successfullyDeletesCodeFromDb() {
         StartCodesRepository startCodesRepo = new StartCodesRepository(databaseHelper);
         startCodesRepo.populate();
         String codeBeforeDelete = startCodesRepo.get("123456");
@@ -84,19 +80,32 @@ public class StartCodesRepositoryTest {
     }
 
     @Test
-    public void test_startCodeRepo_delete_givenNonExistentCode_doesNotError(){
+    public void test_startCodeRepo_delete_givenNonExistentCode_doesNotError() {
         StartCodesRepository startCodesRepo = new StartCodesRepository(databaseHelper);
         startCodesRepo.populate();
         startCodesRepo.delete("hello");
     }
 
     @Test
-    public void test_startCodeRepo_checkForUpdates_givenExistingCodes_doesNotUpdate(){
+    public void test_startCodeRepo_checkForUpdates_givenExistingCodes_doesNotUpdate() {
         StartCodesRepository startCodesRepo = new StartCodesRepository(databaseHelper);
         startCodesRepo.populate();
         startCodesRepo.checkForUpdates();
 
         assert startCodesRepo.get("123456").equals("123456");
+    }
+
+    @Test
+    public void test_startCodeRepo_checkForUpdates_givenNewCodes_updates() {
+        StartCodesRepository startCodesRepo = new StartCodesRepository(databaseHelper);
+        startCodesRepo.populate();
+        assert startCodesRepo.get("123456").equals("123456");
+        mockedTimerCodes.when(TimerCodes::getStartCodes).thenReturn(List.of("random", "codes"));
+        startCodesRepo.checkForUpdates();
+
+        assert startCodesRepo.get("random").equals("random");
+        assert startCodesRepo.get("codes").equals("codes");
+        assert startCodesRepo.get("123456").isEmpty();
     }
 
     @After

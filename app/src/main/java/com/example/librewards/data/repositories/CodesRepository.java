@@ -1,7 +1,6 @@
 package com.example.librewards.data.repositories;
 
 import static com.example.librewards.data.db.DatabaseConstants.CODES_COLUMN_NAME;
-import static com.example.librewards.data.db.DatabaseConstants.ID_COLUMN_NAME;
 import static com.example.librewards.data.db.DatabaseConstants.USED_CODE_COLUMN_NAME;
 
 import android.content.ContentValues;
@@ -51,7 +50,7 @@ public abstract class CodesRepository implements CodesRepositoryInterface {
         List<String> originalCodes = getOriginalCodes();
         List<String> allCodes = getAll();
         if (!(allCodes.equals(originalCodes))) {
-            this.update(getTableName(), originalCodes);
+            this.replace(getTableName(), originalCodes);
         }
     }
 
@@ -59,11 +58,12 @@ public abstract class CodesRepository implements CodesRepositoryInterface {
         return dbHelper.getAllStrings(getTableName(), CODES_COLUMN_NAME, null, null);
     }
 
-    private void update(String table, List<String> newCodesList) {
+    private void replace(String table, List<String> newCodesList) {
         ContentValues contentValues = new ContentValues();
-        for (int i = 1, k = 0; k < newCodesList.size(); i++, k++) {
-            contentValues.put(CODES_COLUMN_NAME, newCodesList.get(k));
-            db.update(table, contentValues, ID_COLUMN_NAME + " = ?", new String[]{String.valueOf(i)});
+        db.delete(getTableName(), null, null);
+        for (int i = 0; i < newCodesList.size(); i++) {
+            contentValues.put(CODES_COLUMN_NAME, newCodesList.get(i));
+            db.insert(table, null, contentValues);
         }
     }
 }

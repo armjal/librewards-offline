@@ -16,7 +16,11 @@ android {
 
         testInstrumentationRunner "com.example.librewards.HiltTestRunner"
     }
-
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
     testFixtures {
         enable = true
     }
@@ -32,10 +36,6 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 }
-tasks.withType(Test).configureEach {
-    useJUnitPlatform()
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -46,23 +46,24 @@ dependencies {
     implementation libs.material
     implementation libs.core.splashscreen
     implementation libs.viewpager2
-    implementation libs.ext.junit
     implementation libs.hilt.android
+    implementation libs.junit
     annotationProcessor libs.hilt.android.compiler
 
-    testImplementation platform(libs.junit)
-    testImplementation libs.junit.jupiter
-    testRuntimeOnly libs.junit.platform.launcher
-    testAnnotationProcessor libs.hilt.android.compiler
+    testImplementation libs.hilt.android.testing
+    testImplementation libs.robolectric
+    testImplementation libs.mockito.core
+    testImplementation libs.core
+    testImplementation libs.junit
     testImplementation(testFixtures(project(":app")))
-    debugImplementation libs.fragment.testing
+    testAnnotationProcessor libs.hilt.android.compiler
 
-    androidTestImplementation(testFixtures(project(":app")))
-    androidTestImplementation platform(libs.junit)
     androidTestImplementation libs.espresso.core
     androidTestImplementation libs.hilt.android.testing
+    androidTestImplementation(testFixtures(project(":app")))
     androidTestAnnotationProcessor libs.hilt.android.compiler
+    debugImplementation libs.fragment.testing
 
-    testFixturesAnnotationProcessor(libs.hilt.android.compiler)
     testFixturesImplementation(libs.hilt.android.testing)
+    testFixturesAnnotationProcessor(libs.hilt.android.compiler)
 }

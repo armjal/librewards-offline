@@ -2,7 +2,7 @@ package com.example.librewards.repositories;
 
 import com.example.librewards.data.db.DatabaseHelper;
 import com.example.librewards.data.repositories.StartCodesRepository;
-import com.example.librewards.resources.TimerCodes;
+import com.example.librewards.resources.TimerCodesTest;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,14 +47,14 @@ public class StartCodesRepositoryFake extends StartCodesRepository {
 
     @Override
     public void populate() {
-        for (String code : TimerCodes.startCodesTest) {
+        for (String code : TimerCodesTest.startCodesTest) {
             codesMap.put(code, "false");
         }
     }
 
     @Override
     public void checkForUpdates() {
-        if (!(new ArrayList<>(codesMap.keySet()).equals(TimerCodes.startCodesTest))) {
+        if (!(new ArrayList<>(codesMap.keySet()).equals(TimerCodesTest.startCodesTest))) {
             codesMap = new HashMap<>();
             populate();
         }

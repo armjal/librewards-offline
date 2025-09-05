@@ -1,7 +1,7 @@
 package com.example.librewards.data.repositories;
 
 import static com.example.librewards.data.db.DatabaseConstants.STOP_CODES_TABLE_NAME;
-import static com.example.librewards.resources.TimerCodes.stopCodes;
+import static com.example.librewards.resources.TimerCodes.getStopCodes;
 
 import com.example.librewards.data.db.DatabaseHelper;
 
@@ -25,6 +25,6 @@ public class StopCodesRepository extends CodesRepository {
 
     @Override
     public List<String> getOriginalCodes() {
-        return stopCodes;
+        return getStopCodes();
     }
 }

@@ -61,7 +61,7 @@ public abstract class CodesRepository implements CodesRepositoryInterface {
 
     private void update(String table, List<String> newCodesList) {
         ContentValues contentValues = new ContentValues();
-        for (int i = 1, k = 0; i < newCodesList.size() - 1; i++, k++) {
+        for (int i = 1, k = 0; k < newCodesList.size(); i++, k++) {
             contentValues.put(CODES_COLUMN_NAME, newCodesList.get(k));
             db.update(table, contentValues, ID_COLUMN_NAME + " = ?", new String[]{String.valueOf(i)});
         }

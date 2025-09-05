@@ -1,7 +1,7 @@
 package com.example.librewards.data.repositories;
 
 import static com.example.librewards.data.db.DatabaseConstants.START_CODES_TABLE_NAME;
-import static com.example.librewards.resources.TimerCodes.startCodes;
+import static com.example.librewards.resources.TimerCodes.getStartCodes;
 
 import com.example.librewards.data.db.DatabaseHelper;
 
@@ -12,7 +12,6 @@ import javax.inject.Singleton;
 
 @Singleton
 public class StartCodesRepository extends CodesRepository {
-
     @Inject
     public StartCodesRepository(DatabaseHelper dbHelper) {
         super(dbHelper);
@@ -25,6 +24,6 @@ public class StartCodesRepository extends CodesRepository {
 
     @Override
     public List<String> getOriginalCodes() {
-        return startCodes;
+        return getStartCodes();
     }
 }

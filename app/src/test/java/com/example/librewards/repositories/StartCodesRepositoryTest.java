@@ -18,6 +18,7 @@ import org.mockito.MockedStatic;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -35,10 +36,12 @@ public class StartCodesRepositoryTest {
     @Inject
     public DatabaseHelper databaseHelper;
     MockedStatic<TimerCodes> mockedTimerCodes;
+    StartCodesRepository startCodesRepo;
 
     @Before
     public void setUp() {
         hiltAndroidRule.inject();
+        startCodesRepo = new StartCodesRepository(databaseHelper);
         mockedTimerCodes = mockStatic(TimerCodes.class);
         mockedTimerCodes.when(TimerCodes::getStartCodes).thenReturn(startCodesTest);
 
@@ -46,14 +49,27 @@ public class StartCodesRepositoryTest {
 
     @Test
     public void test_startCodeRepo_getOriginalCodes_returnsOriginalCodes() {
-        StartCodesRepository startCodesRepo = new StartCodesRepository(databaseHelper);
+        startCodesRepo = new StartCodesRepository(databaseHelper);
 
         assert startCodesRepo.getOriginalCodes() == startCodesTest;
     }
 
     @Test
+    public void test_startCodeRepo_populate_successfullyPopulatesDbWithCodesAndUsedState() {
+        List<String> codesColumnBeforePopulation = databaseHelper.getAllStrings("start_codes_table", "codes", null,
+                null);
+        startCodesRepo.populate();
+        List<String> codesColumnAfterPopulation = databaseHelper.getAllStrings("start_codes_table", "codes", null,
+                null);
+        String isCodeUsed = databaseHelper.getString("start_codes_table", "used", "codes = ?", new String[]{"123456"});
+
+        assert isCodeUsed.equals("false");
+        assert codesColumnBeforePopulation.equals(new ArrayList<>());
+        assert codesColumnAfterPopulation.equals(startCodesTest);
+    }
+
+    @Test
     public void test_startCodeRepo_get_returnsExistingCodeFromDb() {
-        StartCodesRepository startCodesRepo = new StartCodesRepository(databaseHelper);
         startCodesRepo.populate();
 
         assert startCodesRepo.get("123456").equals("123456");
@@ -61,34 +77,32 @@ public class StartCodesRepositoryTest {
 
     @Test
     public void test_startCodeRepo_get_givenIncorrectCode_returnsEmptyString() {
-        StartCodesRepository startCodesRepo = new StartCodesRepository(databaseHelper);
         startCodesRepo.populate();
 
         assert startCodesRepo.get("987623").isEmpty();
     }
 
     @Test
-    public void test_startCodeRepo_delete_successfullyDeletesCodeFromDb() {
-        StartCodesRepository startCodesRepo = new StartCodesRepository(databaseHelper);
+    public void test_startCodeRepo_delete_successfullySoftDeletesCodeAndSetsItToUsed() {
         startCodesRepo.populate();
         String codeBeforeDelete = startCodesRepo.get("123456");
         startCodesRepo.delete("123456");
         String codeAfterDelete = startCodesRepo.get("123456");
+        String isCodeUsed = databaseHelper.getString("start_codes_table", "used", "codes = ?", new String[]{"123456"});
 
         assert codeBeforeDelete.equals("123456");
         assert codeAfterDelete.isEmpty();
+        assert isCodeUsed.equals("true");
     }
 
     @Test
     public void test_startCodeRepo_delete_givenNonExistentCode_doesNotError() {
-        StartCodesRepository startCodesRepo = new StartCodesRepository(databaseHelper);
         startCodesRepo.populate();
         startCodesRepo.delete("hello");
     }
 
     @Test
     public void test_startCodeRepo_checkForUpdates_givenExistingCodes_doesNotUpdate() {
-        StartCodesRepository startCodesRepo = new StartCodesRepository(databaseHelper);
         startCodesRepo.populate();
         startCodesRepo.checkForUpdates();
 
@@ -97,7 +111,6 @@ public class StartCodesRepositoryTest {
 
     @Test
     public void test_startCodeRepo_checkForUpdates_givenNewCodes_updates() {
-        StartCodesRepository startCodesRepo = new StartCodesRepository(databaseHelper);
         startCodesRepo.populate();
         assert startCodesRepo.get("123456").equals("123456");
         mockedTimerCodes.when(TimerCodes::getStartCodes).thenReturn(List.of("random", "codes"));
@@ -106,6 +119,12 @@ public class StartCodesRepositoryTest {
         assert startCodesRepo.get("random").equals("random");
         assert startCodesRepo.get("codes").equals("codes");
         assert startCodesRepo.get("123456").isEmpty();
+    }
+
+    @Test
+    public void test_startCodeRepo_get_givenUsedCode_returnsEmptyString() {
+        startCodesRepo.populate();
+        startCodesRepo.delete("123456");
     }
 
     @After

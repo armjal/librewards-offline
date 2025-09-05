@@ -102,7 +102,7 @@ public class StartCodesRepositoryTest {
     }
 
     @Test
-    public void test_startCodeRepo_checkForUpdates_givenExistingCodes_doesNotUpdate() {
+    public void test_startCodeRepo_checkForUpdates_givenExistingCodes_doesNotReplace() {
         startCodesRepo.populate();
         startCodesRepo.checkForUpdates();
 
@@ -112,13 +112,18 @@ public class StartCodesRepositoryTest {
     @Test
     public void test_startCodeRepo_checkForUpdates_givenNewCodes_updates() {
         startCodesRepo.populate();
-        assert startCodesRepo.get("123456").equals("123456");
+        List<String> codesInDbBeforeUpdate = databaseHelper.getAllStrings("start_codes_table", "codes", null, null);
+        List<String> newCodes = List.of("random", "codes");
         mockedTimerCodes.when(TimerCodes::getStartCodes).thenReturn(List.of("random", "codes"));
-        startCodesRepo.checkForUpdates();
 
-        assert startCodesRepo.get("random").equals("random");
-        assert startCodesRepo.get("codes").equals("codes");
-        assert startCodesRepo.get("123456").isEmpty();
+        startCodesRepo.checkForUpdates();
+        List<String> codesInDbAfterUpdate = databaseHelper.getAllStrings("start_codes_table", "codes", null, null);
+        String isRandomCodeUsed = databaseHelper.getString("start_codes_table", "used", "codes = ?", new String[]{
+                "random"});
+
+        assert isRandomCodeUsed.equals("false");
+        assert codesInDbBeforeUpdate.equals(startCodesTest);
+        assert codesInDbAfterUpdate.equals(newCodes);
     }
 
     @Test

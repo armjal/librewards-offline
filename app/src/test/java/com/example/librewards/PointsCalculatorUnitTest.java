@@ -1,35 +1,43 @@
 package com.example.librewards;
 
 import static com.example.librewards.utils.PointsCalculator.calculatePointsFromDuration;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
-import java.util.stream.Stream;
+import java.util.Arrays;
+import java.util.Collection;
 
 
-class PointsCalculatorUnitTest {
-    static Stream<Arguments> provideInputsForPointsCalculatorTest() {
-        return Stream.of(
-                Arguments.of(10500, 0),
-                Arguments.of(60000, 75),
-                Arguments.of(120000, 125),
-                Arguments.of(185000, 225),
-                Arguments.of(507000, 700),
-                Arguments.of(800000, 800)
+@RunWith(Parameterized.class)
+public class PointsCalculatorUnitTest {
+    private final int totalDuration;
+    private final int expectedPoints;
 
-        );
+    public PointsCalculatorUnitTest(int totalDuration, int expectedPoints) {
+        this.totalDuration = totalDuration;
+        this.expectedPoints = expectedPoints;
     }
 
-    @ParameterizedTest
-    @MethodSource("provideInputsForPointsCalculatorTest")
-    void calculateFromDuration_givenRangeOfTimes_returnsExpectedPointsEarned(long timeSpentInLibrary,
-                                                                             int expectedPointsEarned) {
-        int actualPointsEarned = calculatePointsFromDuration(timeSpentInLibrary);
+    @Parameters(name = "Test #{index}: calculatesPointsFromDuration ({0}) returnsExpectedPoints {1}")
+    public static Collection<Object[]> durationToPoints() {
+        return Arrays.asList(new Object[][]{
+                {10500, 0},
+                {60000, 75},
+                {120000, 125},
+                {185000, 225},
+                {507000, 700},
+                {800000, 800}
+        });
+    }
 
-        assertEquals(expectedPointsEarned, actualPointsEarned);
+    @Test
+    public void calculatePointsFromDuration_givenRangeOfTimes_returnsExpectedPointsEarned() {
+        int actualPointsEarned = calculatePointsFromDuration(totalDuration);
+        assertEquals(expectedPoints, actualPointsEarned);
 
     }
 }

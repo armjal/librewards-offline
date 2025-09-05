@@ -1,6 +1,6 @@
 package com.example.librewards.repositories;
 
-import static com.example.librewards.resources.RewardCodes.rewardCodesAndPoints;
+import static com.example.librewards.resources.RewardCodesTest.rewardCodesAndPoints;
 
 import com.example.librewards.data.db.DatabaseHelper;
 import com.example.librewards.data.repositories.RewardsRepository;

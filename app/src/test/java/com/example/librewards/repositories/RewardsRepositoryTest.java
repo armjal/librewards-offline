@@ -61,6 +61,21 @@ public class RewardsRepositoryTest {
     }
 
     @Test
+    public void test_rewardsRepo_populate_givenNewRewardCodes_replacesExisting() {
+        rewardsRepo.populate();
+        Map<String, Integer> rewardsAfterPopulation = getRewardsFromDb();
+
+        Map<String, Integer> newRewards = Map.of("876543", 20, "987643", 30);
+        mockedRewardCodes.when(RewardCodes::getRewardCodes).thenReturn(newRewards);
+
+        rewardsRepo.populate();
+        Map<String, Integer> rewardsAfterSecondPopulation = getRewardsFromDb();
+
+        assertThat(rewardsAfterPopulation, equalTo(RewardCodesTest.rewardCodesAndPoints));
+        assertThat(rewardsAfterSecondPopulation, equalTo(newRewards));
+    }
+
+    @Test
     public void test_rewardsRepo_getCode_returnsCodeFromDb() {
         rewardsRepo.populate();
 
@@ -82,18 +97,18 @@ public class RewardsRepositoryTest {
     public void test_rewardsRepo_getCost_returnsCostOfReward() {
         rewardsRepo.populate();
 
-        int codeInDb = rewardsRepo.getCost("123456");
+        int costInDb = rewardsRepo.getCost("123456");
 
-        assertThat(codeInDb, equalTo(5));
+        assertThat(costInDb, equalTo(5));
     }
 
     @Test
     public void test_rewardsRepo_getCost_givenIncorrectCode_returnsZero() {
         rewardsRepo.populate();
         //COME BACK TO THIS - Return null instead
-        int codeInDb = rewardsRepo.getCost("incorrect code");
+        int costInDb = rewardsRepo.getCost("incorrect code");
 
-        assertThat(codeInDb, equalTo(0));
+        assertThat(costInDb, equalTo(0));
     }
 
     private Map<String, Integer> getRewardsFromDb() {

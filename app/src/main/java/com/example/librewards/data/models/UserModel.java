@@ -3,6 +3,8 @@ package com.example.librewards.data.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Objects;
+
 public class UserModel implements Parcelable {
     public static final Creator<UserModel> CREATOR = new Creator<>() {
         @Override
@@ -48,6 +50,18 @@ public class UserModel implements Parcelable {
 
     public void setPoints(Integer points) {
         this.points = points;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        UserModel userModel = (UserModel) o;
+        return id == userModel.id && points == userModel.points && Objects.equals(name, userModel.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, points);
     }
 
     @Override

@@ -107,4 +107,53 @@ public class DatabaseHelperTest {
         assertThat(points, equalTo(7));
     }
 
+    @Test
+    public void test_databaseHelper_givenANeedToWrapDbCallsInATransaction_successfullyProcessesTransaction() {
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        try {
+            databaseHelper.processTransaction(() -> {
+                ContentValues userContentValues = new ContentValues();
+                userContentValues.put("name", "John");
+                userContentValues.put("points", "7");
+                db.insert("user_table", null, userContentValues);
+
+                ContentValues rewardsContentValues = new ContentValues();
+                rewardsContentValues.put("codes", "123456");
+                rewardsContentValues.put("cost", "5");
+                db.insert("reward_codes_table", null, rewardsContentValues);
+            });
+        } catch (NullPointerException ignored) {
+        }
+        String name = databaseHelper.getString("user_table", "name", null, null);
+        String code = databaseHelper.getString("reward_codes_table", "codes", null, null);
+
+        assertThat(name, equalTo("John"));
+        assertThat(code, equalTo("123456"));
+    }
+
+    @Test
+    public void test_databaseHelper_givenAnExceptionRaisedDuringTransaction_doesNotWriteToDb() {
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        try {
+            databaseHelper.processTransaction(() -> {
+                ContentValues userContentValues = new ContentValues();
+                userContentValues.put("name", "John");
+                userContentValues.put("points", "7");
+                db.insert("user_table", null, userContentValues);
+
+                ContentValues rewardsContentValues = new ContentValues();
+                rewardsContentValues.put("codes", "123456");
+                rewardsContentValues.put("cost", "5");
+                db.insert("reward_codes_table", null, rewardsContentValues);
+
+                throw new NullPointerException();
+            });
+        } catch (NullPointerException ignored) {
+        }
+        String name = databaseHelper.getString("user_table", "name", null, null);
+        String code = databaseHelper.getString("reward_codes_table", "codes", null, null);
+
+        assertThat(name, equalTo(""));
+        assertThat(code, equalTo(""));
+    }
 }

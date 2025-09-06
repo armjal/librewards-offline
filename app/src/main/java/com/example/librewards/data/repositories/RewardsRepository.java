@@ -5,7 +5,7 @@ import static com.example.librewards.data.db.DatabaseConstants.CODES_COLUMN_NAME
 import static com.example.librewards.data.db.DatabaseConstants.COST_COLUMN_NAME;
 import static com.example.librewards.data.db.DatabaseConstants.ID_COLUMN_NAME;
 import static com.example.librewards.data.db.DatabaseConstants.REWARD_CODES_TABLE_NAME;
-import static com.example.librewards.resources.RewardCodes.rewardCodesAndPoints;
+import static com.example.librewards.resources.RewardCodes.getRewardCodes;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
@@ -40,7 +40,7 @@ public class RewardsRepository{
 
     public void populate() {
         int id = 1;
-        for (Map.Entry<String, Integer> entry : rewardCodesAndPoints.entrySet()) {
+        for (Map.Entry<String, Integer> entry : getRewardCodes().entrySet()) {
             ContentValues contentValues = new ContentValues();
             contentValues.put(ID_COLUMN_NAME, id);
             contentValues.put(CODES_COLUMN_NAME, entry.getKey());

@@ -57,9 +57,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.endTransaction();
     }
 
-    public int getInt(String tableName, String column, String whereClause, String[] whereArgs) {
+    public Integer getInt(String tableName, String column, String whereClause, String[] whereArgs) {
         SQLiteDatabase db = this.getWritableDatabase();
-        int output = 0;
+        Integer output = null;
         Cursor c = db.query(tableName, new String[]{column}, whereClause, whereArgs, null, null, null, "1");
         if (c.getCount() > 0 && c.moveToFirst()) {
             output = c.getInt(0);

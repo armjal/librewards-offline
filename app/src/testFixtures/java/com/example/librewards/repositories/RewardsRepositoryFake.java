@@ -29,7 +29,7 @@ public class RewardsRepositoryFake extends RewardsRepository {
     }
 
     @Override
-    public int getCost(String code) {
+    public Integer getCost(String code) {
         return rewardsMap.get(code);
     }
 

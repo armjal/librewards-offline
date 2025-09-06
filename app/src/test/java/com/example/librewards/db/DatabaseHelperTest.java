@@ -1,5 +1,9 @@
 package com.example.librewards.db;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -19,7 +23,7 @@ public class DatabaseHelperTest {
 
     @Before
     public void setUp() {
-        databaseHelper = new DatabaseHelper(ApplicationProvider.getApplicationContext());
+        databaseHelper = new DatabaseHelper(ApplicationProvider.getApplicationContext(), "test_librewards.db");
     }
 
     @Test
@@ -35,4 +39,72 @@ public class DatabaseHelperTest {
         c3.close();
         c4.close();
     }
+
+    @Test
+    public void test_databaseHelper_successfullyInteractsWithStartCodesTable() {
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("codes", "123456");
+
+        db.insert("start_codes_table", null, contentValues);
+        int id = databaseHelper.getInt("start_codes_table", "id", null, null);
+        String code = databaseHelper.getString("start_codes_table", "codes", null, null);
+        String used = databaseHelper.getString("start_codes_table", "used", null, null);
+
+        assertThat(id, equalTo(1));
+        assertThat(code, equalTo("123456"));
+        assertThat(used, equalTo("false"));
+    }
+
+    @Test
+    public void test_databaseHelper_successfullyInteractsWithStopCodesTable() {
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("codes", "123456");
+
+        db.insert("stop_codes_table", null, contentValues);
+        int id = databaseHelper.getInt("stop_codes_table", "id", null, null);
+        String code = databaseHelper.getString("stop_codes_table", "codes", null, null);
+        String used = databaseHelper.getString("stop_codes_table", "used", null, null);
+
+        assertThat(id, equalTo(1));
+        assertThat(code, equalTo("123456"));
+        assertThat(used, equalTo("false"));
+    }
+
+    @Test
+    public void test_databaseHelper_successfullyInteractsWithRewardCodesTable() {
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("codes", "123456");
+        contentValues.put("cost", "5");
+
+        db.insert("reward_codes_table", null, contentValues);
+        int id = databaseHelper.getInt("reward_codes_table", "id", null, null);
+        String code = databaseHelper.getString("reward_codes_table", "codes", null, null);
+        int cost = databaseHelper.getInt("reward_codes_table", "cost", null, null);
+
+        assertThat(id, equalTo(1));
+        assertThat(code, equalTo("123456"));
+        assertThat(cost, equalTo(5));
+    }
+
+    @Test
+    public void test_databaseHelper_successfullyInteractsWithUserTable() {
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("name", "John");
+        contentValues.put("points", "7");
+
+
+        db.insert("user_table", null, contentValues);
+        int id = databaseHelper.getInt("user_table", "id", null, null);
+        String name = databaseHelper.getString("user_table", "name", null, null);
+        int points = databaseHelper.getInt("user_table", "points", null, null);
+
+        assertThat(id, equalTo(1));
+        assertThat(name, equalTo("John"));
+        assertThat(points, equalTo(7));
+    }
+
 }

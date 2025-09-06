@@ -1,5 +1,6 @@
 package com.example.librewards.db;
 
+import static com.example.librewards.resources.TimerCodesTest.startCodesTest;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -15,6 +16,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
+
+import java.util.List;
 
 @RunWith(RobolectricTestRunner.class)
 public class DatabaseHelperTest {
@@ -108,7 +111,7 @@ public class DatabaseHelperTest {
     }
 
     @Test
-    public void test_databaseHelper_givenANeedToWrapDbCallsInATransaction_successfullyProcessesTransaction() {
+    public void test_databaseHelper_givenANeedToMaintainAtomicity_successfullyProcessesTransaction() {
         SQLiteDatabase db = databaseHelper.getWritableDatabase();
         try {
             databaseHelper.processTransaction(() -> {
@@ -155,5 +158,18 @@ public class DatabaseHelperTest {
 
         assertThat(name, equalTo(""));
         assertThat(code, equalTo(""));
+    }
+
+    @Test
+    public void test_databaseHelper_getAllStrings_returnsListOfStringsForColumn() {
+        SQLiteDatabase db = databaseHelper.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        for (String code : startCodesTest) {
+            contentValues.put("codes", code);
+            db.insert("start_codes_table", null, contentValues);
+        }
+
+        List<String> codesInDb = databaseHelper.getAllStrings("start_codes_table", "codes", null, null);
+        assertThat(codesInDb, equalTo(startCodesTest));
     }
 }

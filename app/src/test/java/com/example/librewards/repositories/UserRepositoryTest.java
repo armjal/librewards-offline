@@ -3,17 +3,22 @@ package com.example.librewards.repositories;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 import android.os.Build;
 
 import com.example.librewards.data.db.DatabaseHelper;
 import com.example.librewards.data.models.UserModel;
+import com.example.librewards.data.notifiers.UserChangeListener;
+import com.example.librewards.data.notifiers.UserChangeNotifier;
 import com.example.librewards.data.repositories.UserRepository;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
@@ -32,11 +37,19 @@ public class UserRepositoryTest {
     @Inject
     public DatabaseHelper databaseHelper;
     UserRepository userRepo;
+    private UserChangeListener mockUserChangeListener1;
+    private UserChangeListener mockUserChangeListener2;
 
     @Before
     public void setUp() {
         hiltAndroidRule.inject();
         userRepo = new UserRepository(databaseHelper);
+        mockUserChangeListener1 = Mockito.mock(UserChangeListener.class);
+        mockUserChangeListener2 = Mockito.mock(UserChangeListener.class);
+
+        UserChangeNotifier.addListener(mockUserChangeListener1);
+        UserChangeNotifier.addListener(mockUserChangeListener2);
+
     }
 
     @Test
@@ -61,6 +74,8 @@ public class UserRepositoryTest {
         UserModel expectedUser = new UserModel(1, "Test Name", 0);
 
         assertThat(userRepo.getUser(), equalTo(expectedUser));
+        verify(mockUserChangeListener1).onNameChanged(eq("Test Name"));
+        verify(mockUserChangeListener2).onNameChanged(eq("Test Name"));
     }
 
     @Test
@@ -70,6 +85,8 @@ public class UserRepositoryTest {
         userRepo.addPoints(userRepo.getUser(), 10);
 
         assertThat(userRepo.getPoints(), equalTo(110));
+        verify(mockUserChangeListener1).onPointsChanged(eq(110));
+        verify(mockUserChangeListener2).onPointsChanged(eq(110));
     }
 
     @Test
@@ -79,6 +96,8 @@ public class UserRepositoryTest {
         userRepo.minusPoints(userRepo.getUser(), 10);
 
         assertThat(userRepo.getPoints(), equalTo(90));
+        verify(mockUserChangeListener1).onPointsChanged(eq(90));
+        verify(mockUserChangeListener2).onPointsChanged(eq(90));
     }
 
     private void insertUserInDb() {

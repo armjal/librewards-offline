@@ -31,7 +31,7 @@ public class RewardsRepository {
                 new String[]{code});
     }
 
-    public int getCost(String code) {
+    public Integer getCost(String code) {
         return dbHelper.getInt(REWARD_CODES_TABLE_NAME, COST_COLUMN_NAME, CODES_COLUMN_NAME + " = ?",
                 new String[]{code});
     }

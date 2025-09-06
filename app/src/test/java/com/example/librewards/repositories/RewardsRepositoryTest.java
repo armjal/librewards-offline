@@ -97,7 +97,7 @@ public class RewardsRepositoryTest {
     public void test_rewardsRepo_getCost_returnsCostOfReward() {
         rewardsRepo.populate();
 
-        int costInDb = rewardsRepo.getCost("123456");
+        Integer costInDb = rewardsRepo.getCost("123456");
 
         assertThat(costInDb, equalTo(5));
     }
@@ -105,10 +105,10 @@ public class RewardsRepositoryTest {
     @Test
     public void test_rewardsRepo_getCost_givenIncorrectCode_returnsZero() {
         rewardsRepo.populate();
-        //COME BACK TO THIS - Return null instead
-        int costInDb = rewardsRepo.getCost("incorrect code");
 
-        assertThat(costInDb, equalTo(0));
+        Integer costInDb = rewardsRepo.getCost("incorrect code");
+
+        assertThat(costInDb, equalTo(null));
     }
 
     private Map<String, Integer> getRewardsFromDb() {

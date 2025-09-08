@@ -5,7 +5,7 @@ public class PointsCalculator {
         int pointsEarned = 0;
         int durationSeconds = (int) (totalDurationAtLibrary / 1000);
 
-        if (isInBetween(durationSeconds, 0, 120)) {
+        if (isInBetween(durationSeconds, 60, 120)) {
             pointsEarned = 75;
         } else if (isInBetween(durationSeconds, 120, 180)) {
             pointsEarned = 125;

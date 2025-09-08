@@ -3,6 +3,7 @@ package com.example.librewards;
 import static android.content.Context.MODE_PRIVATE;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -95,7 +96,7 @@ public class MainActivityInstrumentedTest {
     public void test_mainActivity_givenFirstStart_asksForNameAndProvidesHelp() {
         onView(withId(R.id.welcomeText)).check(matches(isDisplayed())).check(matches(withText(
                 "Welcome to Lib Rewards! Can we start by taking your name, please?")));
-        onView(withId(R.id.enterName)).perform(typeText("random name"));
+        onView(withId(R.id.enterName)).perform(typeText("random name"), closeSoftKeyboard());
         onView(withId(R.id.nameButton)).perform(click());
         onView(withId(R.id.popupText)).inRoot(isDialog()).check(matches(withText(expectedHelpText)));
         onView(withId(R.id.closeBtn)).inRoot(isDialog()).perform(click());

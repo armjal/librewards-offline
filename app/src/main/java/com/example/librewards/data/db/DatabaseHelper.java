@@ -52,9 +52,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void processTransaction(Runnable actions) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.beginTransaction();
-        actions.run();
-        db.setTransactionSuccessful();
-        db.endTransaction();
+        try {
+            actions.run();
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
     }
 
     public Integer getInt(String tableName, String column, String whereClause, String[] whereArgs) {

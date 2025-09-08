@@ -14,21 +14,11 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v4
 
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            gradle-${{ runner.os }}-
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Run unit tests
-        run: ./gradlew testDebugUnitTest --build-cache --no-daemon
+        run: ./gradlew testDebugUnitTest
 
       - name: Upload test report
         uses: actions/upload-artifact@v4.6.2
@@ -38,21 +28,10 @@ jobs:
 
   instrumented-test:
     name: Perform Instrumentation Testing
-    needs: [unit-test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code
         uses: actions/checkout@v4
-
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/build.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            gradle-${{ runner.os }}-
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
@@ -62,7 +41,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: gradle
 
       - name: Enable KVM group perms
         run: |
@@ -73,14 +51,6 @@ jobs:
       - name: Run instrumented tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 36
-          target: google_apis
-          arch: x86_64
-          disable-animations: true
-          profile: pixel_6
-          script: ./gradlew connectedDebugAndroidTest --no-daemon
-      - name: Upload Instrumentation Test report
-        uses: actions/upload-artifact@v4.6.2
-        with:
-          name: instrumentation_test_report
-          path: app/build/reports/androidTests/connected
+          api-level: 29
+          ram-size: 2048M
+          script: ./gradlew connectedCheck --stacktrace

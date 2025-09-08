@@ -2,6 +2,7 @@ package com.example.librewards;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
@@ -75,7 +76,7 @@ public class RewardsFragmentInstrumentedTest {
     public void test_rewardsFragment_givenCorrectCodeAndSufficientPoints_successfullyPurchasesItem() {
         userRepositoryFake.addPoints(user, 10);
         onView(withId(POINTS_VALUE_ID)).check(matches(isDisplayed())).check(matches(withText("10")));
-        onView(withId(REWARDS_TEXT_ID)).perform(typeText("123456"));
+        onView(withId(REWARDS_TEXT_ID)).perform(typeText("123456"), closeSoftKeyboard());
         onView(withId(REWARDS_BUTTON_ID)).perform(click());
         onView(withId(POPUP_TEXT)).inRoot(isDialog()).check(matches(withText("Code accepted, keep it up! Your new " +
                 "points balance is: 5")));
@@ -86,7 +87,7 @@ public class RewardsFragmentInstrumentedTest {
     @Test
     public void test_rewardsFragment_givenCorrectCodeButInsufficientPoints_providesInsufficientPointsMessage() {
         onView(withId(POINTS_VALUE_ID)).check(matches(isDisplayed())).check(matches(withText("0")));
-        onView(withId(REWARDS_TEXT_ID)).perform(typeText("123456"));
+        onView(withId(REWARDS_TEXT_ID)).perform(typeText("123456"), closeSoftKeyboard());
         onView(withId(REWARDS_BUTTON_ID)).perform(click());
         onView(withId(POPUP_TEXT)).inRoot(isDialog()).check(matches(withText("Woops! Unfortunately you don't have " +
                 "sufficient points for this reward. Please choose another reward or carry on doing a great job at the " +
@@ -98,7 +99,7 @@ public class RewardsFragmentInstrumentedTest {
     public void test_rewardsFragment_givenIncorrectCode_doesNotPurchaseItem() {
         userRepositoryFake.addPoints(user, 10);
         onView(withId(POINTS_VALUE_ID)).check(matches(isDisplayed())).check(matches(withText("10")));
-        onView(withId(REWARDS_TEXT_ID)).perform(typeText("incorrect-code"));
+        onView(withId(REWARDS_TEXT_ID)).perform(typeText("incorrect-code"), closeSoftKeyboard());
         onView(withId(REWARDS_BUTTON_ID)).perform(click());
         onView(withId(POINTS_VALUE_ID)).check(matches(isDisplayed())).check(matches(withText("10")));
     }

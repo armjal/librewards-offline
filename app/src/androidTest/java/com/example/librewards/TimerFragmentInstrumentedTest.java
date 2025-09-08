@@ -2,6 +2,7 @@ package com.example.librewards;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -81,7 +82,7 @@ public class TimerFragmentInstrumentedTest {
 
     @Test
     public void test_timerFragment_startsTimerWithCorrectCode() throws InterruptedException {
-        onView(withId(TIMER_CODE_TEXT)).perform(typeText("123456"));
+        onView(withId(TIMER_CODE_TEXT)).perform(typeText("123456"), closeSoftKeyboard());
         onView(withId(START_BUTTON_ID)).perform(click());
         onView(withId(TIMER_CODE_TEXT)).check(matches(withHint("Please enter the stop code")));
         onView(withId(STOP_BUTTON_ID)).check(matches(isDisplayed()));
@@ -93,9 +94,9 @@ public class TimerFragmentInstrumentedTest {
 
     @Test
     public void test_timerFragment_startsTimerWithCorrectCodeAndStopsWithCorrectCode() {
-        onView(withId(TIMER_CODE_TEXT)).perform(typeText("123456"));
+        onView(withId(TIMER_CODE_TEXT)).perform(typeText("123456"), closeSoftKeyboard());
         onView(withId(START_BUTTON_ID)).perform(click());
-        onView(withId(TIMER_CODE_TEXT)).perform(typeText("111111"));
+        onView(withId(TIMER_CODE_TEXT)).perform(typeText("111111"), closeSoftKeyboard());
         onView(withId(STOP_BUTTON_ID)).check(matches(withText("stop"))).perform(click());
         onView(withId(POPUP_TEXT)).check(matches(withText("Unfortunately you have not spent the minimum required time " +
                 "at the library to receive points!")));

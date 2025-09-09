@@ -1,4 +1,4 @@
-package com.example.librewards;
+package utils;
 
 import static com.example.librewards.utils.PointsCalculator.calculatePointsFromDuration;
 import static org.junit.Assert.assertEquals;

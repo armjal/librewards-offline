@@ -32,6 +32,7 @@ import com.example.librewards.data.repositories.StopCodesRepository;
 import com.example.librewards.data.repositories.UserRepository;
 import com.example.librewards.views.MainActivity;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -151,5 +152,13 @@ public class MainActivityInstrumentedTest {
         onView(withId(R.id.pointsTimer)).check(matches(withText("10")));
         onView(allOf(withText("Rewards"), isDescendantOfA(ViewMatchers.withId(R.id.tabLayout)))).perform(click());
         onView(withId(R.id.pointsRewards)).check(matches(withText("10")));
+    }
+
+    @After
+    public void tearDown(){
+        db.delete("user_table", null, null);
+        db.delete("start_codes_table", null, null);
+        db.delete("stop_codes_table", null, null);
+        db.delete("reward_codes_table", null, null);
     }
 }

@@ -16,6 +16,7 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.core.IsNot.not;
 
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
@@ -23,11 +24,12 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.librewards.data.db.DatabaseHelper;
 import com.example.librewards.data.models.UserModel;
-import com.example.librewards.repositories.RewardsRepositoryFake;
-import com.example.librewards.repositories.StartCodesRepositoryFake;
-import com.example.librewards.repositories.StopCodesRepositoryFake;
-import com.example.librewards.repositories.UserRepositoryFake;
+import com.example.librewards.data.repositories.RewardsRepository;
+import com.example.librewards.data.repositories.StartCodesRepository;
+import com.example.librewards.data.repositories.StopCodesRepository;
+import com.example.librewards.data.repositories.UserRepository;
 import com.example.librewards.views.MainActivity;
 
 import org.junit.Before;
@@ -52,21 +54,25 @@ public class MainActivityInstrumentedTest {
     private ActivityScenario<MainActivity> scenario;
     public UserModel user;
     @Inject
-    public UserRepositoryFake userRepositoryFake;
+    public DatabaseHelper dbHelper;
     @Inject
-    public StartCodesRepositoryFake startCodesRepositoryFake;
+    public UserRepository userRepository;
     @Inject
-    public StopCodesRepositoryFake stopCodesRepositoryFake;
+    public StartCodesRepository startCodesRepository;
     @Inject
-    public RewardsRepositoryFake rewardsRepositoryFake;
+    public StopCodesRepository stopCodesRepository;
+    @Inject
+    public RewardsRepository rewardsRepository;
+    private SQLiteDatabase db;
 
     @Before
     public void setUp() {
         hiltRule.inject();
-        user = new UserModel(1, "test-name", 0);
         setFirstStartGlobally(true);
+        db = dbHelper.getWritableDatabase();
         if (!testName.getMethodName().equals("test_mainActivity_givenFirstStart_asksForNameAndProvidesHelp")) {
-            userRepositoryFake.setUser(user);
+            user = new UserModel(1, "test-name", 0);
+            userRepository.addName("test-name");
             setFirstStartGlobally(false);
         }
         scenario = ActivityScenario.launch(MainActivity.class);
@@ -141,7 +147,7 @@ public class MainActivityInstrumentedTest {
     @Test
     public void test_mainActivity_givenPointsUpdate_amendsBothFragments() {
         onView(withId(R.id.pointsTimer)).check(matches(withText("0")));
-        scenario.onActivity(activity -> userRepositoryFake.addPoints(user, 10));
+        scenario.onActivity(activity -> userRepository.addPoints(user, 10));
         onView(withId(R.id.pointsTimer)).check(matches(withText("10")));
         onView(allOf(withText("Rewards"), isDescendantOfA(ViewMatchers.withId(R.id.tabLayout)))).perform(click());
         onView(withId(R.id.pointsRewards)).check(matches(withText("10")));

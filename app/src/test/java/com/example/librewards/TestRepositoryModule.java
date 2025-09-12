@@ -1,4 +1,4 @@
-package com.example.librewards.dependency_injection;
+package com.example.librewards;
 
 import com.example.librewards.data.repositories.RewardsRepository;
 import com.example.librewards.data.repositories.StartCodesRepository;

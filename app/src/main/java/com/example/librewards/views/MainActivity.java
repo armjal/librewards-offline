@@ -78,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
         helpButton.setOnClickListener(v -> showPopup(this, getString(R.string.helpInfo)));
     }
+
     private void setUserIfNotSet() {
         try {
             user = userRepo.getUser();

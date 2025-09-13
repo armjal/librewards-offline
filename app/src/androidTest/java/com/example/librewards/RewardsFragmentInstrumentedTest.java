@@ -11,16 +11,20 @@ import static androidx.test.espresso.matcher.ViewMatchers.withHint;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.example.librewards.utils.FragmentTestUtils.launchFragmentInHiltContainer;
+import static com.example.librewards.utils.TestUtils.clearTables;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.librewards.data.db.DatabaseHelper;
 import com.example.librewards.data.models.UserModel;
 import com.example.librewards.data.repositories.RewardsRepository;
 import com.example.librewards.data.repositories.UserRepository;
 import com.example.librewards.views.RewardsFragment;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,6 +45,9 @@ public class RewardsFragmentInstrumentedTest {
     UserRepository userRepository;
     @Inject
     RewardsRepository rewardsRepository;
+    @Inject
+    DatabaseHelper databaseHelper;
+    private SQLiteDatabase db;
     private UserModel user;
     private static final int POINTS_VALUE_ID = R.id.pointsRewards;
     private static final int NAME_VALUE_ID = R.id.nameRewards;
@@ -54,6 +61,8 @@ public class RewardsFragmentInstrumentedTest {
     public void setUp() {
         hiltRule.inject();
         user = new UserModel(1, "test-name", 0);
+        db = databaseHelper.getWritableDatabase();
+
         userRepository.addName("test-name");
         rewardsRepository.populate();
 
@@ -102,5 +111,10 @@ public class RewardsFragmentInstrumentedTest {
         onView(withId(REWARDS_TEXT_ID)).perform(typeText("incorrect-code"), closeSoftKeyboard());
         onView(withId(REWARDS_BUTTON_ID)).perform(click());
         onView(withId(POINTS_VALUE_ID)).check(matches(isDisplayed())).check(matches(withText("10")));
+    }
+
+    @After
+    public void tearDown() {
+        clearTables(db);
     }
 }

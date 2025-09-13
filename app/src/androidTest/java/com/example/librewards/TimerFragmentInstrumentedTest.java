@@ -10,18 +10,22 @@ import static androidx.test.espresso.matcher.ViewMatchers.withHint;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.example.librewards.utils.FragmentTestUtils.launchFragmentInHiltContainer;
+import static com.example.librewards.utils.TestUtils.clearTables;
 import static org.hamcrest.CoreMatchers.not;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.librewards.data.db.DatabaseHelper;
 import com.example.librewards.data.models.UserModel;
 import com.example.librewards.data.repositories.StartCodesRepository;
 import com.example.librewards.data.repositories.StopCodesRepository;
 import com.example.librewards.data.repositories.UserRepository;
 import com.example.librewards.views.TimerFragment;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,6 +48,9 @@ public class TimerFragmentInstrumentedTest {
     StartCodesRepository startCodesRepository;
     @Inject
     StopCodesRepository stopCodesRepository;
+    @Inject
+    DatabaseHelper databaseHelper;
+    private SQLiteDatabase db;
     private static final int POINTS_VALUE_ID = R.id.pointsTimer;
     private static final int NAME_VALUE_ID = R.id.nameTimer;
     private static final int POINTS_LABEL_ID = R.id.pointsLabelTimer;
@@ -58,6 +65,7 @@ public class TimerFragmentInstrumentedTest {
     public void setUp() {
         hiltRule.inject();
         UserModel user = new UserModel(1, "test-name", 0);
+        db = databaseHelper.getWritableDatabase();
 
         startCodesRepository.populate();
         stopCodesRepository.populate();
@@ -104,5 +112,10 @@ public class TimerFragmentInstrumentedTest {
         onView(withId(TIMER_ID)).check(matches(withText("00:00")));
         onView(withId(TIMER_CODE_TEXT)).check(matches(withHint("Please enter the start code")));
         onView(withId(START_BUTTON_ID)).check(matches(isDisplayed()));
+    }
+
+    @After
+    public void tearDown() {
+        clearTables(db);
     }
 }

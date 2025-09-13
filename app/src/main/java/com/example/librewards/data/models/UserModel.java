@@ -32,6 +32,12 @@ public class UserModel implements Parcelable {
         points = in.readInt();
     }
 
+    public UserModel(){
+        id = 1;
+        name = "";
+        points = 0;
+    }
+
     public int getId() {
         return id;
     }

@@ -6,6 +6,7 @@ import static com.example.librewards.views.utils.ViewUtils.showPopup;
 import static com.example.librewards.views.utils.ViewUtils.toastMessage;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,6 +37,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
+    private static final String TITLE = "MainActivity";
     @Inject
     public DatabaseHelper dbHelper;
     @Inject
@@ -49,10 +51,10 @@ public class MainActivity extends AppCompatActivity {
     private EditText enterName;
     private Button nameButton;
     private FrameLayout popupNameContainer;
-    private UserModel user;
     private TabLayout tabLayout;
     private ViewPager2 viewPager;
     private ImageView helpButton;
+    private UserModel user = new UserModel();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +65,9 @@ public class MainActivity extends AppCompatActivity {
         setupViews();
 
         rewardsRepo.populate();
-        user = userRepo.getUser();
+
         handleFirstStart(this, this::onFirstStart);
-        requireUserNameIfNotSet();
+        setUserIfNotSet();
 
         Bundle bundle = new Bundle();
         bundle.putParcelable("user", user);
@@ -77,18 +79,21 @@ public class MainActivity extends AppCompatActivity {
         helpButton.setOnClickListener(v -> showPopup(this, getString(R.string.helpInfo)));
     }
 
+    private void setUserIfNotSet() {
+        try {
+            user = userRepo.getUser();
+        } catch (NullPointerException e) {
+            Log.e(TITLE, "User is null " + e.getMessage());
+            requireUserToEnterName();
+        }
+    }
+
     public void onFirstStart() {
         requireUserToEnterName();
         dbHelper.processTransaction(() -> {
             startCodesRepo.populate();
             stopCodesRepo.populate();
         });
-    }
-
-    private void requireUserNameIfNotSet() {
-        if (user.getName().isEmpty()) {
-            requireUserToEnterName();
-        }
     }
 
     public void requireUserToEnterName() {

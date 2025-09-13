@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSession;
+import static com.example.librewards.utils.TestUtils.clearTables;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.core.IsNot.not;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -172,9 +173,6 @@ public class MainActivityInstrumentedTest {
 
     @After
     public void tearDown() {
-        db.delete("user_table", null, null);
-        db.delete("start_codes_table", null, null);
-        db.delete("stop_codes_table", null, null);
-        db.delete("reward_codes_table", null, null);
+        clearTables(db);
     }
 }

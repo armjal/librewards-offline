@@ -9,14 +9,14 @@ import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.librewards.data.db.DatabaseHelper;
-import com.example.librewards.data.notifiers.UserChangeNotifier;
 import com.example.librewards.data.models.UserModel;
+import com.example.librewards.data.notifiers.UserChangeNotifier;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class UserRepository implements UserRepositoryInterface{
+public class UserRepository implements UserRepositoryInterface {
     private final SQLiteDatabase db;
     private final DatabaseHelper dbHelper;
 
@@ -28,6 +28,7 @@ public class UserRepository implements UserRepositoryInterface{
 
     public void addName(String name) {
         ContentValues contentValues = new ContentValues();
+        contentValues.put(ID_COLUMN_NAME, 1);
         contentValues.put(NAME_COLUMN_NAME, name);
         db.insert(USER_TABLE_NAME, null, contentValues);
         UserChangeNotifier.notifyNameChange(name);
@@ -35,8 +36,10 @@ public class UserRepository implements UserRepositoryInterface{
 
     public UserModel getUser() {
         int id = 1;
-        String name = dbHelper.getString(USER_TABLE_NAME, NAME_COLUMN_NAME, null, null);
-        int points = dbHelper.getInt(USER_TABLE_NAME, POINTS_COLUMN_NAME, null, null);
+        String name = dbHelper.getString(USER_TABLE_NAME, NAME_COLUMN_NAME, ID_COLUMN_NAME + " = ?",
+                new String[]{String.valueOf(id)});
+        int points = dbHelper.getInt(USER_TABLE_NAME, POINTS_COLUMN_NAME, ID_COLUMN_NAME + " = ?",
+                new String[]{String.valueOf(id)});
 
         return new UserModel(id, name, points);
     }

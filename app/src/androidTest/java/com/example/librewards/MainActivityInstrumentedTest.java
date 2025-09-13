@@ -12,8 +12,11 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.android.dx.mockito.inline.extended.ExtendedMockito.mockitoSession;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.core.IsNot.not;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
@@ -30,6 +33,7 @@ import com.example.librewards.data.repositories.RewardsRepository;
 import com.example.librewards.data.repositories.StartCodesRepository;
 import com.example.librewards.data.repositories.StopCodesRepository;
 import com.example.librewards.data.repositories.UserRepository;
+import com.example.librewards.utils.PointsCalculator;
 import com.example.librewards.views.MainActivity;
 
 import org.junit.After;
@@ -38,6 +42,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
+import org.mockito.MockitoSession;
 
 import javax.inject.Inject;
 
@@ -71,6 +76,8 @@ public class MainActivityInstrumentedTest {
         hiltRule.inject();
         setFirstStartGlobally(true);
         db = dbHelper.getWritableDatabase();
+        startCodesRepository.populate();
+        stopCodesRepository.populate();
         if (!testName.getMethodName().equals("test_mainActivity_givenFirstStart_asksForNameAndProvidesHelp")) {
             user = new UserModel(1, "test-name", 0);
             userRepository.addName("test-name");
@@ -147,15 +154,24 @@ public class MainActivityInstrumentedTest {
 
     @Test
     public void test_mainActivity_givenPointsUpdate_amendsBothFragments() {
+        MockitoSession session = mockitoSession().mockStatic(PointsCalculator.class).startMocking();
+        when(PointsCalculator.calculatePointsFromDuration(anyLong())).thenReturn(10);
+
         onView(withId(R.id.pointsTimer)).check(matches(withText("0")));
-        scenario.onActivity(activity -> userRepository.addPoints(user, 10));
+        onView(withId(R.id.timerCodeText)).perform(typeText("583927"), closeSoftKeyboard());
+        onView(withId(R.id.startButton)).perform(click());
+        onView(withId(R.id.timerCodeText)).perform(typeText("241859"), closeSoftKeyboard());
+        onView(withId(R.id.stopButton)).check(matches(withText("stop"))).perform(click());
+        onView(withId(R.id.closeBtn)).inRoot(isDialog()).perform(click());
         onView(withId(R.id.pointsTimer)).check(matches(withText("10")));
         onView(allOf(withText("Rewards"), isDescendantOfA(ViewMatchers.withId(R.id.tabLayout)))).perform(click());
         onView(withId(R.id.pointsRewards)).check(matches(withText("10")));
+
+        session.finishMocking();
     }
 
     @After
-    public void tearDown(){
+    public void tearDown() {
         db.delete("user_table", null, null);
         db.delete("start_codes_table", null, null);
         db.delete("stop_codes_table", null, null);

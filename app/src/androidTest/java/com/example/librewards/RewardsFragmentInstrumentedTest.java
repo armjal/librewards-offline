@@ -56,6 +56,7 @@ public class RewardsFragmentInstrumentedTest {
     private static final int REWARDS_TEXT_ID = R.id.rewardText;
     private static final int POPUP_TEXT = R.id.popupText;
     private static final int POPUP_CLOSE_BUTTON = R.id.closeBtn;
+    private Bundle bundle;
 
     @Before
     public void setUp() {
@@ -66,14 +67,14 @@ public class RewardsFragmentInstrumentedTest {
         userRepository.addName("test-name");
         rewardsRepository.populate();
 
-        Bundle bundle = new Bundle();
+        bundle = new Bundle();
         bundle.putParcelable("user", user);
-
-        launchFragmentInHiltContainer(RewardsFragment.class, bundle, R.style.AppTheme, null);
     }
 
     @Test
     public void test_rewardsFragment_hasCoreUiElementsCorrectlySetup() {
+        launchFragmentInHiltContainer(RewardsFragment.class, bundle, R.style.AppTheme, null);
+
         onView(withId(NAME_VALUE_ID)).check(matches(isDisplayed())).check(matches(withText("Hey, test-name")));
         onView(withId(POINTS_VALUE_ID)).check(matches(isDisplayed())).check(matches(withText("0")));
         onView(withId(POINTS_LABEL_ID)).check(matches(isDisplayed())).check(matches(withText("Points")));
@@ -84,6 +85,10 @@ public class RewardsFragmentInstrumentedTest {
     @Test
     public void test_rewardsFragment_givenCorrectCodeAndSufficientPoints_successfullyPurchasesItem() {
         userRepository.addPoints(user, 10);
+        user = userRepository.getUser();
+        bundle.putParcelable("user", user);
+        launchFragmentInHiltContainer(RewardsFragment.class, bundle, R.style.AppTheme, null);
+
         onView(withId(POINTS_VALUE_ID)).check(matches(isDisplayed())).check(matches(withText("10")));
         onView(withId(REWARDS_TEXT_ID)).perform(typeText("943248"), closeSoftKeyboard());
         onView(withId(REWARDS_BUTTON_ID)).perform(click());
@@ -95,6 +100,8 @@ public class RewardsFragmentInstrumentedTest {
 
     @Test
     public void test_rewardsFragment_givenCorrectCodeButInsufficientPoints_providesInsufficientPointsMessage() {
+        launchFragmentInHiltContainer(RewardsFragment.class, bundle, R.style.AppTheme, null);
+
         onView(withId(POINTS_VALUE_ID)).check(matches(isDisplayed())).check(matches(withText("0")));
         onView(withId(REWARDS_TEXT_ID)).perform(typeText("674382"), closeSoftKeyboard());
         onView(withId(REWARDS_BUTTON_ID)).perform(click());
@@ -106,6 +113,8 @@ public class RewardsFragmentInstrumentedTest {
 
     @Test
     public void test_rewardsFragment_givenIncorrectCode_doesNotPurchaseItem() {
+        launchFragmentInHiltContainer(RewardsFragment.class, bundle, R.style.AppTheme, null);
+
         userRepository.addPoints(user, 10);
         onView(withId(POINTS_VALUE_ID)).check(matches(isDisplayed())).check(matches(withText("10")));
         onView(withId(REWARDS_TEXT_ID)).perform(typeText("incorrect-code"), closeSoftKeyboard());

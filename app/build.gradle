@@ -20,6 +20,11 @@ android {
         unitTests {
             includeAndroidResources = true
         }
+        packagingOptions {
+            jniLibs {
+                useLegacyPackaging = true // Required to enable use of dexmaker-mockito-inline. To revisit with later versions that support recent AGP of https://github.com/linkedin/dexmaker (inline-extended)
+            }
+        }
     }
     testFixtures {
         enable = true
@@ -60,6 +65,8 @@ dependencies {
 
     androidTestImplementation libs.espresso.core
     androidTestImplementation libs.hilt.android.testing
+
+    androidTestImplementation libs.dexmaker.mockito.inline.extended
     androidTestImplementation(testFixtures(project(":app")))
     androidTestAnnotationProcessor libs.hilt.android.compiler
     debugImplementation libs.fragment.testing

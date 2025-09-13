@@ -1,4 +1,4 @@
-package com.example.librewards.repositories;
+package com.example.librewards.dependency_injection.repositories;
 
 import static com.example.librewards.resources.RewardCodesTest.rewardCodesAndPoints;
 

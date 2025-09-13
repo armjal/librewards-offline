@@ -4,10 +4,10 @@ import com.example.librewards.data.repositories.RewardsRepository;
 import com.example.librewards.data.repositories.StartCodesRepository;
 import com.example.librewards.data.repositories.StopCodesRepository;
 import com.example.librewards.data.repositories.UserRepository;
-import com.example.librewards.repositories.RewardsRepositoryFake;
-import com.example.librewards.repositories.StartCodesRepositoryFake;
-import com.example.librewards.repositories.StopCodesRepositoryFake;
-import com.example.librewards.repositories.UserRepositoryFake;
+import com.example.librewards.dependency_injection.repositories.RewardsRepositoryFake;
+import com.example.librewards.dependency_injection.repositories.StartCodesRepositoryFake;
+import com.example.librewards.dependency_injection.repositories.StopCodesRepositoryFake;
+import com.example.librewards.dependency_injection.repositories.UserRepositoryFake;
 
 import javax.inject.Singleton;
 

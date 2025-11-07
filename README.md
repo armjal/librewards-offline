@@ -8,6 +8,10 @@ This repository and the code within sees to:
 - Become familiar with Java once again
 - Become familiar with Android development
 
+## Commits
+The commits are potentially interesting to look through, especially the [initial one](https://github.com/armjal/librewards-offline/commit/b9d95c91468f0628d3afef135ea64eb54cfdc5c0) where the original codebase was committed. This commit compared to more recent ones will show the differences.
+Throughout the history, conventional commits were used as an aim to provide further context to changes and understand quicker what constitutes as: refactor, feature, and improvement, or a task.
+
 ## User interface snippets
 <img width="190" height="390" alt="librewards-timer" src="https://github.com/user-attachments/assets/c04ccf30-67ab-450f-9e4c-67e23700ba77" />
 <img width="190" height="390" alt="librewards-welldone" src="https://github.com/user-attachments/assets/ebb8d5fe-0e95-4f8e-8155-f0cb49d6a0e9" />
@@ -30,6 +34,3 @@ This repository and the code within sees to:
 - Unit tests for views (Activity and Fragments)
 - Potentially split out functionality within views further into separate modules. This seems to be what the MVVM architecture solves - where it makes sense to split the majority of logic within views into separate modules
 - Create repository with Librewards - Online
-
-## Commits
-Throughout the history, conventional commits were used as an aim to provide further context to changes and understand quicker what constitutes as: refactor, feature, and improvement, or a task.
